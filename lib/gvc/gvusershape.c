@@ -19,7 +19,7 @@
 #include <ctype.h>
 #include <errno.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #define GLOB_NOSPACE    1   /* Ran out of memory.  */
 #define GLOB_ABORTED    2   /* Read error.  */
@@ -597,7 +597,7 @@ boolean gvusershape_file_access(usershape_t *us)
 	    agerr(AGWARN, "Filename \"%s\" is unsafe\n", us->name);
 	    return FALSE;
 	}
-#ifndef WIN32
+#ifndef _WIN32
 	us->f = fopen(fn, "r");
 #else
 	us->f = fopen(fn, "rb");

@@ -29,7 +29,7 @@
 
 
 
-#ifdef WIN32
+#ifdef _WIN32
 #define STRCASECMP stricmp
 #else
 #include <strings.h>

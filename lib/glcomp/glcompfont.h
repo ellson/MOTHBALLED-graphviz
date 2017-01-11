@@ -15,7 +15,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include "glpangofont.h"
 typedef float GLfloat;
 #else

@@ -33,7 +33,7 @@
 extern int strcasecmp(const char *s1, const char *s2);
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 #define strdup(x) _strdup(x)
 #endif
 
@@ -171,7 +171,7 @@ gvplugin_library_t *gvplugin_library_load(GVC_t * gvc, char *path)
         else
             p = gmalloc(lenp);
     }
-#ifdef WIN32
+#ifdef _WIN32
     if (path[1] == ':') {
 #else
     if (path[0] == '/') {
@@ -197,7 +197,7 @@ gvplugin_library_t *gvplugin_library_load(GVC_t * gvc, char *path)
 
     s = strrchr(p, DIRSEP[0]);
     len = strlen(s);
-#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+#if defined(_WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
     if (len < strlen("/gvplugin_x")) {
 #else
     if (len < strlen("/libgvplugin_x")) {
@@ -206,7 +206,7 @@ gvplugin_library_t *gvplugin_library_load(GVC_t * gvc, char *path)
         return NULL;
     }
     sym = gmalloc(len + strlen(suffix) + 1);
-#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+#if defined(_WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
     strcpy(sym, s + 1);         /* strip leading "/"  */
 #else
     strcpy(sym, s + 4);         /* strip leading "/lib" or "/cyg" */

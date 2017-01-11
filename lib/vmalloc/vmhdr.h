@@ -20,7 +20,7 @@ extern "C" {
 #ifndef _BLD_vmalloc
 #define _BLD_vmalloc	1
 #endif
-#ifdef WIN32
+#ifdef _WIN32
 #include <io.h>
 #endif
 
@@ -416,7 +416,7 @@ extern "C" {
 
     extern size_t getpagesize(void);
 
-#ifndef WIN32
+#ifndef _WIN32
     extern void abort(void);
     extern ssize_t write(int, const void *, size_t);
 #endif
@@ -429,14 +429,14 @@ extern "C" {
 #include	<string.h>
 
 /* for malloc.c */
-#ifndef WIN32
+#ifndef _WIN32
     extern int creat(const char *, int);
     extern int close(int);
 #endif
     extern int getpid(void);
 
 /* for vmexit.c */
-#ifndef WIN32
+#ifndef _WIN32
     extern int onexit(void(*)(void));
     extern void _exit(int);
 #endif

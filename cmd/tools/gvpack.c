@@ -30,7 +30,7 @@
 #include "pack.h"
 
 /*visual studio*/
-#if defined(WIN32)
+#if defined(_WIN32)
 #define extern __declspec(dllimport)
 #endif
 /*end visual studio*/
@@ -38,7 +38,7 @@ extern gvplugin_library_t gvplugin_neato_layout_LTX_library;
 #undef extern
 
 lt_symlist_t lt_preloaded_symbols[] = {
-#if defined(WIN32)
+#if defined(_WIN32)
 	{ "gvplugin_neato_layout_LTX_library", 0 },
 #else
 	{ "gvplugin_neato_layout_LTX_library", (void*)(&gvplugin_neato_layout_LTX_library) },
@@ -872,7 +872,7 @@ int main(int argc, char *argv[])
 
     doPack = (pinfo.mode != l_undef);
 
-#if defined(WIN32)
+#if defined(_WIN32)
     lt_preloaded_symbols[0].address = (void*)(&gvplugin_neato_layout_LTX_library);
 #endif
     gvc = gvContextPlugins(lt_preloaded_symbols, DEMAND_LOADING);

@@ -179,7 +179,7 @@ static int parseArgs(char *s, int argc, char ***argv)
 }
 
 
-#ifdef WIN32
+#ifdef _WIN32
 #define PATHSEP '\\'
 #define LISTSEP ';'
 #else

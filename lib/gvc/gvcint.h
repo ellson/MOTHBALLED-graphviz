@@ -146,7 +146,7 @@ extern "C" {
 extern GVC_t* gvCloneGVC (GVC_t *);
 extern void gvFreeCloneGVC (GVC_t *);
 
-#ifdef WIN32
+#ifdef _WIN32
 #define DIRSEP "\\"
 #else
 #define DIRSEP "/"

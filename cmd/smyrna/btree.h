@@ -15,7 +15,7 @@
 #define	BTREE_H
 
 #include "tvnodes.h"
-#ifdef WIN32
+#ifdef _WIN32
 #include "regex_win32.h"
 #endif
 

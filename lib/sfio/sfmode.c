@@ -227,7 +227,7 @@ int _sfpclose(reg Sfio_t * f)
 	    CLOSE(p->file);
 
 	/* wait for process termination */
-#ifndef WIN32
+#ifndef _WIN32
 	while ((pid = waitpid(p->pid, &status, 0)) == -1
 	       && errno == EINTR);
 #endif

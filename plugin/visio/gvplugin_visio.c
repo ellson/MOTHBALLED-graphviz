@@ -11,7 +11,7 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
-#ifdef WIN32 //*dependencies
+#ifdef _WIN32 //*dependencies
     #pragma comment( lib, "gvc.lib" )
     #pragma comment( lib, "graph.lib" )
 #endif

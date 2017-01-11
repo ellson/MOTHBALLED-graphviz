@@ -41,7 +41,7 @@
 #ifndef HAVE_SRAND48
 #define srand48 srand
 #endif
-#ifdef WIN32
+#ifdef _WIN32
 extern double drand48(void);
 #endif
 

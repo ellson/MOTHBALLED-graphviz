@@ -19,7 +19,7 @@ extern "C" {
 
 #ifndef _TBL_H
 #define _TBL_H
-#ifdef WIN32
+#ifdef _WIN32
 #include "mem.h"
 #endif
 

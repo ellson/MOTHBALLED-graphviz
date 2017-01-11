@@ -114,7 +114,7 @@ static void execute(const char *argcmd)
     _exit(EXIT_NOTFOUND);
 }
 
-#ifndef WIN32
+#ifndef _WIN32
 /**
  * @param f
  * @param command command to execute

@@ -121,7 +121,7 @@ parseStyle (char* s)
     char* ip;
     char* sep = " \t,";
 
-#ifdef WIN32 
+#ifdef _WIN32 
 	s = _strdup(s);
 #else
 	s = strdup(s);

@@ -20,7 +20,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <io.h>
 #include "compat.h"
 #endif

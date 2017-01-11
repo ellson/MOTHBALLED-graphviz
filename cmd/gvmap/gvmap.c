@@ -32,7 +32,7 @@
 #include "colorutil.h"
 #include "color_palette.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #define strdup(x) _strdup(x)
 #endif
 enum {POINTS_ALL = 1, POINTS_LABEL, POINTS_RANDOM};

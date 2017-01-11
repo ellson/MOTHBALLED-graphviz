@@ -38,7 +38,7 @@
 char **Files;
 char *CmdName;
 
-#ifdef WIN32 //*dependencies
+#ifdef _WIN32 //*dependencies
     #pragma comment( lib, "cgraph.lib" )
     #pragma comment( lib, "ingraphs.lib" )
     #pragma comment( lib, "gvc.lib" )

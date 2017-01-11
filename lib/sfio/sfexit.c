@@ -33,7 +33,7 @@ typedef struct _wait_ {
 
 static Waitpid_t *Wait;
 
-#ifndef WIN32
+#ifndef _WIN32
 waitpid(int pid, int *status, int options)
 {
     int id, ps;

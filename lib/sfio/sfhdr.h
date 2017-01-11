@@ -781,13 +781,13 @@ extern "C" {
 
 /* for portable encoding of double values */
 #if !__STDC__
-#ifndef WIN32
+#ifndef _WIN32
     extern double frexp(double, int *);
     extern double ldexp(double, int);
 #endif
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 #undef SF_ERROR
 #include <io.h>
 #define SF_ERROR	0000400	/* an error happened                    */
@@ -813,11 +813,11 @@ extern "C" {
 #endif
 
 #endif /*HAVE_UNISTD_H*/
-#endif /* WIN32 */
+#endif /* _WIN32 */
 
     extern time_t time(time_t *);
     extern int waitpid(int, int *, int);
-#ifndef WIN32
+#ifndef _WIN32
     extern void _exit(int);
 #endif
     typedef int (*Onexit_f)(void);
