@@ -468,7 +468,7 @@ static pointf initPositions(graph_t * g, bport_t * pp)
     double size;
     Agnode_t *np;
     int n_pos = 0;		/* no. of nodes with position info */
-    box bb = { {0, 0}, {0, 0} };
+    boxf bb = { {0, 0}, {0, 0} };
     pointf ctr;			/* center of boundary ellipse */
     long local_seed;
     double PItimes2 = M_PI * 2.0;
