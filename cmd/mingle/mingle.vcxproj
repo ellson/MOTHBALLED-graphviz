@@ -72,9 +72,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalDependencies>getopt.lib;cdt.lib;cgraph.lib;gvc.lib;ingraphs.lib;sparse.lib;sfdp.lib;minglelib.lib;neatogen.lib;rbtree.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>copy $(SolutionDir)windows\dependencies\ANN\ANN.dll $(OutDir)ANN.dll</Command>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -98,9 +96,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalDependencies>getopt.lib;cdt.lib;cgraph.lib;gvc.lib;ingraphs.lib;sparse.lib;sfdp.lib;minglelib.lib;neatogen.lib;rbtree.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>copy $(SolutionDir)windows\dependencies\ANN\ANN.dll $(OutDir)ANN.dll</Command>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="minglemain.c" />

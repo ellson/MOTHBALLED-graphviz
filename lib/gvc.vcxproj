@@ -51,7 +51,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\rxspencer\include\rxspencer;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)windows\dependencies\expat\Source\lib;$(SolutionDir)windows\dependencies\libtool\include;$(SolutionDir);$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\fdpgen;$(SolutionDir)lib\label;$(SolutionDir)lib\pathplan;$(SolutionDir)lib\gvc;$(SolutionDir)lib\xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)windows\dependencies\libraries\include;$(SolutionDir);$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\fdpgen;$(SolutionDir)lib\label;$(SolutionDir)lib\pathplan;$(SolutionDir)lib\gvc;$(SolutionDir)lib\xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MSWIN32;WIN32;_DEBUG;_WINDOWS;_USRDLL;GVC_EXPORTS;WIN32_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -63,7 +63,7 @@
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)windows\dependencies\rxspencer\lib;$(SolutionDir)windows\dependencies\GTK2\lib;$(SolutionDir)windows\dependencies\libtool\lib;$(SolutionDir)windows\dependencies\expat\Bin;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)windows\dependencies\libraries\lib;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <DataExecutionPrevention />
@@ -79,15 +79,15 @@ del common\htmlparse-intermediate.c
 del common\htmlparse-intermediate.h</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)windows\dependencies\libtool\bin\libltdl3.dll $(OutDir)libltdl3.dll
-copy $(SolutionDir)windows\dependencies\rxspencer\bin\rxspencer.dll $(OutDir)rxspencer.dll
-copy $(SolutionDir)windows\dependencies\expat\Bin\libexpat.dll $(OutDir)libexpat.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll</Command>
+      <Command>copy $(SolutionDir)windows\dependencies\libraries\bin\libltdl3.dll $(OutDir)libltdl3.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\rxspencer.dll $(OutDir)rxspencer.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libexpat.dll $(OutDir)libexpat.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\zlib1.dll $(OutDir)zlib1.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\rxspencer\include\rxspencer;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)windows\dependencies\expat\Source\lib;$(SolutionDir)windows\dependencies\libtool\include;$(SolutionDir);$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\fdpgen;$(SolutionDir)lib\label;$(SolutionDir)lib\pathplan;$(SolutionDir)lib\gvc;$(SolutionDir)lib\xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)windows\dependencies\libraries\include;$(SolutionDir);$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\fdpgen;$(SolutionDir)lib\label;$(SolutionDir)lib\pathplan;$(SolutionDir)lib\gvc;$(SolutionDir)lib\xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;GVC_EXPORTS;WIN32_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
@@ -96,7 +96,7 @@ copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll</C
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)windows\dependencies\rxspencer\lib;$(SolutionDir)windows\dependencies\GTK2\lib;$(SolutionDir)windows\dependencies\libtool\lib;$(SolutionDir)windows\dependencies\expat\Bin;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)windows\dependencies\libraries\lib;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -114,10 +114,10 @@ del common\htmlparse-intermediate.c
 del common\htmlparse-intermediate.h</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)windows\dependencies\libtool\bin\libltdl3.dll $(OutDir)libltdl3.dll
-copy $(SolutionDir)windows\dependencies\rxspencer\bin\rxspencer.dll $(OutDir)rxspencer.dll
-copy $(SolutionDir)windows\dependencies\expat\Bin\libexpat.dll $(OutDir)libexpat.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll</Command>
+      <Command>copy $(SolutionDir)windows\dependencies\libraries\bin\libltdl3.dll $(OutDir)libltdl3.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\rxspencer.dll $(OutDir)rxspencer.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libexpat.dll $(OutDir)libexpat.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\zlib1.dll $(OutDir)zlib1.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
