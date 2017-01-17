@@ -51,7 +51,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\libraries\include;$(SolutionDir)windows\dependencies\libraries\include\cairo;$(SolutionDir)windows\dependencies\libgd\src;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\gvc;$(SolutionDir)lib\pathplan;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\libraries\include;$(SolutionDir)windows\dependencies\libraries\include\cairo;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\gvc;$(SolutionDir)lib\pathplan;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;GVPLUGIN_GD_EXPORTS;WIN32_DLL;NONDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -63,7 +63,7 @@
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\dependencies\libgd\build;$(SolutionDir)windows\dependencies\libraries\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\dependencies\libraries\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>gvplugin_gd.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -72,7 +72,7 @@
       <AdditionalDependencies>cgraph.lib;libpng12.lib;libgd.lib;libcairo-2.lib;fontconfig.lib;gvc.lib;freetype.lib;iconv.lib;jpeg.lib;z.lib;pathplan.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)windows\dependencies\libgd\build\libgd.dll $(OutDir)libgd.dll
+      <Command>copy $(SolutionDir)windows\dependencies\libraries\bin\libgd.dll $(OutDir)libgd.dll
 copy $(SolutionDir)windows\dependencies\libraries\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
 copy $(SolutionDir)windows\dependencies\libraries\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
 copy $(SolutionDir)windows\dependencies\libraries\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
@@ -84,7 +84,7 @@ copy $(SolutionDir)windows\dependencies\libraries\bin\iconv.dll $(OutDir)iconv.d
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\libraries\include;$(SolutionDir)windows\dependencies\libraries\include\cairo;$(SolutionDir)windows\dependencies\libgd\src;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\gvc;$(SolutionDir)lib\pathplan;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\libraries\include;$(SolutionDir)windows\dependencies\libraries\include\cairo;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\gvc;$(SolutionDir)lib\pathplan;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;GVPLUGIN_GD_EXPORTS;WIN32_DLL;NONDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader />
@@ -93,7 +93,7 @@ copy $(SolutionDir)windows\dependencies\libraries\bin\iconv.dll $(OutDir)iconv.d
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\dependencies\libgd\build;$(SolutionDir)windows\dependencies\libraries\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\dependencies\libraries\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>gvplugin_gd.def</ModuleDefinitionFile>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -104,7 +104,7 @@ copy $(SolutionDir)windows\dependencies\libraries\bin\iconv.dll $(OutDir)iconv.d
       <AdditionalDependencies>cgraph.lib;libpng12.lib;libgd.lib;libcairo-2.lib;fontconfig.lib;gvc.lib;freetype.lib;iconv.lib;jpeg.lib;z.lib;pathplan.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)windows\dependencies\libgd\build\libgd.dll $(OutDir)libgd.dll
+      <Command>copy $(SolutionDir)windows\dependencies\libraries\bin\libgd.dll $(OutDir)libgd.dll
 copy $(SolutionDir)windows\dependencies\libraries\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
 copy $(SolutionDir)windows\dependencies\libraries\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
 copy $(SolutionDir)windows\dependencies\libraries\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
