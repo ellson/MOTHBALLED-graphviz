@@ -137,8 +137,8 @@ case "${host_os}" in
   *uwin* )
 	UWIN=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
-	CFLAGS="${CFLAGS} -DWIN32 -DMSWIN32"
-	CXXFLAGS="${CXXFLAGS} -DWIN32 -DMSWIN32"
+	CFLAGS="${CFLAGS} -DMSWIN32"
+	CXXFLAGS="${CXXFLAGS} -DMSWIN32"
 	PATHSEPARATOR=";"
         NO_POSTSCRIPT_ALIAS=1
 	BROWSER="xdg-open"
@@ -419,9 +419,9 @@ dnl Checks for header files
 # AC_HEADER_STDC
 AC_CHECK_HEADERS(malloc.h \
 	fcntl.h search.h termios.h \
-	unistd.h strings.h stat.h \
+	unistd.h strings.h stat.h vfork.h \
 	sys/time.h sys/types.h sys/select.h \
-	sys/stat.h sys/mman.h \
+	sys/stat.h sys/mman.h sys/vfork.h \
 	sys/ioctl.h sys/inotify.h crt_externs.h)
 AC_HEADER_TIME
 AC_HEADER_DIRENT

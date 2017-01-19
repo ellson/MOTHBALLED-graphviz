@@ -306,7 +306,7 @@ int GQqueryask (
 
 void Gqwpopaction (Widget w, XEvent *evp, char **app, unsigned int *anp) {
     Gwidget_t *widget;
-    char c;
+    char c = 0;
 
     if (evp->type == KeyPress || evp->type == KeyRelease)
         XLookupString ((XKeyEvent *) evp, &c, 1, NULL, NULL);

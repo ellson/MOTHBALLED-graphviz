@@ -14,7 +14,7 @@
 #include "gvplugin.h"
 
 /*visual studio*/
-#if defined(WIN32)
+#if defined(_WIN32)
 #define extern __declspec(dllimport)
 #endif
 /*end visual studio*/

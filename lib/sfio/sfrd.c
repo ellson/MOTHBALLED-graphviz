@@ -69,12 +69,6 @@ ssize_t sfrd(reg Sfio_t * f, reg void * buf, reg size_t n,
 	if (f->next < f->endb) {
 	    if (SFSYNC(f) < 0)
 		SFMTXRETURN(f, -1);
-#ifdef MAP_TYPE
-	    if ((f->bits & SF_MMAP) && f->data) {
-		SFMUNMAP(f, f->data, f->endb - f->data);
-		f->data = NIL(uchar *);
-	    }
-#endif
 	    f->next = f->endb = f->endr = f->endw = f->data;
 	}
     }
@@ -107,102 +101,6 @@ ssize_t sfrd(reg Sfio_t * f, reg void * buf, reg size_t n,
 		SFMTXRETURN(f, (ssize_t) rv);
 	    }
 	}
-#ifdef MAP_TYPE
-	if (f->bits & SF_MMAP) {
-	    reg ssize_t a, round;
-	    Stat_t st;
-
-	    /* determine if we have to copy data to buffer */
-	    if ((uchar *) buf >= f->data && (uchar *) buf <= f->endb) {
-		n += f->endb - f->next;
-		buf = NIL(char *);
-	    }
-
-	    /* actual seek location */
-	    if ((f->flags & (SF_SHARE | SF_PUBLIC)) ==
-		(SF_SHARE | SF_PUBLIC)
-		&& (r = SFSK(f, (Sfoff_t) 0, SEEK_CUR, dc)) != f->here)
-		f->here = r;
-	    else
-		f->here -= f->endb - f->next;
-
-	    /* before mapping, make sure we have data to map */
-	    if ((f->flags & SF_SHARE)
-		|| (size_t) (r = f->extent - f->here) < n) {
-		if ((r = fstat(f->file, &st)) < 0)
-		    goto do_except;
-		if ((r = (f->extent = st.st_size) - f->here) <= 0) {
-		    r = 0;	/* eof */
-		    goto do_except;
-		}
-	    }
-
-	    /* make sure current position is page aligned */
-	    if ((a = (size_t) (f->here % _Sfpage)) != 0) {
-		f->here -= a;
-		r += a;
-	    }
-
-	    /* map minimal requirement */
-	    if (r > (round = (1 + (n + a) / f->size) * f->size))
-		r = round;
-
-	    if (f->data)
-		SFMUNMAP(f, f->data, f->endb - f->data);
-
-	    for (;;) {
-		f->data = (uchar *) mmap((caddr_t) 0, (size_t) r,
-					 (PROT_READ | PROT_WRITE),
-					 MAP_PRIVATE,
-					 f->file, (off_t) f->here);
-		if (f->data && (caddr_t) f->data != (caddr_t) (-1))
-		    break;
-		else {
-		    f->data = NIL(uchar *);
-		    if ((r >>= 1) < (_Sfpage * SF_NMAP) ||
-			(errno != EAGAIN && errno != ENOMEM))
-			break;
-		}
-	    }
-
-	    if (f->data) {
-		if (f->bits & SF_SEQUENTIAL)
-		    SFMMSEQON(f, f->data, r);
-		f->next = f->data + a;
-		f->endr = f->endb = f->data + r;
-		f->endw = f->data;
-		f->here += r;
-
-		/* make known our seek location */
-		(void) SFSK(f, f->here, SEEK_SET, dc);
-
-		if (buf) {
-		    if (n > (size_t) (r - a))
-			n = (ssize_t) (r - a);
-		    memcpy(buf, f->next, n);
-		    f->next += n;
-		} else
-		    n = f->endb - f->next;
-
-		SFMTXRETURN(f, n);
-	    } else {
-		r = -1;
-		f->here += a;
-
-		/* reset seek pointer to its physical location */
-		(void) SFSK(f, f->here, SEEK_SET, dc);
-
-		/* make a buffer */
-		(void) SFSETBUF(f, (void *) f->tiny,
-				(size_t) SF_UNBOUND);
-
-		if (!buf) {
-		    buf = (void *) f->data;
-		    n = f->size;
-		}
-	    }
-	}
-#endif
 
 	/* sync unseekable write streams to prevent deadlock */
 	if (!dosync && f->extent < 0) {

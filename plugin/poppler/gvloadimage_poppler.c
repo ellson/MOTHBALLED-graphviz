@@ -23,7 +23,7 @@
 #include <poppler.h>
 #include <cairo.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #define NUL_FILE "nul"
 #else
 #define NUL_FILE "/dev/null"

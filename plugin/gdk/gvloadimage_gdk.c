@@ -23,7 +23,7 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gdk/gdkcairo.h>
 
-#ifdef WIN32 //*dependencies
+#ifdef _WIN32 //*dependencies
     #pragma comment( lib, "gvc.lib" )
     #pragma comment( lib, "glib-2.0.lib" )
     #pragma comment( lib, "cairo.lib" )

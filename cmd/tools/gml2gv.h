@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <cgraph.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #define strdup(x) _strdup(x)
 #endif
 

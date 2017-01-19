@@ -29,12 +29,6 @@ static char* gname = "";
 static FILE *outFile;
 static char *CmdName;
 static char **Files;
-#ifdef WIN32 //*dependencies
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "cdt.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-    #pragma comment( lib, "gvc.lib" )
-#endif
 
 static FILE *getFile(void)
 {

@@ -24,8 +24,6 @@
 __declspec(dllimport) boolean MemTest;
 __declspec(dllimport) int GvExitOnUsage;
 /*gvc.lib cgraph.lib*/
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "gvc.lib" )
 #else   /* not WIN32_DLL */
 #include "globals.h"
 #endif
@@ -39,7 +37,7 @@ __declspec(dllimport) int GvExitOnUsage;
 static GVC_t *Gvc;
 static graph_t * G;
 
-#ifndef WIN32
+#ifndef _WIN32
 static void intr(int s)
 {
 /* if interrupted we try to produce a partial rendering before exiting */
@@ -102,7 +100,7 @@ int main(int argc, char **argv)
     Gvc = gvContextPlugins(lt_preloaded_symbols, DEMAND_LOADING);
     GvExitOnUsage = 1;
     gvParseArgs(Gvc, argc, argv);
-#ifndef WIN32
+#ifndef _WIN32
     signal(SIGUSR1, gvToggle);
     signal(SIGINT, intr);
 #ifndef NO_FPERR

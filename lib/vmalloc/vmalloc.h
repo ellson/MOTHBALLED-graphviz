@@ -101,25 +101,8 @@ extern "C" {
 #define VM_BADADDR	3	/* bad addr in vmfree/vmresize  */
 #define VM_DISC		4	/* discipline being changed     */
 
-/* public data */
-#if _BLD_vmalloc && defined(__EXPORT__)
-#define extern	__EXPORT__
-#endif
-#if !_BLD_vmalloc && defined(__IMPORT__)
-#define extern	__IMPORT__
-#endif
 
-/*visual studio*/
-#ifdef WIN32
-#undef extern
-#ifndef VMALLOC_EXPORTS
-#define extern __declspec(dllimport)
-#else
-#define extern __declspec(dllexport)
-#endif
-#endif
-/*end visual studio*/		 
-		 extern Vmethod_t *Vmbest;	/* best allocation              */
+    extern Vmethod_t *Vmbest;	/* best allocation              */
     extern Vmethod_t *Vmlast;	/* last-block allocation        */
     extern Vmethod_t *Vmpool;	/* pool allocation              */
     extern Vmethod_t *Vmdebug;	/* allocation with debugging    */
@@ -131,11 +114,7 @@ extern "C" {
     extern Vmalloc_t *Vmheap;	/* heap region                  */
     extern Vmalloc_t *Vmregion;	/* malloc region                */
 
-/* public functions */
-#if _BLD_vmalloc && defined(__EXPORT__)
-#define extern	__EXPORT__
-#endif
-     extern Vmalloc_t *vmopen(Vmdisc_t *, Vmethod_t *, int);
+    extern Vmalloc_t *vmopen(Vmdisc_t *, Vmethod_t *, int);
     extern int vmclose(Vmalloc_t *);
     extern int vmclear(Vmalloc_t *);
     extern int vmcompact(Vmalloc_t *);
@@ -169,8 +148,6 @@ extern "C" {
 				     Vmdisc_t *));
     extern char *vmstrdup(Vmalloc_t *, const char *);
 
-
-#undef extern
 
 /* to coerce any value to a Vmalloc_t*, make ANSI happy */
 #define _VM_(vm)	((Vmalloc_t*)(vm))

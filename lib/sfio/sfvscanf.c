@@ -471,11 +471,6 @@ int sfvscanf(Sfio_t * f, reg const char *form, va_list args)
 	    value = va_arg(args, void *);
 
 	if (fmt == 'n') {	/* return length of consumed input */
-#if !_ast_intmax_long
-	    if (FMTCMP(size, Sflong_t, Sflong_t))
-		*((Sflong_t *) value) = (Sflong_t) (n_input + SFLEN(f));
-	    else
-#endif
 	    if (sizeof(long) > sizeof(int) && FMTCMP(size, long, Sflong_t))
 		*((long *) value) = (long) (n_input + SFLEN(f));
 	    else if (sizeof(short) < sizeof(int) &&
@@ -539,21 +534,11 @@ int sfvscanf(Sfio_t * f, reg const char *form, va_list args)
 
 	    if (value) {
 		*val = '\0';
-#if !defined(_ast_fltmax_double)
-		if (FMTCMP(size, Sfdouble_t, Sfdouble_t))
-		    argv.ld = _sfstrtod(accept, NIL(char **));
-		else
-#endif
 		    argv.d = (double) strtod(accept, NIL(char **));
 	    }
 
 	    if (value) {
 		n_assign += 1;
-#if !defined(_ast_fltmax_double)
-		if (FMTCMP(size, Sfdouble_t, Sfdouble_t))
-		    *((Sfdouble_t *) value) = argv.ld;
-		else
-#endif
 		if (FMTCMP(size, double, Sfdouble_t))
 		    *((double *) value) = argv.d;
 		else
@@ -670,10 +655,6 @@ int sfvscanf(Sfio_t * f, reg const char *form, va_list args)
 		    *((void **) value) = (void *) ((ulong) argv.lu);
 #else
 		    *((void **) value) = (void *) ((uint) argv.lu);
-#endif
-#if !_ast_intmax_long
-		else if (FMTCMP(size, Sflong_t, Sflong_t))
-		    *((Sflong_t *) value) = argv.ll;
 #endif
 		else if (sizeof(long) > sizeof(int) &&
 			 FMTCMP(size, long, Sflong_t)) {

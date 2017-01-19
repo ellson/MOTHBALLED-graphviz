@@ -29,15 +29,15 @@ extern "C" {
 
 #include	"FEATURE/sfio"
 #include	"sfio_t.h"
+#include	"config.h"
 
-/* note that the macro vt_threaded has effect on vthread.h */
 #include	<vthread.h>
 
 #if defined(__mips) && __mips == 2 && !defined(_NO_LARGEFILE64_SOURCE)
 #define _NO_LARGEFILE64_SOURCE  1
 #endif
 #if !defined(_NO_LARGEFILE64_SOURCE) && \
-	_lib_lseek64 && _lib_stat64 && _lib_mmap64 && defined(_typ_off64_t) && \
+	_lib_lseek64 && _lib_stat64 && defined(_typ_off64_t) && \
 	_typ_struct_stat64
 #	if !defined(_LARGEFILE64_SOURCE)
 #	define _LARGEFILE64_SOURCE     1
@@ -55,12 +55,10 @@ extern "C" {
 #undef  _lib_poll
 #undef  _stream_peek
 #undef  _socket_peek
-#undef  _hdr_vfork
-#undef  _sys_vfork
+#undef  HAVE_VFORK_H
+#undef  _HAVE_SYS_VFORK_H
 #undef  _lib_vfork
-#undef  _hdr_math
-#undef  _sys_mman
-#undef  _sys_ioctl
+#undef  HAVE_SYS_IOCTL_H
 #endif
 
 #include	<stdlib.h>
@@ -85,31 +83,12 @@ extern "C" {
 
 #include	<fcntl.h>
 
-#if _hdr_unistd
+#if HAVE_UNISTD_H
 #include	<unistd.h>
 #endif
 
 #include	<errno.h>
 #include	<ctype.h>
-
-#if vt_threaded
-
-/* initialization */
-#define SFONCE()	(_Sfdone ? 0 : vtonce(_Sfonce,_Sfoncef))
-
-/* to lock/unlock a stream on entering and returning from some function */
-#define SFMTXLOCK(f)	 (((f)->flags&SF_MTSAFE) ? sfmutex(f,SFMTX_LOCK) : 0)
-#define SFMTXUNLOCK(f)	 (((f)->flags&SF_MTSAFE) ? sfmutex(f,SFMTX_UNLOCK) : 0)
-#define SFMTXSTART(f,v)  { if(!f || SFMTXLOCK(f) != 0) return(v); }
-#define SFMTXRETURN(f,v) { SFMTXUNLOCK(f); return(v); }
-
-/* start and end critical region for a pool */
-#define POOLMTXLOCK(p)		( vtmtxlock(&(p)->mutex) )
-#define POOLMTXUNLOCK(p)	( vtmtxunlock(&(p)->mutex) )
-#define POOLMTXSTART(p)		{ POOLMTXLOCK(p); }
-#define POOLMTXRETURN(p,v)	{ POOLMTXUNLOCK(p); return(v); }
-
-#else				/*!vt_threaded */
 
 #undef SF_MTSAFE		/* no need to worry about thread-safety */
 #define SF_MTSAFE		0
@@ -125,9 +104,6 @@ extern "C" {
 #define POOLMTXUNLOCK(p)
 #define POOLMTXSTART(p)
 #define POOLMTXRETURN(p,v)	{ return(v); }
-
-#endif				/*vt_threaded */
-
 
 /* functions for polling readiness of streams */
 #if _lib_select
@@ -163,10 +139,10 @@ extern "C" {
 
 /* alternative process forking */
 #if _lib_vfork && !defined(fork) && !defined(sparc) && !defined(__sparc)
-#if defined(_hdr_vfork)
+#if defined(HAVE_VFORK_H)
 #include	<vfork.h>
 #endif
-#if defined(_sys_vfork)
+#if defined(_HAVE_SYS_VFORK_H)
 #include	<sys/vfork.h>
 #endif
 #define fork	vfork
@@ -175,22 +151,6 @@ extern "C" {
 #if _lib_unlink
 #define remove	unlink
 #endif
-
-#if _hdr_math
-#include	<math.h>
-#endif
-
-#if !defined(_ast_fltmax_double)
-
-#if defined(_lib_qfrexp) && _lib_qldexp
-#define _has_expfuncs	1
-#define frexp		qfrexp
-#define ldexp		qldexp
-#else
-#define _has_expfuncs	0
-#endif
-
-#endif/*_ast_fltmax_double*/
 
 /* 64-bit vs 32-bit file stuff */
 #if _sys_stat
@@ -341,23 +301,7 @@ extern "C" {
 #ifndef ESPIPE
 #define ESPIPE	29
 #endif
-/* see if we can use memory mapping for io */
-#if defined(_mmap_worthy)
-#	ifdef _LARGEFILE64_SOURCE
-#		undef	mmap
-#	endif
-#	if _sys_mman
-#		include	<sys/mman.h>
-#	endif
-#	ifdef _LARGEFILE64_SOURCE
-#		ifndef off_t
-#			define off_t		off64_t
-#		endif
-#		define mmap		mmap64
-#	endif
-#endif
 /* function to get the decimal point for local environment */
-#if _lib_locale
 #ifdef MAXFLOAT			/* we don't need these, so we zap them to avoid compiler warnings */
 #undef MAXFLOAT
 #endif
@@ -383,9 +327,6 @@ extern "C" {
 	    } \
 	  } \
 	}
-#else
-#define SFSETLOCALE(decimal,thousand)
-#endif
 /* stream pool structure. */
     typedef struct _sfpool_s Sfpool_t;
     struct _sfpool_s {
@@ -572,9 +513,6 @@ extern "C" {
 #ifndef MAP_VARIABLE
 #define MAP_VARIABLE	0
 #endif
-#ifndef _mmap_fixed
-#define _mmap_fixed	0
-#endif
 
 /* the bottomless bit bucket */
 #define DEVNULL		"/dev/null"
@@ -711,13 +649,8 @@ extern "C" {
 /* floating point to ascii conversion */
 #define SF_MAXEXP10	6
 #define SF_MAXPOW10	(1 << SF_MAXEXP10)
-#if !defined(_ast_fltmax_double)
-#define SF_FDIGITS	1024	/* max allowed fractional digits */
-#define SF_IDIGITS	(8*1024)	/* max number of digits in int part */
-#else
 #define SF_FDIGITS	256	/* max allowed fractional digits */
 #define SF_IDIGITS	1024	/* max number of digits in int part */
-#endif
 #define SF_MAXDIGITS	(((SF_FDIGITS+SF_IDIGITS)/sizeof(int) + 1)*sizeof(int))
 
 /* tables for numerical translation */
@@ -802,14 +735,7 @@ extern "C" {
 #define max(x,y)	((x) > (y) ? (x) : (y))
 
 /* fast functions for memory copy and memory clear */
-#if _lib_bcopy && !_lib_memcpy
-#define memcpy(to,fr,n)	bcopy((fr),(to),(n))
-#endif
-#if _lib_bzero && !_lib_memset
-#define memclear(s,n)	bzero((s),(n))
-#else
 #define memclear(s,n)	memset((s),'\0',(n))
-#endif
 
 /* note that MEMCPY advances the associated pointers */
 #define MEMCPY(to,fr,n) \
@@ -849,33 +775,24 @@ extern "C" {
     extern char **_sfgetpath(char *);
     extern Sfdouble_t _sfstrtod(const char *, char **);
 
-#if !_lib_strtod
-#define strtod		_sfstrtod
-#endif
-
 #ifndef errno
     extern int errno;
 #endif
 
 /* for portable encoding of double values */
 #if !__STDC__
-#ifndef WIN32
+#ifndef _WIN32
     extern double frexp(double, int *);
     extern double ldexp(double, int);
 #endif
 #endif
 
-#if !_sys_mman
-    extern void *mmap(void *, size_t, int, int, int, off_t);
-    extern int munmap(void *, size_t);
-#endif
-
-#ifdef WIN32
+#ifdef _WIN32
 #undef SF_ERROR
 #include <io.h>
 #define SF_ERROR	0000400	/* an error happened                    */
 #else
-#if !_hdr_unistd
+#if !HAVE_UNISTD_H
     extern int close(int);
     extern ssize_t read(int, void *, size_t);
     extern ssize_t write(int, const void *, size_t);
@@ -895,19 +812,12 @@ extern "C" {
     extern int unlink(const char *);
 #endif
 
-#endif /*_hdr_unistd*/
-#endif /* WIN32 */
-
-#if _lib_bcopy && !_proto_bcopy
-    extern void bcopy(const void *, void *, size_t);
-#endif
-#if _lib_bzero && !_proto_bzero
-    extern void bzero(void *, size_t);
-#endif
+#endif /*HAVE_UNISTD_H*/
+#endif /* _WIN32 */
 
     extern time_t time(time_t *);
     extern int waitpid(int, int *, int);
-#ifndef WIN32
+#ifndef _WIN32
     extern void _exit(int);
 #endif
     typedef int (*Onexit_f)(void);
@@ -917,7 +827,7 @@ extern "C" {
     extern int fstat(int, Stat_t *);
 #endif
 
-#if _lib_vfork && !defined(_hdr_vfork) && !defined(_sys_vfork)
+#if _lib_vfork && !defined(HAVE_VFORK_H) && !defined(_HAVE_SYS_VFORK_H)
     extern pid_t vfork(void);
 #endif /*_lib_vfork*/
 

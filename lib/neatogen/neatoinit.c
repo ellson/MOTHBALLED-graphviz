@@ -15,7 +15,7 @@
 #include "config.h"
 
 #include <time.h>
-#ifndef WIN32
+#ifndef _WIN32
 #include <unistd.h>
 #endif
 #include <ctype.h>
@@ -981,7 +981,7 @@ setSeed (graph_t * G, int dflt, long* seedp)
 	long seed;
 	/* Check for seed value */
 	if (!isdigit(*(unsigned char *)p) || sscanf(p, "%ld", &seed) < 1) {
-#if defined(MSWIN32) || defined(WIN32)
+#if defined(MSWIN32) || defined(_WIN32)
 	    seed = (unsigned) time(NULL);
 #else
 	    seed = (unsigned) getpid() ^ (unsigned) time(NULL);

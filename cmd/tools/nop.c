@@ -31,11 +31,6 @@ static char *useString = "Usage: nop [-p?] <files>\n\
   -? - print usage\n\
 If no files are specified, stdin is used\n";
 
-#ifdef WIN32 //*dependencies
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-#endif
-
 static void usage(int v)
 {
     printf("%s",useString);

@@ -27,13 +27,6 @@
 #include <stdlib.h>
 #include "cgraph.h"
 
-
-#ifdef WIN32 /*dependencies*/
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-#endif
-
-
 typedef struct {
     Agrec_t h;
     Agraph_t *next;

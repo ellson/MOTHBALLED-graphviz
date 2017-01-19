@@ -87,12 +87,6 @@ Sfio_t *sfnew(Sfio_t * oldf, void * buf, size_t size, int file,
 	}
     }
 
-    /* create a mutex */
-#if vt_threaded
-    if (!f->mutex)
-	f->mutex = vtmtxopen(NIL(Vtmutex_t *), VT_INIT);
-#endif
-
     /* stream type */
     f->mode = (flags & SF_READ) ? SF_READ : SF_WRITE;
     f->flags = (flags & SF_FLAGS) | (sflags & (SF_MALLOC | SF_STATIC));

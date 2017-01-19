@@ -26,7 +26,7 @@
 #include <unistd.h>
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <fcntl.h>
 #include <io.h>
 #include "compat.h"
@@ -152,7 +152,7 @@ int gvdevice_initialize(GVJ_t * job)
 #ifdef HAVE_SETMODE
 #ifdef O_BINARY
         if (job->flags & GVDEVICE_BINARY_FORMAT)
-#ifdef WIN32
+#ifdef _WIN32
 		_setmode(fileno(job->output_file), O_BINARY);
 #else
 		setmode(fileno(job->output_file), O_BINARY);

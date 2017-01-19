@@ -42,13 +42,6 @@ int _sfputd(Sfio_t * f, Sfdouble_t v)
     } else
 	n = 0;
 
-#if !defined(_ast_fltmax_double)		/* don't know how to do these yet */
-    if (v > DBL_MAX && !_has_expfuncs) {
-	SFOPEN(f, 0);
-	SFMTXRETURN(f, -1);
-    }
-#endif
-
     /* make the magnitude of v < 1 */
     if (v != 0.)
 	v = frexp(v, &exp);

@@ -66,12 +66,6 @@ Sfoff_t sfsize(reg Sfio_t * f)
     }
 
     if (f->here != s && (f->mode & SF_READ)) {	/* buffered data is known to be invalid */
-#ifdef MAP_TYPE
-	if ((f->bits & SF_MMAP) && f->data) {
-	    SFMUNMAP(f, f->data, f->endb - f->data);
-	    f->data = NIL(uchar *);
-	}
-#endif
 	f->next = f->endb = f->endr = f->endw = f->data;
     }
 

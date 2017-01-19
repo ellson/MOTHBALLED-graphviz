@@ -28,7 +28,7 @@
 #include <string.h>
 #include <assert.h>
 #include <time.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <stdlib.h>
 #define srand48 srand
 #define drand48 rand

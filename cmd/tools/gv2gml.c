@@ -14,12 +14,6 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#ifdef WIN32 /*dependencies*/
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-    #pragma comment( lib, "cdt.lib" )
-#endif
-
 #include "config.h"
 
 #include <stdio.h>
@@ -127,7 +121,7 @@ parseStyle (char* s)
     char* ip;
     char* sep = " \t,";
 
-#ifdef WIN32 
+#ifdef _WIN32 
 	s = _strdup(s);
 #else
 	s = strdup(s);
