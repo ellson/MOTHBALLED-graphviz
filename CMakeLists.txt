@@ -3,6 +3,7 @@ project (Graphviz)
 
 # Build options
 # =============
+option(WITH_IPSEPCOLA  "IPSEPCOLA features in neato layout engine (disabled by default - C++ portability issues)." OFF )
 option(WITH_ORTHO      "ORTHO features in neato layout engine." ON )
 
 # Append local CMake module directory

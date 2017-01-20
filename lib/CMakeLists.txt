@@ -15,6 +15,7 @@ add_subdirectory(sparse)
 add_subdirectory(spine)
 add_subdirectory(twopigen)
 add_subdirectory(vmalloc)
+add_subdirectory(vpsc)
 add_subdirectory(xdot)
 
 # Dependent on: cdt
