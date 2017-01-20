@@ -1,6 +1,10 @@
 cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
 project (Graphviz)
 
+# Build options
+# =============
+option(WITH_ORTHO      "ORTHO features in neato layout engine." ON )
+
 # Append local CMake module directory
 # ===================================
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
