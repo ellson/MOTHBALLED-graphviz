@@ -3,9 +3,18 @@ project (Graphviz)
 
 # Build options
 # =============
+option(with_digcola    "DIGCOLA features in neato layout engine" ON )
 option(with_ipsepcola  "IPSEPCOLA features in neato layout engine (disabled by default - C++ portability issues)." OFF )
 option(with_ortho      "ORTHO features in neato layout engine." ON )
 option(with_sfdp       "sfdp layout engine." ON )
+
+if (with_digcola)
+    add_definitions(-DDIGCOLA)
+endif (with_digcola)
+
+if (with_ipsepcola)
+    add_definitions(-DIPSEPCOLA)
+endif (with_ipsepcola)
 
 if (with_ortho)
     add_definitions(-DORTHO)
