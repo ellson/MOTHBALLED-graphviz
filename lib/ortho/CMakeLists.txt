@@ -1,4 +1,4 @@
-if (WITH_ORTHO)
+if (with_ortho)
 
 add_definitions(-D_BLD_gvc=1)
 
@@ -34,4 +34,4 @@ add_library(ortho STATIC
     trapezoid.c
 )
 
-endif (WITH_ORTHO)
+endif (with_ortho)

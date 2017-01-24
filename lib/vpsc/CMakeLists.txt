@@ -1,4 +1,4 @@
-if (WITH_IPSEPCOLA)
+if (with_ipsepcola)
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -29,4 +29,4 @@ add_library(vpsc STATIC
     variable.cpp
 )
 
-endif (WITH_IPSEPCOLA)
+endif (with_ipsepcola)

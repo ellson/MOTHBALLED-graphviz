@@ -1,4 +1,4 @@
-if (WITH_SFDP)
+if (with_sfdp)
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -36,4 +36,4 @@ add_library(sfdpgen STATIC
     uniform_stress.c
 )
 
-endif (WITH_SFDP)
+endif (with_sfdp)

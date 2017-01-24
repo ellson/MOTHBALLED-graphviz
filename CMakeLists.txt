@@ -3,17 +3,17 @@ project (Graphviz)
 
 # Build options
 # =============
-option(WITH_IPSEPCOLA  "IPSEPCOLA features in neato layout engine (disabled by default - C++ portability issues)." OFF )
-option(WITH_ORTHO      "ORTHO features in neato layout engine." ON )
-option(WITH_SFDP       "sfdp layout engine." ON )
+option(with_ipsepcola  "IPSEPCOLA features in neato layout engine (disabled by default - C++ portability issues)." OFF )
+option(with_ortho      "ORTHO features in neato layout engine." ON )
+option(with_sfdp       "sfdp layout engine." ON )
 
-if (WITH_ORTHO)
+if (with_ortho)
     add_definitions(-DORTHO)
-endif (WITH_ORTHO)
+endif (with_ortho)
 
-if (WITH_SFDP)
+if (with_sfdp)
     add_definitions(-DSFDP)
-endif (WITH_SFDP)
+endif (with_sfdp)
 
 # Append local CMake module directory
 # ===================================
