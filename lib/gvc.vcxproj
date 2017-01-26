@@ -76,7 +76,11 @@
 sed "s/yy/html/g" &lt; common\htmlparse-intermediate.c &gt; common\htmlparse.c
 sed "s/yy/html/g" &lt; common\htmlparse-intermediate.h &gt; common\htmlparse.h
 del common\htmlparse-intermediate.c
-del common\htmlparse-intermediate.h</Command>
+del common\htmlparse-intermediate.h
+awk -f $(SolutionDir)awk\svgcolor.awk common\svgcolor_names &gt; common\svgcolor_lib
+awk -f $(SolutionDir)awk\brewer.awk common\brewer_colors &gt; common\brewer_lib
+type common\brewer_lib common\svgcolor_lib common\color_names | sort /L C &gt; color_lib
+awk -f $(SolutionDir)awk\colortbl.awk color_lib &gt; common\colortbl.h</Command>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)windows\dependencies\libraries\bin\libltdl3.dll $(OutDir)libltdl3.dll
@@ -111,7 +115,11 @@ copy $(SolutionDir)windows\dependencies\libraries\bin\zlib1.dll $(OutDir)zlib1.d
 sed "s/yy/html/g" &lt; common\htmlparse-intermediate.c &gt; common\htmlparse.c
 sed "s/yy/html/g" &lt; common\htmlparse-intermediate.h &gt; common\htmlparse.h
 del common\htmlparse-intermediate.c
-del common\htmlparse-intermediate.h</Command>
+del common\htmlparse-intermediate.h
+awk -f $(SolutionDir)awk\svgcolor.awk common\svgcolor_names &gt; common\svgcolor_lib
+awk -f $(SolutionDir)awk\brewer.awk common\brewer_colors &gt; common\brewer_lib
+type common\brewer_lib common\svgcolor_lib common\color_names | sort /L C &gt; color_lib
+awk -f $(SolutionDir)awk\colortbl.awk color_lib &gt; common\colortbl.h</Command>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)windows\dependencies\libraries\bin\libltdl3.dll $(OutDir)libltdl3.dll

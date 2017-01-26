@@ -212,6 +212,7 @@ tests/unit_tests/lib/common/command_line
 *.lib
 *.pdb
 graphviz.sdf
+lib/color_lib
 
 # User specific Visual Studio folders and files
 .vs/**
