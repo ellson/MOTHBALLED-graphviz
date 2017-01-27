@@ -1,8 +1,7 @@
 cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
 project (Graphviz)
 
-# Build options
-# =============
+# =============================== Build options ================================
 option(with_digcola    "DIGCOLA features in neato layout engine" ON )
 option(with_ipsepcola  "IPSEPCOLA features in neato layout engine (disabled by default - C++ portability issues)." OFF )
 option(with_ortho      "ORTHO features in neato layout engine." ON )
@@ -24,18 +23,15 @@ if (with_sfdp)
     add_definitions(-DSFDP)
 endif (with_sfdp)
 
-# Append local CMake module directory
-# ===================================
+# ===================== Append local CMake module directory ====================
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-# Build dependencies
-# ==================
+# ============================= Build dependencies =============================
 find_package(Git REQUIRED)
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
 
-# Convenient values for CMake configuration
-# =========================================
+# ================== Convenient values for CMake configuration =================
 set(BINARY_INSTALL_DIR  bin)
 set(LIBRARY_INSTALL_DIR lib)
 set(HEADER_INSTALL_DIR  include/graphviz)
@@ -45,8 +41,7 @@ set(MAN_INSTALL_DIR     share/man/man3)
 set(TOP_SOURCE_DIR      "${CMAKE_SOURCE_DIR}")
 set(GRAPHVIZ_LIB_DIR    "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 
-# Set Graphviz version
-# ====================
+# ============================ Set Graphviz version ============================
 set(GRAPHVIZ_VERSION_MAJROR 2)
 set(GRAPHVIZ_VERSION_MINOR 41)
 
@@ -69,13 +64,11 @@ set(GRAPHVIZ_VERSION_FULL "${GRAPHVIZ_VERSION_MAJROR}.${GRAPHVIZ_VERSION_MINOR}.
 
 message(STATUS "Graphviz version: ${GRAPHVIZ_VERSION_FULL}")
 
-# Generate config.h with proper defines
-# =====================================
+# =================== Generate config.h with proper defines ====================
 include(config_checks)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-# Custom target for `make uninstall`
-# ==================================
+# ==================== Custom target for `make uninstall` ======================
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
     "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
@@ -84,11 +77,9 @@ configure_file(
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 
-# Packaging information
-# =====================
+# ============================ Packaging information ===========================
 set(CPACK_GENERATOR ZIP)
 include(CPack)
 
-# Specify subdirectories to build
-# ===============================
+# ======================= Specify subdirectories to build ======================
 add_subdirectory(lib)
