@@ -24,14 +24,15 @@ extern "C" {
 #include <io.h>
 #endif
 
-#include <inttypes.h>
-
 /*	Common types, and macros for vmalloc functions.
 **
 **	Written by Kiem-Phong Vo, kpv@research.att.com, 01/16/94.
 */
 
 #include "config.h"
+
+#include <inttypes.h>
+#include <stdlib.h>
 
 #ifdef HAVE_SYS_TYPES_H
 #   include <sys/types.h>
@@ -80,7 +81,7 @@ extern "C" {
 #define COUNT(n)	((n) += 1)
 #endif /*DEBUG*/
 #define VMPAGESIZE	8192
-#if HAVE_GETPAGESIZE
+#ifdef HAVE_GETPAGESIZE
 #define GETPAGESIZE(x)	((x) ? (x) : \
 			 (((x)=getpagesize()) < VMPAGESIZE ? ((x)=VMPAGESIZE) : (x)) )
 #else

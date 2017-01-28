@@ -1,0 +1,4 @@
+file(READ @CMAKE_CURRENT_BINARY_DIR@/scan.c file_contents)
+string(REPLACE "yy" "aag" file_contents "${file_contents}")
+string(REPLACE "extern int isatty (int );" "" file_contents "${file_contents}")
+file(WRITE @CMAKE_CURRENT_BINARY_DIR@/scan.c "${file_contents}")
