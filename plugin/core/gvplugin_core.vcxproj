@@ -72,6 +72,9 @@
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalDependencies>cgraph.lib;gvc.lib;xdot.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>awk -f $(SolutionDir)awk\stringize.awk ps.txt &gt; ps.h</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -94,6 +97,9 @@
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalDependencies>cgraph.lib;gvc.lib;xdot.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>awk -f $(SolutionDir)awk\stringize.awk ps.txt &gt; ps.h</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ps.h" />
