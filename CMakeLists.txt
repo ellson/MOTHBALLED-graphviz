@@ -6,6 +6,7 @@ option(with_digcola    "DIGCOLA features in neato layout engine" ON )
 option(with_ipsepcola  "IPSEPCOLA features in neato layout engine (disabled by default - C++ portability issues)." OFF )
 option(with_ortho      "ORTHO features in neato layout engine." ON )
 option(with_sfdp       "sfdp layout engine." ON )
+option(with_smyrna     "SMYRNA large graph viewer (disabled by default - experimental)" OFF)
 
 if (with_digcola)
     add_definitions(-DDIGCOLA)
@@ -22,6 +23,11 @@ endif (with_ortho)
 if (with_sfdp)
     add_definitions(-DSFDP)
 endif (with_sfdp)
+
+if (with_smyrna)
+    # TODO include dependency checks
+    add_definitions(-DSMYRNA)
+endif (with_smyrna)
 
 # ===================== Append local CMake module directory ====================
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
