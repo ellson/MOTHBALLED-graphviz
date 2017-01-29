@@ -38,14 +38,25 @@ find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
 
 # ================== Convenient values for CMake configuration =================
-set(BINARY_INSTALL_DIR  bin)
-set(LIBRARY_INSTALL_DIR lib)
-set(HEADER_INSTALL_DIR  include/graphviz)
-set(MAN_INSTALL_DIR     share/man/man3)
+set(BINARY_INSTALL_DIR      bin)
+set(LIBRARY_INSTALL_DIR     lib)
+set(HEADER_INSTALL_DIR      include/graphviz)
+set(MAN_INSTALL_DIR         share/man/man3)
 # TODO: Find a way to check for groff and ps2pdf for manpage pdf generation
 # set(MAN_PDF_INSTALL_DIR share/graphviz/doc/pdf)
-set(TOP_SOURCE_DIR      "${CMAKE_SOURCE_DIR}")
-set(GRAPHVIZ_LIB_DIR    "${CMAKE_CURRENT_SOURCE_DIR}/lib")
+set(TOP_SOURCE_DIR          "${CMAKE_SOURCE_DIR}")
+set(GRAPHVIZ_LIB_DIR        "${CMAKE_CURRENT_SOURCE_DIR}/lib")
+set(WINDOWS_DEPENDENCY_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/windows/dependencies/libraries")
+
+# ============================ Library dependencies ============================
+if (WIN32)
+    list(APPEND CMAKE_LIBRARY_PATH ${WINDOWS_DEPENDENCY_DIR}/lib)
+    list(APPEND CMAKE_INCLUDE_PATH ${WINDOWS_DEPENDENCY_DIR}/include ${WINDOWS_DEPENDENCY_DIR}/bin)
+else()
+    list(APPEND CMAKE_INCLUDE_PATH /usr/lib /usr/local/lib)
+endif()
+
+find_package(ANN)
 
 # ============================ Set Graphviz version ============================
 set(GRAPHVIZ_VERSION_MAJROR 2)

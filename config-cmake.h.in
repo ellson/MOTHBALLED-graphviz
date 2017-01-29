@@ -25,3 +25,6 @@
 #ifndef HAVE_SSIZE_T
 typedef int ssize_t;
 #endif
+
+// Libraries
+#cmakedefine HAVE_ANN

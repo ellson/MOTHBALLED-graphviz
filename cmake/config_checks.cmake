@@ -26,5 +26,10 @@ include(CheckTypeSize)
 check_type_size( ssize_t     SSIZE_T     )
 check_type_size( intptr_t    INTPTR_T    )
 
+# Library checks
+if (ANN_FOUND)
+    set(HAVE_ANN 1)
+endif()
+
 # Write check results to config.h header
 configure_file(config-cmake.h.in config.h)
