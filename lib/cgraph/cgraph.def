@@ -50,6 +50,7 @@ agedgeseqcmpf
 agerr	
 agerrorf	
 agerrors	
+ageqedge	
 agfindnode_by_id	
 agfindnode_by_name	
 agflatten	
@@ -81,6 +82,7 @@ aginternalmaplookup
 aginternalmapprint	
 AgIoDisc	
 agisdirected	
+agissimple	
 agisstrict	
 agisundirected	
 aglasterr	

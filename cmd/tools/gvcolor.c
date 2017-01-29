@@ -19,12 +19,6 @@
 
 #include "config.h"
 
-#ifdef WIN32 /*dependencies*/
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-    #pragma comment( lib, "gvc.lib" )
-#endif
-
 /* if NC changes, a bunch of scanf calls below are in trouble */
 #define	NC	3		/* size of HSB color vector */
 

@@ -128,10 +128,8 @@ struct fdpParms_s {
 typedef struct fdpParms_s fdpParms_t;
 
     extern void fdp_layout(Agraph_t * g);
-    extern void fdp_nodesize(node_t *, boolean);
-    extern void fdp_init_graph(Agraph_t * g);
-    extern void fdp_init_node_edge(Agraph_t * g);
     extern void fdp_cleanup(Agraph_t * g);
+    extern void fdp_init_node_edge(graph_t * g);
 
 #ifdef __cplusplus
 }

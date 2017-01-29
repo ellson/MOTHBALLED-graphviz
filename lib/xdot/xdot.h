@@ -13,12 +13,22 @@
 #ifndef XDOT_H
 #define XDOT_H
 #include <stdio.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+#ifdef _WIN32
+#   ifdef EXPORT_XDOT
+#       define XDOT_API __declspec(dllexport)
+#   else
+#       define XDOT_API __declspec(dllimport)
+#   endif
+#else
+#   define XDOT_API extern
 #endif
 
 #define INITIAL_XDOT_CAPACITY 512
@@ -162,17 +172,17 @@ typedef struct {
 } xdot_stats;
 
 /* ops are indexed by xop_kind */
-extern xdot* parseXDotF (char*, drawfunc_t opfns[], int sz);
-extern xdot* parseXDotFOn (char*, drawfunc_t opfns[], int sz, xdot*);
-extern xdot* parseXDot (char*);
-extern char* sprintXDot (xdot*);
-extern void fprintXDot (FILE*, xdot*);
-extern void jsonXDot (FILE*, xdot*);
-extern void freeXDot (xdot*);
-extern int statXDot (xdot*, xdot_stats*);
-extern xdot_grad_type colorTypeXDot (char*);
-extern char* parseXDotColor (char* cp, xdot_color* clr);
-extern void freeXDotColor (xdot_color*);
+XDOT_API xdot* parseXDotF (char*, drawfunc_t opfns[], int sz);
+XDOT_API xdot* parseXDotFOn (char*, drawfunc_t opfns[], int sz, xdot*);
+XDOT_API xdot* parseXDot (char*);
+XDOT_API char* sprintXDot (xdot*);
+XDOT_API void fprintXDot (FILE*, xdot*);
+XDOT_API void jsonXDot (FILE*, xdot*);
+XDOT_API void freeXDot (xdot*);
+XDOT_API int statXDot (xdot*, xdot_stats*);
+XDOT_API xdot_grad_type colorTypeXDot (char*);
+XDOT_API char* parseXDotColor (char* cp, xdot_color* clr);
+XDOT_API void freeXDotColor (xdot_color*);
 
 #ifdef __cplusplus
 }

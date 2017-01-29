@@ -51,8 +51,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\GTK2\include\cairo;$(SolutionDir)windows\dependencies\libgd\src;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\gvc;$(SolutionDir)lib\pathplan;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;GVPLUGIN_GD_EXPORTS;WIN32_DLL;NONDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\libraries\include;$(SolutionDir)windows\dependencies\libraries\include\cairo;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\gvc;$(SolutionDir)lib\pathplan;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;GVPLUGIN_GD_EXPORTS;WIN32_DLL;NONDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -63,28 +63,29 @@
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\dependencies\libgd\build;$(SolutionDir)windows\dependencies\GTK2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\dependencies\libraries\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>gvplugin_gd.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>cgraph.lib;libpng12.lib;libgd.lib;libcairo-2.lib;fontconfig.lib;gvc.lib;freetype.lib;iconv.lib;jpeg.lib;z.lib;pathplan.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)windows\dependencies\libgd\build\libgd.dll $(OutDir)libgd.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpng12.dll $(OutDir)libpng12.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libxml2.dll $(OutDir)libxml2.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\iconv.dll $(OutDir)iconv.dll</Command>
+      <Command>copy $(SolutionDir)windows\dependencies\libraries\bin\libgd.dll $(OutDir)libgd.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpng12.dll $(OutDir)libpng12.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\zlib1.dll $(OutDir)zlib1.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libxml2.dll $(OutDir)libxml2.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\iconv.dll $(OutDir)iconv.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\GTK2\include\cairo;$(SolutionDir)windows\dependencies\libgd\src;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\gvc;$(SolutionDir)lib\pathplan;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;GVPLUGIN_GD_EXPORTS;WIN32_DLL;NONDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\libraries\include;$(SolutionDir)windows\dependencies\libraries\include\cairo;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\gvc;$(SolutionDir)lib\pathplan;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;GVPLUGIN_GD_EXPORTS;WIN32_DLL;NONDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
@@ -92,7 +93,7 @@ copy $(SolutionDir)windows\dependencies\GTK2\bin\iconv.dll $(OutDir)iconv.dll</C
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\dependencies\libgd\build;$(SolutionDir)windows\dependencies\GTK2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\dependencies\libraries\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>gvplugin_gd.def</ModuleDefinitionFile>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -100,16 +101,17 @@ copy $(SolutionDir)windows\dependencies\GTK2\bin\iconv.dll $(OutDir)iconv.dll</C
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>cgraph.lib;libpng12.lib;libgd.lib;libcairo-2.lib;fontconfig.lib;gvc.lib;freetype.lib;iconv.lib;jpeg.lib;z.lib;pathplan.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)windows\dependencies\libgd\build\libgd.dll $(OutDir)libgd.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpng12.dll $(OutDir)libpng12.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libxml2.dll $(OutDir)libxml2.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\iconv.dll $(OutDir)iconv.dll</Command>
+      <Command>copy $(SolutionDir)windows\dependencies\libraries\bin\libgd.dll $(OutDir)libgd.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpng12.dll $(OutDir)libpng12.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\zlib1.dll $(OutDir)zlib1.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libxml2.dll $(OutDir)libxml2.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\iconv.dll $(OutDir)iconv.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

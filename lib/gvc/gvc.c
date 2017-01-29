@@ -22,17 +22,6 @@
 #include "gvio.h"
 #include <stdlib.h>
 
-#ifdef WIN32 /*dependencies*/
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "cdt.lib" )
-    #pragma comment( lib, "ltdl.lib" )
-    #pragma comment( lib, "xml2.lib" )
-    #pragma comment( lib, "libexpat.lib" )
-    #pragma comment( lib, "z.lib")
-	#pragma comment( lib, "rxspencer.lib")
-#endif
-
-
 GVC_t *gvContext(void)
 {
     GVC_t *gvc;

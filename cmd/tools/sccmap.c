@@ -36,11 +36,6 @@
 
 #define INF ((unsigned int)(-1))
 
-#ifdef WIN32 //*dependencies
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-#endif
-
 typedef struct Agraphinfo_t {
     Agrec_t h;
     Agnode_t *rep;

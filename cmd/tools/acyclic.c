@@ -17,16 +17,6 @@
  * Updated by Emden Gansner
  */
 
-
-
-
-#ifdef WIN32 /*dependencies*/
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-#endif
-
-
-
 #include "config.h"
 
 #ifdef HAVE_UNISTD_H

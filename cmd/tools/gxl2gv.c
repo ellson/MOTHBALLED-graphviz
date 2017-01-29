@@ -18,15 +18,6 @@
 #include    <expat.h>
 #include    <ctype.h>
 
-#ifdef WIN32 //*dependencies
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "cdt.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-    #pragma comment( lib, "gvc.lib" )
-    #pragma comment( lib, "libexpat.lib" )
-#endif
-
-
 #ifndef XML_STATUS_ERROR
 #define XML_STATUS_ERROR 0
 #endif

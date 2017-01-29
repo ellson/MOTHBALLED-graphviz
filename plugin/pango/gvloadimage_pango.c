@@ -21,17 +21,6 @@
 #ifdef HAVE_PANGOCAIRO
 #include <cairo.h>
 
-#ifdef WIN32 //*dependencies
-    #pragma comment( lib, "gvc.lib" )
-    #pragma comment( lib, "glib-2.0.lib" )
-    #pragma comment( lib, "pango-1.0.lib" )
-    #pragma comment( lib, "pangocairo-1.0.lib" )
-    #pragma comment( lib, "libcairo-2.lib" )
-    #pragma comment( lib, "gobject-2.0.lib" )
-    #pragma comment( lib, "cgraph.lib" )
-#endif
-
-
 typedef enum {
     FORMAT_PNG_CAIRO, FORMAT_PNG_PS,
 } format_type;

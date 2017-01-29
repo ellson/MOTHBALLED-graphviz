@@ -18,6 +18,7 @@
 #include <cghdr.h>
 #include <agxbuf.h>
 #include <ctype.h>
+// #define YY_BUF_SIZE 128000
 #define GRAPH_EOF_TOKEN		'@'		/* lex class must be defined below */
 	/* this is a workaround for linux flex */
 static int line_num = 1;

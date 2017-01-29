@@ -10,7 +10,7 @@
  *
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
-#ifdef WIN32
+#ifdef _WIN32
 #include "windows.h"
 #endif
 #include "csettings.h"
@@ -32,7 +32,7 @@ typedef struct {
     int cur;
 } rdr_t;
 
-#ifdef WIN32
+#ifdef _WIN32
 #define BSZ 1024
 
 QString findAttrFile ()
@@ -119,7 +119,7 @@ CFrmSettings::CFrmSettings()
     graph = NULL;
     activeWindow = NULL;
     QString path;
-#ifndef WIN32
+#ifndef _WIN32
     char *s = getenv("GVEDIT_PATH");
     if (s)
 	path = s;
@@ -149,7 +149,7 @@ CFrmSettings::CFrmSettings()
     scopeChangedSlot(0);
 
 
-#ifndef WIN32
+#ifndef _WIN32
     loadAttrs(path + "/attrs.txt", WIDGET(QComboBox, cbNameG),
 	      WIDGET(QComboBox, cbNameN), WIDGET(QComboBox, cbNameE));
 #else
@@ -397,7 +397,7 @@ bool CFrmSettings::renderLayout()
 	if (fileName != activeWindow->outputFile)
 	    activeWindow->outputFile = fileName;
 
-#ifdef WIN32
+#ifdef _WIN32
 	if ((!fileName.contains('/')) && (!fileName.contains('\\'))) 
 #else
 	if (!fileName.contains('/'))

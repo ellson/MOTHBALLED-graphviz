@@ -54,16 +54,9 @@ Sfextern_t _Sfextern = { 0,	/* _Sfpage      */
 /* accessible to application code for a few fast macro functions */
 ssize_t _Sfi = -1;
 
-#if vt_threaded
-static Vtmutex_t _Sfmtxin, _Sfmtxout, _Sfmtxerr;
-#define SFMTXIN		(&_Sfmtxin)
-#define SFMTXOUT	(&_Sfmtxout)
-#define SFMTXERR	(&_Sfmtxerr)
-#else
 #define SFMTXIN		(0)
 #define SFMTXOUT	(0)
 #define SFMTXERR	(0)
-#endif
 
 Sfio_t _Sfstdin = SFNEW(NIL(char *), -1, 0,
 			(SF_READ | SF_STATIC | SF_MTSAFE), NIL(Sfdisc_t *),

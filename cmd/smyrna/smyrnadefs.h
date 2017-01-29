@@ -13,12 +13,12 @@
 #ifndef SMYRNADEFS_H
 #define SMYRNADEFS_H
 
-#ifdef WIN32
+#ifdef _WIN32
 #ifndef NO_WIN_HEADER
 #include "windows.h"
 #endif
 #endif
-#ifdef	WIN32			//this  is needed on WIN32 to get libglade see the callback
+#ifdef	_WIN32			//this  is needed on _WIN32 to get libglade see the callback
 #define _BB  __declspec(dllexport)
 #else
 #define _BB
@@ -39,7 +39,7 @@
 extern "C" {
 #endif
 
-#ifdef	WIN32			//this is needed on WIN32 to get libglade see the callback
+#ifdef	_WIN32			//this is needed on _WIN32 to get libglade see the callback
 #define _BB  __declspec(dllexport)
 #else
 #define _BB

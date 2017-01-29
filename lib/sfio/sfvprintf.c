@@ -40,9 +40,6 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
     int sign, decpt;
     ssize_t size;
     double dval;
-#if !defined(_ast_fltmax_double)
-    Sfdouble_t ldval;
-#endif
     char *tls[2], **ls;		/* for %..[separ]s              */
     char *t_str;		/* stuff between ()             */
     ssize_t n_str;		/* its length                   */
@@ -421,22 +418,12 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 	    switch (_Sftype[fmt]) {
 	    case SFFMT_INT:
 	    case SFFMT_UINT:
-#if !_ast_intmax_long
-		if (FMTCMP(size, Sflong_t, Sflong_t))
-		    argv.ll = va_arg(args, Sflong_t);
-		else
-#endif
 		if (FMTCMP(size, long, Sflong_t))
 		     argv.l = va_arg(args, long);
 		else
 		    argv.i = va_arg(args, int);
 		break;
 	    case SFFMT_FLOAT:
-#if !defined(_ast_fltmax_double)
-		if (FMTCMP(size, Sfdouble_t, Sfdouble_t))
-		    argv.ld = va_arg(args, Sfdouble_t);
-		else
-#endif
 		    argv.d = va_arg(args, double);
 		break;
 	    case SFFMT_POINTER:
@@ -569,11 +556,6 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 
 	case 'n':		/* return current output length */
 	    SFEND(f);
-#if !_ast_intmax_long
-	    if (FMTCMP(size, Sflong_t, Sflong_t))
-		*((Sflong_t *) argv.vp) = (Sflong_t) n_output;
-	    else
-#endif
 	    if (FMTCMP(size, long, Sflong_t))
 		*((long *) argv.vp) = (long) n_output;
 	    else if (sizeof(short) < sizeof(int) &&
@@ -635,7 +617,7 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 		n_s = base == 10 ? -1 : 0;
 
 	  int_arg:
-#if !_ast_intmax_long ||  _more_long_int || _more_void_int
+#if _more_long_int || _more_void_int
 	    if (FMTCMP(size, Sflong_t, Sflong_t)) {
 		lv = argv.ll;
 		goto long_cvt;
@@ -784,11 +766,6 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 	case 'e':
 	case 'E':
 	case 'f':
-#if !defined(_ast_fltmax_double)
-	    if (FMTCMP(size, Sfdouble_t, Sfdouble_t))
-		ldval = argv.ld;
-	    else
-#endif
 	    if (!(ft && ft->extf && (ft->flags & SFFMT_VALUE)) ||
 		    FMTCMP(size, double, Sfdouble_t))
 		 dval = argv.d;
@@ -797,13 +774,6 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 
 	    if (fmt == 'e' || fmt == 'E') {
 		n = (precis = precis < 0 ? FPRECIS : precis) + 1;
-#if !defined(_ast_fltmax_double)
-		if (FMTCMP(size, Sfdouble_t, Sfdouble_t)) {
-		    ep = _sfcvt(&ldval, min(n, SF_FDIGITS),
-				&decpt, &sign,
-				SFFMT_EFORMAT | SFFMT_LDOUBLE);
-		} else
-#endif
 		{
 		    ep = _sfcvt(&dval, min(n, SF_FDIGITS),
 				&decpt, &sign, SFFMT_EFORMAT);
@@ -811,12 +781,6 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 		goto e_format;
 	    } else if (fmt == 'f' || fmt == 'F') {
 		precis = precis < 0 ? FPRECIS : precis;
-#if !defined(_ast_fltmax_double)
-		if (FMTCMP(size, Sfdouble_t, Sfdouble_t)) {
-		    ep = _sfcvt(&ldval, min(precis, SF_FDIGITS),
-				&decpt, &sign, SFFMT_LDOUBLE);
-		} else
-#endif
 		{
 		    ep = _sfcvt(&dval, min(precis, SF_FDIGITS),
 				&decpt, &sign, 0);
@@ -826,16 +790,6 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 
 	    /* 'g' or 'G' format */
 	    precis = precis < 0 ? FPRECIS : precis == 0 ? 1 : precis;
-#if !defined(_ast_fltmax_double)
-	    if (FMTCMP(size, Sfdouble_t, Sfdouble_t)) {
-		ep = _sfcvt(&ldval, min(precis, SF_FDIGITS),
-			    &decpt, &sign, SFFMT_EFORMAT | SFFMT_LDOUBLE);
-		if (ldval == 0.)
-		    decpt = 1;
-		else if (*ep == 'I')
-		    goto infinite;
-	    } else
-#endif
 	    {
 		ep = _sfcvt(&dval, min(precis, SF_FDIGITS),
 			    &decpt, &sign, SFFMT_EFORMAT);
@@ -877,10 +831,6 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 
 	    /* build the exponent */
 	    ep = endep = buf + (sizeof(buf) - 1);
-#if !defined(_ast_fltmax_double)
-	    if (FMTCMP(size, Sfdouble_t, Sfdouble_t))
-		dval = ldval ? 1. : 0.;	/* so the below test works */
-#endif
 	    if (dval != 0.) {
 		if ((n = decpt - 1) < 0)
 		    n = -n;

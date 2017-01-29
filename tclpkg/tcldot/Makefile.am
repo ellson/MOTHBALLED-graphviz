@@ -67,7 +67,7 @@ if WITH_LIBGD
 libtcldot_la_LIBADD += $(GDLIB_LIBS)
 endif
 
-libtcldot_la_LIBADD += $(LIBGEN_LIBS) $(MATH_LIBS)
+libtcldot_la_LIBADD += $(MATH_LIBS)
 
 libtcldot_builtin_la_SOURCES = \
 	tcldot.c \
@@ -100,7 +100,7 @@ libtcldot_builtin_la_LIBADD += $(top_builddir)/plugin/gd/libgvplugin_gd_C.la
 libtcldot_builtin_la_LIBADD += $(GD_LIBS)
 endif
 
-libtcldot_builtin_la_LIBADD += $(EXPAT_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
+libtcldot_builtin_la_LIBADD += $(EXPAT_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 
 if WITH_TCL
 all-local: pkgIndex.tcl

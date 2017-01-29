@@ -4,6 +4,14 @@
 </head>
 <body bgcolor=#ffffff>
 <h2>Graphviz Build Instructions for Windows</h2>
+For building on Windows:
+<P>
+<b>(Graphviz versions &ge; 2.41)</b>
+<P>
+First, in the root of the repository, perform git submodule update --init. This will download all submodules, which are mostly the dependencies for the Windows build.
+Next, add the windows\dependencies\graphviz-build-utilities directory to your PATH (and restart Visual Studio or the prompt with which you execute msbuild after that). This folder contains the tools Bison, Flex and SED (and future additions) with versions that are tested.
+If all went right, the dependencies are now set up and you can build Graphviz.
+
 <P>
 <b>(Graphviz versions &ge; 2.30)</b>
 <P>
@@ -172,7 +180,7 @@ that produces Windows-compatible results.
 <PRE>
     case "$host_os" in
      mingw*)
-       DEFS="$DEFS -DWIN32 -DMSWIN32"
+       DEFS="$DEFS -DMSWIN32"
        ;;
      esac
 </PRE>

@@ -81,12 +81,6 @@ int sfsetfd(reg Sfio_t * f, reg int newfd)
 		    SFOPEN(f, 0);
 		    SFMTXRETURN(f, -1);
 		}
-#ifdef MAP_TYPE
-		if ((f->bits & SF_MMAP) && f->data) {
-		    SFMUNMAP(f, f->data, f->endb - f->data);
-		    f->data = NIL(uchar *);
-		}
-#endif
 
 		/* make stream appears uninitialized */
 		f->endb = f->endr = f->endw = f->data;

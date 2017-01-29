@@ -13,7 +13,7 @@
 
 #include "config.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #include "windows.h"
 #endif
 #include <stdio.h>
@@ -27,7 +27,7 @@
 #include "globals.h"
 
 
-#ifdef WIN32
+#ifdef _WIN32
 /*gvc.lib cgraph.lib*/
 #pragma comment( lib, "cgraph.lib" )
 #pragma comment( lib, "gvc.lib" )

@@ -53,13 +53,6 @@
 
 #include <ctype.h>
 
-/* For graphviz, only unthreaded */
-#ifdef WIN32_STATIC
-#undef vt_threaded 0
-#else
-#define vt_threaded 0
-#endif
-
 #include "sfhdr.h"
 
 #define QL		01

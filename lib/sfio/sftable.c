@@ -353,22 +353,12 @@ static Fmtpos_t *sffmtpos(Sfio_t * f, const char *form, va_list args,
 		switch (_Sftype[fp[n].ft.fmt]) {
 		case SFFMT_INT:
 		case SFFMT_UINT:
-#if !_ast_intmax_long
-		    if (FMTCMP(size, Sflong_t, Sflong_t))
-			fp[n].argv.ll = va_arg(args, Sflong_t);
-		    else
-#endif
 		    if (FMTCMP(size, long, Sflong_t))
 			 fp[n].argv.l = va_arg(args, long);
 		    else
 			fp[n].argv.i = va_arg(args, int);
 		    break;
 		case SFFMT_FLOAT:
-#if !defined(_ast_fltmax_double)
-		    if (FMTCMP(size, Sfdouble_t, Sfdouble_t))
-			fp[n].argv.ld = va_arg(args, Sfdouble_t);
-		    else
-#endif
 			fp[n].argv.d = va_arg(args, double);
 		    break;
 		case SFFMT_POINTER:

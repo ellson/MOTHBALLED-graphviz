@@ -35,7 +35,7 @@
 #endif
 #include <stdlib.h>
 #include <time.h>
-#ifndef WIN32
+#ifndef _WIN32
 #include <unistd.h>
 #endif
 #include <ctype.h>
@@ -468,7 +468,7 @@ static pointf initPositions(graph_t * g, bport_t * pp)
     double size;
     Agnode_t *np;
     int n_pos = 0;		/* no. of nodes with position info */
-    box bb = { {0, 0}, {0, 0} };
+    boxf bb = { {0, 0}, {0, 0} };
     pointf ctr;			/* center of boundary ellipse */
     long local_seed;
     double PItimes2 = M_PI * 2.0;
@@ -537,7 +537,7 @@ static pointf initPositions(graph_t * g, bport_t * pp)
     if (T_smode == INIT_RANDOM)
 	local_seed = T_seed;
     else {
-#if defined(MSWIN32) || defined(WIN32)
+#if defined(MSWIN32) || defined(_WIN32)
 	local_seed = time(NULL);
 #else
 	local_seed = getpid() ^ time(NULL);

@@ -13,7 +13,7 @@
 
 #include "config.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <io.h>
 #include "compat.h"
 #endif
@@ -45,13 +45,6 @@ typedef enum {
 	FORMAT_XDOT12,
 	FORMAT_XDOT14,
 } format_type;
-
-#ifdef WIN32 /*dependencies*/
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "gvc.lib" )
-    #pragma comment( lib, "xdot.lib" )
-//    #pragma comment( lib, "ingraphs.lib" )
-#endif
 
 #define XDOTVERSION "1.7"
 

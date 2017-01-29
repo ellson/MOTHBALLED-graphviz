@@ -19,10 +19,10 @@ pdfdir = $(pkgdatadir)/doc/pdf
 noinst_HEADERS = colortbl.h convert.h mmio.h matrix_market.h \
 	 graph_generator.h gml2gv.h gmlparse.h
 if ENABLE_STATIC
-bin_PROGRAMS = gc gvcolor gxl2gv acyclic nop ccomps sccmap tred tred2\
+bin_PROGRAMS = gc gvcolor gxl2gv acyclic nop ccomps sccmap tred \
 	unflatten gvpack gvpack_static dijkstra bcomps mm2gv gvgen gml2gv gv2gml graphml2gv
 else
-bin_PROGRAMS = gc gvcolor gxl2gv acyclic nop ccomps sccmap tred tred2\
+bin_PROGRAMS = gc gvcolor gxl2gv acyclic nop ccomps sccmap tred \
 	unflatten gvpack dijkstra bcomps mm2gv gvgen gml2gv gv2gml graphml2gv
 endif
 
@@ -79,12 +79,12 @@ ccomps_LDADD = \
 ccomps.1.pdf: $(srcdir)/ccomps.1
 	- @GROFF@ -Tps -man $(srcdir)/ccomps.1 | @PS2PDF@ - - >ccomps.1.pdf
 
-tred2_SOURCES = tred2.c
-
-tred2_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/cgraph/libcgraph.la \
-	$(top_builddir)/lib/gvc/libgvc.la
+#tred2_SOURCES = tred2.c
+#
+#tred2_LDADD = \
+#	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
+#	$(top_builddir)/lib/cgraph/libcgraph.la \
+#	$(top_builddir)/lib/gvc/libgvc.la
 
 tred_SOURCES = tred.c
 
@@ -169,10 +169,10 @@ gvpack_static_LDADD = \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/cgraph/libcgraph_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
-       	$(EXPAT_LIBS) $(Z_LIBS) $(GTS_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS) 
+		$(EXPAT_LIBS) $(Z_LIBS) $(GTS_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 endif
 
-#$(PANGOCAIRO_LIBS) $(PANGOFT2_LIBS) $(GTS_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
+#$(PANGOCAIRO_LIBS) $(PANGOFT2_LIBS) $(GTS_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 
 gvpack.1.pdf: $(srcdir)/gvpack.1
 	- @GROFF@ -Tps -man $(srcdir)/gvpack.1 | @PS2PDF@ - - >gvpack.1.pdf

@@ -20,7 +20,7 @@
 
 #ifdef ENABLE_LTDL
 #include	<sys/types.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #define GLOB_NOSPACE    1   /* Ran out of memory.  */
 #define GLOB_ABORTED    2   /* Read error.  */
@@ -271,7 +271,7 @@ char * gvconfig_libdir(GVC_t * gvc)
     if (!libdir) {
         libdir=getenv("GVBINDIR");
 	if (!libdir) {
-#ifdef WIN32
+#ifdef _WIN32
 	    int r;
 	    char* s;
 		
@@ -370,7 +370,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
     int i, rc, re_status;
     gvplugin_library_t *library;
     regex_t re;
-#ifndef WIN32
+#ifndef _WIN32
     char *plugin_glob = "libgvplugin_*";
 #endif
 #if defined(DARWIN_DYLIB)
@@ -384,7 +384,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
     plugin_glob = "cyggvplugin_*";
     char *plugin_re_beg = "[^0-9]-";
     char *plugin_re_end = "\\.dll$"; 
-#elif defined(WIN32)
+#elif defined(_WIN32)
     char *plugin_glob = "gvplugin_*";
     char *plugin_re_beg = "[^0-9]";
     char *plugin_re_end = "\\.dll$"; 
@@ -415,7 +415,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 
     config_re = gmalloc(strlen(plugin_re_beg) + 20 + strlen(plugin_re_end) + 1);
 
-#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+#if defined(_WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
     sprintf(config_re,"%s%s", plugin_re_beg, plugin_re_end);
 #elif defined(GVPLUGIN_VERSION)
     sprintf(config_re,"%s%d%s", plugin_re_beg, GVPLUGIN_VERSION, plugin_re_end);
@@ -434,7 +434,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 
     /* load all libraries even if can't save config */
 
-#if defined(WIN32)
+#if defined(_WIN32)
     rc = glob(gvc, config_glob, GLOB_NOSORT, NULL, &globbuf);
 #else
     rc = glob(config_glob, GLOB_NOSORT, NULL, &globbuf);
@@ -563,7 +563,7 @@ void gvconfig(GVC_t * gvc, boolean rescan)
 }
 
 #ifdef ENABLE_LTDL
-#ifdef WIN32
+#ifdef _WIN32
 
 /* Emulating windows glob */
 

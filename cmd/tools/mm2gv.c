@@ -33,14 +33,6 @@
 #define real double
 #define BUFS         1024
 
-#ifdef WIN32 //*dependencies
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-    #pragma comment( lib, "gvc.lib" )
-    #pragma comment( lib, "sparse.lib" )
-#endif
-
-
 typedef struct {
     Agrec_t h;
     int id;

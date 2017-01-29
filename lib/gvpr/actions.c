@@ -813,7 +813,7 @@ char *canon(Expr_t * pgm, char *arg)
 }
 
 #include <stdlib.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include "compat.h"
 #endif
 
@@ -1340,7 +1340,7 @@ char *colorx (Expr_t* ex, char* incolor, char* fmt, Sfio_t* fp)
     return exstring(ex, sfstruse(fp));
 }
 
-#ifndef WIN32
+#ifndef _WIN32
 
 #include        <unistd.h>
 #include        <sys/types.h>

@@ -16,12 +16,12 @@
 extern gvplugin_installed_t gvdevice_dot_types[];
 extern gvplugin_installed_t gvdevice_fig_types[];
 extern gvplugin_installed_t gvdevice_map_types[];
-#if !defined(WIN32)
+#if !defined(_WIN32)
 extern gvplugin_installed_t gvdevice_mp_types[];
 #endif
 extern gvplugin_installed_t gvdevice_ps_types[];
 extern gvplugin_installed_t gvdevice_svg_types[];
-#if !defined(WIN32)
+#if !defined(_WIN32)
 extern gvplugin_installed_t gvdevice_json_types[];
 #endif
 extern gvplugin_installed_t gvdevice_tk_types[];
@@ -32,12 +32,12 @@ extern gvplugin_installed_t gvdevice_pov_types[];
 extern gvplugin_installed_t gvrender_dot_types[];
 extern gvplugin_installed_t gvrender_fig_types[];
 extern gvplugin_installed_t gvrender_map_types[];
-#if !defined(WIN32)
+#if !defined(_WIN32)
 extern gvplugin_installed_t gvrender_mp_types[];
 #endif
 extern gvplugin_installed_t gvrender_ps_types[];
 extern gvplugin_installed_t gvrender_svg_types[];
-#if !defined(WIN32)
+#if !defined(_WIN32)
 extern gvplugin_installed_t gvrender_json_types[];
 #endif
 extern gvplugin_installed_t gvrender_tk_types[];
@@ -54,12 +54,12 @@ static gvplugin_api_t apis[] = {
     {API_device, gvdevice_dot_types},
     {API_device, gvdevice_fig_types},
     {API_device, gvdevice_map_types},
-#if !defined(WIN32)
+#if !defined(_WIN32)
     {API_device, gvdevice_mp_types},
 #endif
     {API_device, gvdevice_ps_types},
     {API_device, gvdevice_svg_types},
-#if !defined(WIN32)
+#if !defined(_WIN32)
     {API_device, gvdevice_json_types},
 #endif
     {API_device, gvdevice_tk_types},
@@ -70,12 +70,12 @@ static gvplugin_api_t apis[] = {
     {API_render, gvrender_dot_types},
     {API_render, gvrender_fig_types},
     {API_render, gvrender_map_types},
-#if !defined(WIN32)
+#if !defined(_WIN32)
     {API_render, gvrender_mp_types},
 #endif
     {API_render, gvrender_ps_types},
     {API_render, gvrender_svg_types},
-#if !defined(WIN32)
+#if !defined(_WIN32)
     {API_render, gvrender_json_types},
 #endif
     {API_render, gvrender_tk_types},

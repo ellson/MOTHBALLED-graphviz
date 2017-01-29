@@ -183,7 +183,7 @@ extern const char*	exversion;
 extern Exstate_t	expr;
 
 extern int		exparse(void);	/* yacc should do this		*/
-#if defined(WIN32)
+#if defined(_WIN32)
 #define strtoll _strtoi64
 #define strtoull _strtoui64
 #endif

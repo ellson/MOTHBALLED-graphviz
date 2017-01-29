@@ -13,7 +13,7 @@
 
 #include	"sfhdr.h"
 #ifndef FIONREAD
-#if _sys_ioctl
+#if HAVE_SYS_IOCTL_H
 #include	<sys/ioctl.h>
 #endif
 #endif
@@ -117,9 +117,6 @@ ssize_t sfpkrd(int fd, void * argbuf, size_t n, int rc, long tm,
 #endif /*_lib_poll*/
 #if _lib_select
 	    if (r == -2) {
-#if _hpux_threads && vt_threaded
-#define fd_set	int
-#endif
 		fd_set rd;
 		struct timeval tmb, *tmp;
 		FD_ZERO(&rd);

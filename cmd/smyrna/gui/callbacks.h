@@ -21,7 +21,7 @@
 extern "C" {
 #endif
 
-#ifdef	WIN32			//this shit is needed on WIN32 to get libglade see the callback
+#ifdef	_WIN32			//this shit is needed on _WIN32 to get libglade see the callback
 #define _BB  __declspec(dllexport)
 #else
 #define _BB

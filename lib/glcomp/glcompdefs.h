@@ -18,7 +18,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <math.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #include <winuser.h>
 #include <tchar.h>
@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
-#ifdef WIN32
+#ifdef _WIN32
 #define strdup _strdup
 #endif
 

@@ -32,39 +32,13 @@
 #include "colorutil.h"
 #include "color_palette.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #define strdup(x) _strdup(x)
 #endif
 enum {POINTS_ALL = 1, POINTS_LABEL, POINTS_RANDOM};
 enum {maxlen = 10000000};
 enum {MAX_GRPS = 10000};
 static char swork[maxlen];
-
-#ifdef WIN32
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "gvc.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-    #pragma comment( lib, "sparse.lib" )
-    #pragma comment( lib, "neatogen.lib" )
-    #pragma comment( lib, "gvc.lib" )
-    #pragma comment( lib, "pathplan.lib" )
-    #pragma comment( lib, "neatogen.lib" )
-    #pragma comment( lib, "edgepaintlib.lib" )
-    #pragma comment( lib, "circogen.lib" )
-    #pragma comment( lib, "twopigen.lib" )
-    #pragma comment( lib, "fdpgen.lib" )
-    #pragma comment( lib, "sparse.lib" )
-    #pragma comment( lib, "cdt.lib" )
-    //#pragma comment( lib, "gts.lib" )
-    #pragma comment( lib, "glib-2.0.lib" )
-    #pragma comment( lib, "vpsc.lib" )
-    #pragma comment( lib, "patchwork.lib" )
-    #pragma comment( lib, "gvortho.lib" )
-    #pragma comment( lib, "sfdp.lib" )
-    #pragma comment( lib, "rbtree.lib" )
-#endif   /* not WIN32_DLL */
-
-
 
 #if 0
 void *gmalloc(size_t nbytes)

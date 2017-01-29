@@ -52,8 +52,8 @@
     <ClCompile>
       <AdditionalOptions>/D "_CRT_SECURE_NO_DEPRECATE" %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)gui;$(SolutionDir)windows\include;$(SolutionDir)windows\getopt;$(SolutionDir)windows\dependencies\freeglut\include;$(SolutionDir)windows\dependencies\GTK2\include\libglade-2.0;$(SolutionDir)windows\dependencies\GTK2\lib\gtkglext-1.0\include;$(SolutionDir)windows\dependencies\GTK2\include\gtkglext-1.0\;$(SolutionDir)windows\dependencies\GTK2\include\cairo;$(SolutionDir)windows\dependencies\GTK2\include\atk-1.0;$(SolutionDir)windows\dependencies\GTK2\lib\gtk-2.0\include\cairo;$(SolutionDir)windows\dependencies\GTK2\lib\gtk-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\gtk-2.0\;$(SolutionDir)windows\dependencies\GTK2\lib\glib-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\glib-2.0;$(SolutionDir)windows\dependencies\GTK2\include\pango-1.0\;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir);$(SolutionDir)lib\ast;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\glcomp;$(SolutionDir)lib\gvpr;$(SolutionDir)lib\neatogen;$(SolutionDir)lib\sfio;$(SolutionDir)lib\topfish;$(SolutionDir)lib\xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;HAVE_TRIANGLE;HAVE_GTS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)gui;$(SolutionDir)windows\include;$(SolutionDir)windows\getopt;$(SolutionDir)windows\dependencies\libraries\include;$(SolutionDir)windows\dependencies\libraries\include\cairo;$(SolutionDir);$(SolutionDir)lib\ast;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\glcomp;$(SolutionDir)lib\gvpr;$(SolutionDir)lib\neatogen;$(SolutionDir)lib\sfio;$(SolutionDir)lib\topfish;$(SolutionDir)lib\xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;HAVE_TRIANGLE;HAVE_GTS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -64,42 +64,45 @@
       <EnablePREfast>true</EnablePREfast>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>getopt.lib;asprintf.lib;ast.lib;atk-1.0.lib;bz2.lib;libcairo-2.lib;cdt.lib;cgraph.lib;charset.lib;croco-0.6.lib;expr.lib;fontconfig.lib;freetype.lib;Gdi32.lib;gdk_pixbuf-2.0.lib;gdkglext-win32-1.0.lib;gdk-win32-2.0.lib;glade-2.0.lib;gladeui-1.lib;glcomp.lib;glib-2.0.lib;glu32.lib;gmodule-2.0.lib;gobject-2.0.lib;gsf-1.lib;gsf-win32-1.lib;gthread-2.0.lib;gtkglext-win32-1.0.lib;gtk-win32-2.0.lib;gvprlib.lib;iconv.lib;ingraphs.lib;intl.lib;jpeg.lib;libgtkglext-win32-1.0.dll.a;ltdl.lib;neatogen.lib;opengl32.lib;pango-1.0.lib;pangocairo-1.0.lib;pangoft2-1.0.lib;pangowin32-1.0.lib;popt.lib;rsvg-2.lib;sfio.lib;shlwapi.lib;tiff.lib;topfish.lib;User32.lib;vmalloc.lib;xdot.lib;xml2.lib;z.lib;gvc.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\getopt;$(SolutionDir)windows\dependencies\freeglut\lib;$(SolutionDir)windows\dependencies\libtool\lib;$(SolutionDir)windows\dependencies\GTK2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>getopt.lib;ast.lib;atk-1.0.lib;libcairo-2.lib;cdt.lib;cgraph.lib;expr.lib;fontconfig.lib;freetype.lib;gdk_pixbuf-2.0.lib;gdkglext-win32-1.0.lib;gdk-win32-2.0.lib;glade-2.0.lib;gladeui-1.lib;glcomp.lib;glib-2.0.lib;glu32.lib;gmodule-2.0.lib;gobject-2.0.lib;gtkglext-win32-1.0.lib;gtk-win32-2.0.lib;gvprlib.lib;iconv.lib;ingraphs.lib;jpeg.lib;neatogen.lib;opengl32.lib;pango-1.0.lib;pangocairo-1.0.lib;sfio.lib;topfish.lib;vmalloc.lib;xdot.lib;xml2.lib;z.lib;gvc.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\getopt;$(SolutionDir)windows\dependencies\libraries\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)windows\dependencies\GTK2\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpng12.dll $(OutDir)libpng12.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libxml2.dll $(OutDir)libxml2.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\iconv.dll $(OutDir)iconv.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libglib-2.0-0.dll $(OutDir)libglib-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpango-1.0-0.dll $(OutDir)libpango-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangocairo-1.0-0.dll $(OutDir)libpangocairo-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libgobject-2.0-0.dll $(OutDir)libgobject-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\intl.dll $(OutDir)intl.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libgmodule-2.0-0.dll $(OutDir)libgmodule-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangoft2-1.0-0.dll $(OutDir)libpangoft2-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangowin32-1.0-0.dll $(OutDir)libpangowin32-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libgdkglext-win32-1.0-0.dll $(OutDir)libgdkglext-win32-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libgdk-win32-2.0-0.dll $(OutDir)libgdk-win32-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libgdk_pixbuf-2.0-0.dll $(OutDir)libgdk_pixbuf-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libglade-2.0-0.dll $(OutDir)libglade-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libatk-1.0-0.dll $(OutDir)libatk-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libgtk-win32-2.0-0.dll $(OutDir)libgtk-win32-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\freeglut\bin\freeglut.dll $(OutDir)freeglut.dll</Command>
+      <Command>copy $(SolutionDir)windows\dependencies\libraries\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpng12.dll $(OutDir)libpng12.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\zlib1.dll $(OutDir)zlib1.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libxml2.dll $(OutDir)libxml2.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\iconv.dll $(OutDir)iconv.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libglib-2.0-0.dll $(OutDir)libglib-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpango-1.0-0.dll $(OutDir)libpango-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpangocairo-1.0-0.dll $(OutDir)libpangocairo-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libgobject-2.0-0.dll $(OutDir)libgobject-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\intl.dll $(OutDir)intl.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libgmodule-2.0-0.dll $(OutDir)libgmodule-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpangoft2-1.0-0.dll $(OutDir)libpangoft2-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpangowin32-1.0-0.dll $(OutDir)libpangowin32-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libgdkglext-win32-1.0-0.dll $(OutDir)libgdkglext-win32-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libgdk-win32-2.0-0.dll $(OutDir)libgdk-win32-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libgdk_pixbuf-2.0-0.dll $(OutDir)libgdk_pixbuf-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libglade-2.0-0.dll $(OutDir)libglade-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libatk-1.0-0.dll $(OutDir)libatk-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libgtk-win32-2.0-0.dll $(OutDir)libgtk-win32-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\freeglut.dll $(OutDir)freeglut.dll
+xcopy /E $(SolutionDir)windows\dependencies\libraries\lib\pango $(OutDir)..\lib\pango\
+if not exist "$(OutDir)..\etc\pango\" mkdir $(OutDir)..\etc\pango\
+$(SolutionDir)windows\dependencies\libraries\bin\pango-querymodules.exe &gt; $(OutDir)..\etc\pango\pango.modules</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)gui;$(SolutionDir)windows\include;$(SolutionDir)windows\getopt;$(SolutionDir)windows\dependencies\freeglut\include;$(SolutionDir)windows\dependencies\GTK2\include\libglade-2.0;$(SolutionDir)windows\dependencies\GTK2\lib\gtkglext-1.0\include;$(SolutionDir)windows\dependencies\GTK2\include\gtkglext-1.0\;$(SolutionDir)windows\dependencies\GTK2\include\cairo;$(SolutionDir)windows\dependencies\GTK2\include\atk-1.0;$(SolutionDir)windows\dependencies\GTK2\lib\gtk-2.0\include\cairo;$(SolutionDir)windows\dependencies\GTK2\lib\gtk-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\gtk-2.0\;$(SolutionDir)windows\dependencies\GTK2\lib\glib-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\glib-2.0;$(SolutionDir)windows\dependencies\GTK2\include\pango-1.0\;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir);$(SolutionDir)lib\ast;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\glcomp;$(SolutionDir)lib\gvpr;$(SolutionDir)lib\neatogen;$(SolutionDir)lib\sfio;$(SolutionDir)lib\topfish;$(SolutionDir)lib\xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;HAVE_TRIANGLE;HAVE_GTS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)gui;$(SolutionDir)windows\include;$(SolutionDir)windows\getopt;$(SolutionDir)windows\dependencies\libraries\include;$(SolutionDir)windows\dependencies\libraries\include\cairo;$(SolutionDir);$(SolutionDir)lib\ast;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\glcomp;$(SolutionDir)lib\gvpr;$(SolutionDir)lib\neatogen;$(SolutionDir)lib\sfio;$(SolutionDir)lib\topfish;$(SolutionDir)lib\xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;HAVE_TRIANGLE;HAVE_GTS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
@@ -107,8 +110,8 @@ copy $(SolutionDir)windows\dependencies\freeglut\bin\freeglut.dll $(OutDir)freeg
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>getopt.lib;asprintf.lib;ast.lib;atk-1.0.lib;bz2.lib;libcairo-2.lib;cdt.lib;cgraph.lib;charset.lib;croco-0.6.lib;expr.lib;fontconfig.lib;freetype.lib;Gdi32.lib;gdk_pixbuf-2.0.lib;gdkglext-win32-1.0.lib;gdk-win32-2.0.lib;glade-2.0.lib;gladeui-1.lib;glcomp.lib;glib-2.0.lib;glu32.lib;gmodule-2.0.lib;gobject-2.0.lib;gsf-1.lib;gsf-win32-1.lib;gthread-2.0.lib;gtkglext-win32-1.0.lib;gtk-win32-2.0.lib;gvprlib.lib;iconv.lib;ingraphs.lib;intl.lib;jpeg.lib;libgtkglext-win32-1.0.dll.a;ltdl.lib;neatogen.lib;opengl32.lib;pango-1.0.lib;pangocairo-1.0.lib;pangoft2-1.0.lib;pangowin32-1.0.lib;popt.lib;rsvg-2.lib;sfio.lib;shlwapi.lib;tiff.lib;topfish.lib;User32.lib;vmalloc.lib;xdot.lib;xml2.lib;z.lib;gvc.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\getopt;$(SolutionDir)windows\dependencies\freeglut\lib;$(SolutionDir)windows\dependencies\libtool\lib;$(SolutionDir)windows\dependencies\GTK2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>getopt.lib;ast.lib;atk-1.0.lib;libcairo-2.lib;cdt.lib;cgraph.lib;expr.lib;fontconfig.lib;freetype.lib;gdk_pixbuf-2.0.lib;gdkglext-win32-1.0.lib;gdk-win32-2.0.lib;glade-2.0.lib;gladeui-1.lib;glcomp.lib;glib-2.0.lib;glu32.lib;gmodule-2.0.lib;gobject-2.0.lib;gtkglext-win32-1.0.lib;gtk-win32-2.0.lib;gvprlib.lib;iconv.lib;ingraphs.lib;jpeg.lib;neatogen.lib;opengl32.lib;pango-1.0.lib;pangocairo-1.0.lib;sfio.lib;topfish.lib;vmalloc.lib;xdot.lib;xml2.lib;z.lib;gvc.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\getopt;$(SolutionDir)windows\dependencies\libraries\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -117,28 +120,31 @@ copy $(SolutionDir)windows\dependencies\freeglut\bin\freeglut.dll $(OutDir)freeg
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)windows\dependencies\GTK2\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpng12.dll $(OutDir)libpng12.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libxml2.dll $(OutDir)libxml2.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\iconv.dll $(OutDir)iconv.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libglib-2.0-0.dll $(OutDir)libglib-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpango-1.0-0.dll $(OutDir)libpango-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangocairo-1.0-0.dll $(OutDir)libpangocairo-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libgobject-2.0-0.dll $(OutDir)libgobject-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\intl.dll $(OutDir)intl.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libgmodule-2.0-0.dll $(OutDir)libgmodule-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangoft2-1.0-0.dll $(OutDir)libpangoft2-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangowin32-1.0-0.dll $(OutDir)libpangowin32-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libgdkglext-win32-1.0-0.dll $(OutDir)libgdkglext-win32-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libgdk-win32-2.0-0.dll $(OutDir)libgdk-win32-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libgdk_pixbuf-2.0-0.dll $(OutDir)libgdk_pixbuf-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libglade-2.0-0.dll $(OutDir)libglade-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libatk-1.0-0.dll $(OutDir)libatk-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libgtk-win32-2.0-0.dll $(OutDir)libgtk-win32-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\freeglut\bin\freeglut.dll $(OutDir)freeglut.dll</Command>
+      <Command>copy $(SolutionDir)windows\dependencies\libraries\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpng12.dll $(OutDir)libpng12.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\zlib1.dll $(OutDir)zlib1.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libxml2.dll $(OutDir)libxml2.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\iconv.dll $(OutDir)iconv.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libglib-2.0-0.dll $(OutDir)libglib-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpango-1.0-0.dll $(OutDir)libpango-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpangocairo-1.0-0.dll $(OutDir)libpangocairo-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libgobject-2.0-0.dll $(OutDir)libgobject-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\intl.dll $(OutDir)intl.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libgmodule-2.0-0.dll $(OutDir)libgmodule-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpangoft2-1.0-0.dll $(OutDir)libpangoft2-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpangowin32-1.0-0.dll $(OutDir)libpangowin32-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libgdkglext-win32-1.0-0.dll $(OutDir)libgdkglext-win32-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libgdk-win32-2.0-0.dll $(OutDir)libgdk-win32-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libgdk_pixbuf-2.0-0.dll $(OutDir)libgdk_pixbuf-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libglade-2.0-0.dll $(OutDir)libglade-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libatk-1.0-0.dll $(OutDir)libatk-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libgtk-win32-2.0-0.dll $(OutDir)libgtk-win32-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\freeglut.dll $(OutDir)freeglut.dll
+xcopy /E $(SolutionDir)windows\dependencies\libraries\lib\pango $(OutDir)..\lib\pango\
+if not exist "$(OutDir)..\etc\pango\" mkdir $(OutDir)..\etc\pango\
+$(SolutionDir)windows\dependencies\libraries\bin\pango-querymodules.exe &gt; $(OutDir)..\etc\pango\pango.modules</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

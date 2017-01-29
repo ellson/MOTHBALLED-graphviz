@@ -45,11 +45,6 @@ char **Files;
 char *CmdName;
 #define MARK(n)  (((Agnodeinfo_t*)(n->base.data))->mark)
 
-#ifdef WIN32 //*dependencies
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-#endif
-
 static int dfs(Agnode_t * n, Agedge_t * link, int warn)
 {
     Agedge_t *e;

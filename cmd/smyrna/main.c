@@ -65,7 +65,7 @@ char *smyrnaPath(char *suffix)
     char *buf;
     static int baselen;
     int slen;
-#ifdef WIN32
+#ifdef _WIN32
     char *pathSep = "\\";
 #else
     char *pathSep = "/";
@@ -210,7 +210,7 @@ static void windowedMode(int argc, char *argv[])
     create_window(glconfig, gladewidget);
     change_cursor(GDK_TOP_LEFT_ARROW);
 
-#ifndef WIN32
+#ifndef _WIN32
     glutInit(&argc, argv);
 #endif
 

@@ -76,17 +76,11 @@ ssize_t sfputr(reg Sfio_t * f, const char *s, reg int rc)
 	    w += 1;
 	    break;
 	}
-#if _lib_memccpy
 	if ((ps = (uchar *) memccpy(ps, s, '\0', p)) != NIL(uchar *))
 	    ps -= 1;
 	else
 	    ps = f->next + p;
 	s += ps - f->next;
-#else
-	for (; p > 0; --p, ++ps, ++s)
-	    if ((*ps = *s) == 0)
-		break;
-#endif
 	w += ps - f->next;
 	f->next = ps;
     }

@@ -3,8 +3,6 @@
 
 AM_CPPFLAGS = -I$(top_srcdir)/lib/sfio
 
-AM_CFLAGS = -Dvt_threaded=0
-
 noinst_LTLIBRARIES = libsfiof_C.la
 
 libsfiof_C_la_SOURCES = _sfclrerr.c _sfdlen.c _sfeof.c _sferror.c \

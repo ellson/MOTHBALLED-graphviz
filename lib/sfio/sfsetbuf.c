@@ -26,8 +26,13 @@ __STDPP__directive pragma pp:nohide getpagesize
 #endif
 
 #if _lib_getpagesize
-_BEGIN_EXTERNS_ extern int getpagesize(void);
-_END_EXTERNS_
+#ifdef __cplusplus
+extern "C" {
+#endif
+	extern int getpagesize(void);
+#ifdef __cplusplus
+}
+#endif
 #endif
 /*	Set a (new) buffer for a stream.
 **	If size < 0, it is assigned a suitable value depending on the
@@ -56,9 +61,6 @@ void *sfsetbuf(reg Sfio_t * f, reg void * buf, reg size_t size)
     reg Sfdisc_t *disc;
     reg ssize_t osize, blksize;
     reg int oflags, init, local;
-#ifdef MAP_TYPE
-    reg int okmmap;
-#endif
     Stat_t st;
 
     SFONCE();
@@ -112,19 +114,6 @@ void *sfsetbuf(reg Sfio_t * f, reg void * buf, reg size_t size)
     blksize = 0;
     oflags = f->flags;
 
-#ifdef MAP_TYPE
-    /* see if memory mapping is possible (see sfwrite for SF_BOTH) */
-    okmmap = (buf || (f->flags & SF_STRING)
-	      || (f->flags & SF_RDWR) == SF_RDWR) ? 0 : 1;
-
-    /* save old buffer info */
-    if (f->bits & SF_MMAP) {
-	if (f->data) {
-	    SFMUNMAP(f, f->data, f->endb - f->data);
-	    f->data = NIL(uchar *);
-	}
-    } else
-#endif
     if (f->data == f->tiny) {
 	f->data = NIL(uchar *);
 	f->size = 0;
@@ -170,22 +159,10 @@ void *sfsetbuf(reg Sfio_t * f, reg void * buf, reg size_t size)
 		while ((blksize + (ssize_t) st.st_blksize) <= SF_PAGE)
 		    blksize += (ssize_t) st.st_blksize;
 #endif
-#ifdef MAP_TYPE
-	    if (S_ISDIR(st.st_mode) || (int) st.st_size < SF_GRAIN)
-		okmmap = 0;
-#endif
 	    if (S_ISREG(st.st_mode) || S_ISDIR(st.st_mode))
 		f->here = SFSK(f, (Sfoff_t) 0, SEEK_CUR, f->disc);
 	    else
 		f->here = -1;
-
-#if O_TEXT			/* no memory mapping with O_TEXT because read()/write() alter data stream */
-#ifdef MAP_TYPE
-	    if (okmmap && f->here >= 0 &&
-		(fcntl((int) f->file, F_GETFL, 0) & O_TEXT))
-		okmmap = 0;
-#endif
-#endif
 	}
 
 	if (f->here >= 0) {
@@ -236,25 +213,6 @@ void *sfsetbuf(reg Sfio_t * f, reg void * buf, reg size_t size)
 		_Sfpage = SF_PAGE;
 	}
     }
-#ifdef MAP_TYPE
-    if (okmmap && size && (f->mode & SF_READ) && f->extent >= 0) {	/* see if we can try memory mapping */
-	if (!disc)
-	    for (disc = f->disc; disc; disc = disc->disc)
-		if (disc->readf)
-		    break;
-	if (!disc) {
-	    f->bits |= SF_MMAP;
-	    if (size == (size_t) SF_UNBOUND) {
-		if (blksize > _Sfpage)
-		    size = blksize * SF_NMAP;
-		else
-		    size = _Sfpage * SF_NMAP;
-		if (size > 256 * 1024)
-		    size = 256 * 1024;
-	    }
-	}
-    }
-#endif
 
     /* get buffer space */
   setbuf:

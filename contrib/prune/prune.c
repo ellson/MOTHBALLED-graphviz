@@ -14,7 +14,7 @@
 #include "config.h"
 
 #include <stdio.h>
-#ifndef WIN32
+#ifndef _WIN32
 #include <unistd.h>
 #endif
 #include <stdlib.h>
@@ -26,13 +26,6 @@
 #include "cgraph.h"
 #include "ingraphs.h"
 #include "generic_list.h"
-
-
-#ifdef WIN32 //*dependencies
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-#endif
-
 
 /* structure to hold an attribute specified on the commandline */
 typedef struct strattr_s {

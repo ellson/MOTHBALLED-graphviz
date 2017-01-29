@@ -20,7 +20,7 @@ typedef struct {
 } char_color_lab;
 
 /*visual studio*/
-#if defined(WIN32) && !defined(LAB_GAMUT_EXPORTS)
+#if defined(_WIN32) && !defined(LAB_GAMUT_EXPORTS)
 #define extern __declspec(dllimport)
 #endif
 /*end visual studio*/

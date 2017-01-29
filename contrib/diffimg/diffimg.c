@@ -23,15 +23,6 @@
  * John Ellson <ellson@research.att.com>
  */
 
-
-
-#ifdef WIN32 /*dependencies*/
-    #pragma comment( lib, "libgd.lib" )
-    #pragma comment( lib, "png.lib" )
-    #pragma comment( lib, "gvc.lib" )
-#endif
-
-
 #include "config.h"
 
 #include <stdio.h>
@@ -39,11 +30,11 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#ifndef WIN32
+#ifndef _WIN32
 //#include <unistd.h>
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 #define EX_USAGE		64
 #define EX_DATAERR		65
 #define EX_NOINPUT		66

@@ -20,12 +20,6 @@
 
 static void newpos(Sfio_t * f, Sfoff_t p)
 {
-#ifdef MAP_TYPE
-    if ((f->bits & SF_MMAP) && f->data) {
-	SFMUNMAP(f, f->data, f->endb - f->data);
-	f->data = NIL(uchar *);
-    }
-#endif
     f->next = f->endr = f->endw = f->data;
     f->endb = (f->mode & SF_WRITE) ? f->data + f->size : f->data;
     if ((f->here = p) < 0) {
@@ -182,21 +176,6 @@ Sfoff_t sfseek(Sfio_t * f, Sfoff_t p, int type)
     /* desired position */
     if ((p += type == SEEK_CUR ? s : 0) < 0)
 	goto done;
-
-#ifdef MAP_TYPE
-    if (f->bits & SF_MMAP) {	/* if mmap is not great, stop mmaping if moving around too much */
-#if _mmap_worthy < 2
-	if ((f->next - f->data) < ((f->endb - f->data) / 4)) {
-	    SFSETBUF(f, (void *) f->tiny, (size_t) SF_UNBOUND);
-	    hardseek = 1;	/* this forces a hard seek below */
-	} else
-#endif
-	{			/* for mmap, f->here can be virtual */
-	    newpos(f, p);
-	    goto done;
-	}
-    }
-#endif
 
     b = f->endb - f->data;	/* amount of buffered data */
     c = f->next - f->data;	/* amount of data consumed */

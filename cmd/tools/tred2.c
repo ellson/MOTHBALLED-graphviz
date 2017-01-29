@@ -38,7 +38,7 @@
 char **Files;
 char *CmdName;
 
-#ifdef WIN32 //*dependencies
+#ifdef _WIN32 //*dependencies
     #pragma comment( lib, "cgraph.lib" )
     #pragma comment( lib, "ingraphs.lib" )
     #pragma comment( lib, "gvc.lib" )
@@ -87,16 +87,21 @@ int main(int argc, char **argv)
 {
     Agraph_t *g;
     ingraph_state ig;
+    int rc = 0;
 
     init(argc, argv);
     newIngraph(&ig, Files, gread);
 
     while ((g = nextGraph(&ig)) != 0) {
-	if (agisdirected(g))
-	    gvToolTred(g);
+	if (agisdirected(g)) {
+	    if ((rc = gvToolTred(g)))
+                break;
+            agwrite(g, stdout);
+            fflush(stdout);
+        }
 	agclose(g);
     }
 
-    return 0;
+    return rc;
 }
 

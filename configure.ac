@@ -137,8 +137,8 @@ case "${host_os}" in
   *uwin* )
 	UWIN=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
-	CFLAGS="${CFLAGS} -DWIN32 -DMSWIN32"
-	CXXFLAGS="${CXXFLAGS} -DWIN32 -DMSWIN32"
+	CFLAGS="${CFLAGS} -DMSWIN32"
+	CXXFLAGS="${CXXFLAGS} -DMSWIN32"
 	PATHSEPARATOR=";"
         NO_POSTSCRIPT_ALIAS=1
 	BROWSER="xdg-open"
@@ -216,11 +216,6 @@ AC_CONFIG_HEADERS([config.h])
 
 # put BUILDDATE in its own file so that only targets that use it get rebuilt
 echo "#define BUILDDATE \"$GRAPHVIZ_VERSION_DATE\"" > builddate.h
-
-# only update ast_common.h (for GNU builds) from master if changed
-if ! `cmp -s $srcdir/ast_common.h.in ast_common.h`; then
-	cp $srcdir/ast_common.h.in ast_common.h;
-fi
 
 AC_PREFIX_DEFAULT([/usr/local])
 if test "x${prefix}" = "xNONE"; then
@@ -413,11 +408,8 @@ AM_CONDITIONAL(RC_IS_WINDRES, [test "x$RC" = "xwindres"])
 
 dnl -----------------------------------
 dnl Check for various typedefs and provide substitutes if they do not exist.
-                                                                                
-AC_C_CONST
-AC_TYPE_MODE_T
+
 AC_TYPE_PID_T
-AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
 AC_TYPE_UID_T
 
@@ -425,12 +417,12 @@ dnl -----------------------------------
 dnl Checks for header files
 
 # AC_HEADER_STDC
-AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h malloc.h \
-	fcntl.h search.h pthread.h values.h float.h limits.h termios.h \
-	errno.h time.h unistd.h strings.h setjmp.h \
-	sys/time.h sys/times.h sys/types.h sys/select.h \
-	sys/socket.h sys/stat.h sys/mman.h \
-	sys/ioctl.h sys/inotify.h langinfo.h libintl.h crt_externs.h)
+AC_CHECK_HEADERS(malloc.h \
+	fcntl.h search.h termios.h \
+	unistd.h strings.h stat.h vfork.h \
+	sys/time.h sys/types.h sys/select.h \
+	sys/stat.h sys/mman.h sys/vfork.h \
+	sys/ioctl.h sys/inotify.h crt_externs.h)
 AC_HEADER_TIME
 AC_HEADER_DIRENT
 AC_HEADER_STDBOOL
@@ -451,27 +443,11 @@ AC_CHECK_FUNCS([log2 sincos])
 
 LIBS=$save_LIBS
 
-dnl -----------------------------------
-dnl INCLUDES and LIBS for libgen (provides basename function)
-
-save_CPPFLAGS=$CPPFLAGS
-save_LDFLAGS=$LDFLAGS
-AC_CHECK_HEADER(libgen.h,
-        AC_CHECK_LIB(gen,basename,
-                [LIBGEN_LIBS="-lgen"
-                AC_DEFINE_UNQUOTED(HAVE_LIBGEN,1,[Define if the LIBGEN library has the basename feature])]),
-        AC_MSG_WARN(libgen.h header not available))
-LDFLAGS=$save_LDFLAGS
-CPPFLAGS=$save_CPPFLAGS
-AC_SUBST([LIBGEN_LIBS])
-
 # -----------------------------------
 
 # Checks for library functions
 AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
-	__freadable _sysconf getrusage strerror cbrt lsqrt vsnprintf \
-	strtoul strtoll strtoull uname memset nl_langinfo pow sqrt \
-	strchr strdup strerror strstr _NSGetEnviron])
+	cbrt vsnprintf _NSGetEnviron mallopt mallinfo mstats getpagesize])
 
 AC_REPLACE_FUNCS([strcasecmp strncasecmp strcasestr])
 
@@ -3029,17 +3005,6 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
 	i=f->_IO_read_end;
 	]])],[AC_MSG_RESULT(yes)
 	AC_DEFINE_UNQUOTED(HAVE_FILE_IO_READ_END,1,Define if FILE structure provides _IO_read_end)
-	],[AC_MSG_RESULT(no)
-	])
-
-# -----------------------------------
-
-AC_MSG_CHECKING(if errno externs are declared)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
-	#include <errno.h>
-	]], [[if ( errno < sys_nerr ) return sys_errlist[errno];
-	]])],[AC_MSG_RESULT(yes)
-	AC_DEFINE_UNQUOTED(HAVE_ERRNO_DECL,1,Define if errno externs are declared)
 	],[AC_MSG_RESULT(no)
 	])
 

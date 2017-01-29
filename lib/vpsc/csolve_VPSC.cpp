@@ -39,7 +39,7 @@ VPSC* newIncVPSC(int n, Variable* vs[], int m, Constraint* cs[]) {
 }
 
 int genXConstraints(int n, boxf* bb, Variable** vs, Constraint*** cs,int transitiveClosure) {
-#ifdef WIN32
+#ifdef _WIN32
 	Rectangle** rs = new Rectangle* [n];
 #else
 	Rectangle* rs[n];
@@ -51,13 +51,13 @@ int genXConstraints(int n, boxf* bb, Variable** vs, Constraint*** cs,int transit
 	for(int i=0;i<n;i++) {
 		delete rs[i];
 	}
-#ifdef WIN32
+#ifdef _WIN32
     delete [] rs;
 #endif
 	return m;
 }
 int genYConstraints(int n, boxf* bb, Variable** vs, Constraint*** cs) {
-#ifdef WIN32
+#ifdef _WIN32
 	Rectangle** rs = new Rectangle* [n];
 #else
 	Rectangle* rs[n];
@@ -69,7 +69,7 @@ int genYConstraints(int n, boxf* bb, Variable** vs, Constraint*** cs) {
 	for(int i=0;i<n;i++) {
 		delete rs[i];
 	}
-#ifdef WIN32
+#ifdef _WIN32
     delete [] rs;
 #endif
 	return m;

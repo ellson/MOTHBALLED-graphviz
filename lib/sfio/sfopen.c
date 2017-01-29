@@ -12,7 +12,7 @@
  *************************************************************************/
 
 #include	"sfhdr.h"
-#ifdef WIN32
+#ifdef _WIN32
 #include	"io.h"
 #endif
 
@@ -38,7 +38,7 @@ Sfio_t *sfopen(reg Sfio_t * f, const char *file, const char *mode)
 
     /* usually used on the standard streams to change control flags */
 
-#ifndef WIN32	
+#ifndef _WIN32	
     if (f && !file && (f->mode & SF_INIT)) {
 	SFMTXSTART(f, NIL(Sfio_t *));
 

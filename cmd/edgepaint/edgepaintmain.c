@@ -10,18 +10,6 @@
 
 #include "config.h"
 
-#ifdef WIN32 /*dependencies*/
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "gvc.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-    #pragma comment( lib, "sparse.lib" )
-    #pragma comment( lib, "sfdp.lib" )
-    #pragma comment( lib, "edgepaintlib.lib" )
-    #pragma comment( lib, "neatogen.lib" )
-    #pragma comment( lib, "rbtree.lib" )
-    #pragma comment( lib, "cdt.lib" )
-#endif   /* not WIN32_DLL */
-
 #include <cgraph.h>
 #include <agxbuf.h>
 #include <ingraphs.h>

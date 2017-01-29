@@ -1,6 +1,6 @@
 #ifdef DARWIN
 #define TIMES "Times"
-#elif defined(WIN32)
+#elif defined(_WIN32)
 #define TIMES "Times New Roman"
 #else
 #define TIMES "Times"

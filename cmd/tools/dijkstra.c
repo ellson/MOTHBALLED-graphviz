@@ -11,13 +11,6 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
-#ifdef WIN32 /*dependencies*/
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-    #pragma comment( lib, "cdt.lib" )
-
-#endif
-
 #include "config.h"
 
 #include <stdio.h>

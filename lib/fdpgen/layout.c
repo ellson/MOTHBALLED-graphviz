@@ -32,13 +32,7 @@
 #define FDP_PRIVATE 1
 
 #include "config.h"
-#ifdef HAVE_LIMITS_H
 #include <limits.h>
-#else
-#ifdef HAVE_VALUES_H
-#include <values.h>
-#endif
-#endif
 #include <inttypes.h>
 #include <assert.h>
 #include "tlayout.h"
@@ -142,7 +136,7 @@ finalCC(graph_t * g, int c_cnt, graph_t ** cc, point * pts, graph_t * rg,
     if (isRoot || isEmpty)
 	margin = 0;
     else
-	margin = late_int (g, G_margin, CL_OFFSET, 0);
+	margin = late_int (rg, G_margin, CL_OFFSET, 0);
     pt.x = -bb.LL.x + margin;
     pt.y = -bb.LL.y + margin + GD_border(rg)[BOTTOM_IX].y;
     bb.LL.x = 0;
@@ -1008,11 +1002,11 @@ static void setBB(graph_t * g)
  * Initialize graph-dependent information and
  * state variable.s
  */
-void init_info(graph_t * g, layout_info * infop)
+static void init_info(graph_t * g, layout_info * infop)
 {
-    infop->G_coord = agattr(g,AGRAPH, "coords", NULL);
-    infop->G_width = agattr(g,AGRAPH, "width", NULL);
-    infop->G_height = agattr(g, AGRAPH,"height", NULL);
+    infop->G_coord = agattr(g, AGRAPH, "coords", NULL);
+    infop->G_width = agattr(g, AGRAPH, "width", NULL);
+    infop->G_height = agattr(g, AGRAPH, "height", NULL);
     infop->rootg = g;
     infop->gid = 0;
     infop->pack.mode = getPackInfo(g, l_node, CL_OFFSET / 2, &(infop->pack));
@@ -1061,7 +1055,7 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
     }
 }
 
-void fdp_init_graph(Agraph_t * g)
+static void fdp_init_graph(Agraph_t * g)
 {
     setEdgeType (g, ET_LINE);
     GD_alg(g) = (void *) NEW(gdata);	/* freed in cleanup_graph */
@@ -1073,7 +1067,7 @@ void fdp_init_graph(Agraph_t * g)
     fdp_init_node_edge(g);
 }
 
-void fdpLayout(graph_t * g)
+static void fdpLayout(graph_t * g)
 {
     layout_info info;
 

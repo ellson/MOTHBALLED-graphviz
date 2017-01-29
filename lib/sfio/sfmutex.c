@@ -21,35 +21,5 @@
 /* the main locking/unlocking interface */
 int sfmutex(Sfio_t * f, int type)
 {
-#if !vt_threaded
     return 0;
-#else
-
-    SFONCE();
-
-    if (!f)
-	return -1;
-
-    if (!f->mutex) {
-	if (f->bits & SF_PRIVATE)
-	    return 0;
-
-	vtmtxlock(_Sfmutex);
-	f->mutex = vtmtxopen(NIL(Vtmutex_t *), VT_INIT);
-	vtmtxunlock(_Sfmutex);
-	if (!f->mutex)
-	    return -1;
-    }
-
-    if (type == SFMTX_LOCK)
-	return vtmtxlock(f->mutex);
-    else if (type == SFMTX_TRYLOCK)
-	return vtmtxtrylock(f->mutex);
-    else if (type == SFMTX_UNLOCK)
-	return vtmtxunlock(f->mutex);
-    else if (type == SFMTX_CLRLOCK)
-	return vtmtxclrlock(f->mutex);
-    else
-	return -1;
-#endif				/*vt_threaded */
 }

@@ -31,7 +31,7 @@
 #include "DotIO.h"
 #include "colorutil.h"
 
-#ifdef WIN32 /*dependencies*/
+#ifdef _WIN32 /*dependencies*/
     #pragma comment( lib, "cgraph.lib" )
     #pragma comment( lib, "gvc.lib" )
     #pragma comment( lib, "ingraphs.lib" )
@@ -41,7 +41,7 @@
     #pragma comment( lib, "neatogen.lib" )
     #pragma comment( lib, "rbtree.lib" )
     #pragma comment( lib, "cdt.lib" )
-#endif   /* not WIN32_DLL */
+#endif   /* not _WIN32 */
 
 enum {POINTS_ALL = 1, POINTS_LABEL, POINTS_RANDOM};
 enum {maxlen = 10000000};

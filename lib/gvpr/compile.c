@@ -67,7 +67,7 @@ static int ioflush(void *chan)
 
 static Agiodisc_t gprIoDisc = { iofread, ioputstr, ioflush };
 
-#ifdef WIN32
+#ifdef _WIN32
 static Agdisc_t gprDisc = { 0, 0, &gprIoDisc };
 #else
 static Agdisc_t gprDisc = { &AgMemDisc, &AgIdDisc, &gprIoDisc };
@@ -2592,7 +2592,7 @@ Agraph_t *readG(Sfio_t * fp)
 {
     Agraph_t *g;
 
-#ifdef WIN32
+#ifdef _WIN32
     gprDisc.mem = &AgMemDisc;
     gprDisc.id = &AgIdDisc;
 #endif
@@ -2612,7 +2612,7 @@ Agraph_t *openG(char *name, Agdesc_t desc)
 {
     Agraph_t *g;
 
-#ifdef WIN32
+#ifdef _WIN32
     gprDisc.mem = &AgMemDisc;
     gprDisc.id = &AgIdDisc;
 #endif

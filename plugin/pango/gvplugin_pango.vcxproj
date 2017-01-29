@@ -51,8 +51,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\GTK2\lib\glib-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\glib-2.0;$(SolutionDir)windows\dependencies\GTK2\include\pango-1.0\;$(SolutionDir)windows\dependencies\GTK2\include\cairo;$(SolutionDir)/libltdl;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/windows/lib/cdt;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/agraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;GVPLUGIN_PANGO_EXPORTS;WIN32_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\libraries\include;$(SolutionDir)windows\dependencies\libraries\include\cairo;$(SolutionDir)/libltdl;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/windows/lib/cdt;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/agraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;GVPLUGIN_PANGO_EXPORTS;WIN32_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -63,34 +63,38 @@
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\dependencies\GTK2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\dependencies\libraries\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>gvc.lib;glib-2.0.lib;pango-1.0.lib;pangocairo-1.0.lib;libcairo-2.lib;gobject-2.0.lib;cgraph.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)windows\dependencies\GTK2\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpng12.dll $(OutDir)libpng12.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libxml2.dll $(OutDir)libxml2.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\iconv.dll $(OutDir)iconv.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libglib-2.0-0.dll $(OutDir)libglib-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpango-1.0-0.dll $(OutDir)libpango-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangocairo-1.0-0.dll $(OutDir)libpangocairo-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libgobject-2.0-0.dll $(OutDir)libgobject-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\intl.dll $(OutDir)intl.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libgmodule-2.0-0.dll $(OutDir)libgmodule-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangoft2-1.0-0.dll $(OutDir)libpangoft2-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangowin32-1.0-0.dll $(OutDir)libpangowin32-1.0-0.dll</Command>
+      <Command>copy $(SolutionDir)windows\dependencies\libraries\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpng12.dll $(OutDir)libpng12.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\zlib1.dll $(OutDir)zlib1.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libxml2.dll $(OutDir)libxml2.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\iconv.dll $(OutDir)iconv.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libglib-2.0-0.dll $(OutDir)libglib-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpango-1.0-0.dll $(OutDir)libpango-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpangocairo-1.0-0.dll $(OutDir)libpangocairo-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libgobject-2.0-0.dll $(OutDir)libgobject-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\intl.dll $(OutDir)intl.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libgmodule-2.0-0.dll $(OutDir)libgmodule-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpangoft2-1.0-0.dll $(OutDir)libpangoft2-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpangowin32-1.0-0.dll $(OutDir)libpangowin32-1.0-0.dll
+xcopy /E $(SolutionDir)windows\dependencies\libraries\lib\pango $(OutDir)..\lib\pango\
+if not exist "$(OutDir)..\etc\pango\" mkdir $(OutDir)..\etc\pango\
+$(SolutionDir)windows\dependencies\libraries\bin\pango-querymodules.exe &gt; $(OutDir)..\etc\pango\pango.modules</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\GTK2\lib\glib-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\glib-2.0;$(SolutionDir)windows\dependencies\GTK2\include\pango-1.0\;$(SolutionDir)windows\dependencies\GTK2\include\cairo;$(SolutionDir)/libltdl;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/windows/lib/cdt;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/agraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;GVPLUGIN_PANGO_EXPORTS;WIN32_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\libraries\include;$(SolutionDir)windows\dependencies\libraries\include\cairo;$(SolutionDir)/libltdl;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/windows/lib/cdt;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/agraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;GVPLUGIN_PANGO_EXPORTS;WIN32_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
@@ -98,30 +102,34 @@ copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangowin32-1.0-0.dll $(OutDi
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\dependencies\GTK2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\dependencies\libraries\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>gvc.lib;glib-2.0.lib;pango-1.0.lib;pangocairo-1.0.lib;libcairo-2.lib;gobject-2.0.lib;cgraph.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)windows\dependencies\GTK2\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpng12.dll $(OutDir)libpng12.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libxml2.dll $(OutDir)libxml2.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\iconv.dll $(OutDir)iconv.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libglib-2.0-0.dll $(OutDir)libglib-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpango-1.0-0.dll $(OutDir)libpango-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangocairo-1.0-0.dll $(OutDir)libpangocairo-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libgobject-2.0-0.dll $(OutDir)libgobject-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\intl.dll $(OutDir)intl.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libgmodule-2.0-0.dll $(OutDir)libgmodule-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangoft2-1.0-0.dll $(OutDir)libpangoft2-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangowin32-1.0-0.dll $(OutDir)libpangowin32-1.0-0.dll</Command>
+      <Command>copy $(SolutionDir)windows\dependencies\libraries\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpng12.dll $(OutDir)libpng12.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\zlib1.dll $(OutDir)zlib1.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libxml2.dll $(OutDir)libxml2.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\iconv.dll $(OutDir)iconv.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libglib-2.0-0.dll $(OutDir)libglib-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpango-1.0-0.dll $(OutDir)libpango-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpangocairo-1.0-0.dll $(OutDir)libpangocairo-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libgobject-2.0-0.dll $(OutDir)libgobject-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\intl.dll $(OutDir)intl.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libgmodule-2.0-0.dll $(OutDir)libgmodule-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpangoft2-1.0-0.dll $(OutDir)libpangoft2-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\bin\libpangowin32-1.0-0.dll $(OutDir)libpangowin32-1.0-0.dll
+xcopy /E $(SolutionDir)windows\dependencies\libraries\lib\pango $(OutDir)..\lib\pango\
+if not exist "$(OutDir)..\etc\pango\" mkdir $(OutDir)..\etc\pango\
+$(SolutionDir)windows\dependencies\libraries\bin\pango-querymodules.exe &gt; $(OutDir)..\etc\pango\pango.modules</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -27,7 +27,7 @@ extern "C" {
 #include "cgraph.h"
 #include "cghdr.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #define strdup(x) _strdup(x)
 #endif
 

@@ -15,7 +15,7 @@
 #include "furtherest_point.h"
 #include "color_palette.h"
 
-#ifndef WIN32
+#ifndef _WIN32
 inline 
 #endif
 static real mydist(int dim, real *x, real *y){

@@ -381,7 +381,7 @@ glCompSet *glcreate_gl_topview_menu(void)
 #if 0
 int getIconsDirectory(char *bf)
 {
-#ifdef WIN32
+#ifdef _WIN32
     int a = GetCurrentDirectory(512, bf);
     if ((a > 512) || (a == 0))
 	return 0;

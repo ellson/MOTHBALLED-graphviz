@@ -15,7 +15,7 @@
 #include "config.h"
 
 #include <time.h>
-#ifndef WIN32
+#ifndef _WIN32
 #include <unistd.h>
 #endif
 #include <ctype.h>
@@ -772,7 +772,7 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
     vtx_data *graph;
     node_t** nodes;
     int ne = agnedges(g);	/* upper bound */
-    int *edges = NULL;
+    int *edges;
     float *ewgts = NULL;
     node_t *np;
     edge_t *ep;
@@ -918,9 +918,6 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
     else
         free (nodes);
     freePM(ps);
-    free(edges);
-    free(edists);
-    free(ewgts);
     return graph;
 }
 
@@ -984,7 +981,7 @@ setSeed (graph_t * G, int dflt, long* seedp)
 	long seed;
 	/* Check for seed value */
 	if (!isdigit(*(unsigned char *)p) || sscanf(p, "%ld", &seed) < 1) {
-#if defined(MSWIN32) || defined(WIN32)
+#if defined(MSWIN32) || defined(_WIN32)
 	    seed = (unsigned) time(NULL);
 #else
 	    seed = (unsigned) getpid() ^ (unsigned) time(NULL);

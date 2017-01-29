@@ -13,22 +13,6 @@
 
 #include "config.h"
 
-
-#ifdef WIN32 /*dependencies*/
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "libpng12.lib" )
-    #pragma comment( lib, "libgd.lib" )
-    #pragma comment( lib, "libcairo-2.lib" )
-    #pragma comment( lib, "fontconfig.lib" )
-    #pragma comment( lib, "gvc.lib" )
-    #pragma comment( lib, "freetype.lib" )
-    #pragma comment( lib, "iconv.lib" )
-    #pragma comment( lib, "jpeg.lib" )
-    #pragma comment( lib, "z.lib" )
-    #pragma comment( lib, "pathplan.lib" )
-#endif
-
-
 #include "gvplugin_device.h"
 #include "gvio.h"
 

@@ -70,9 +70,6 @@
     <ClCompile Include="dttree.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dttreeset.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="dtview.c">
       <Filter>Source Files</Filter>
     </ClCompile>
