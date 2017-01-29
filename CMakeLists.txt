@@ -83,6 +83,16 @@ configure_file(
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 
+# =========================== Compiler configuration ===========================
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+    # MSVC warning C4996 mostly fires on completely valid code. The changes
+    # proposed in the warning text often seriously compromise the code
+    # portability, while they never substantially improve the code quality. Thus
+    # we suppress this warning.
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /wd4996")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996")
+endif()
+
 # ============================ Packaging information ===========================
 set(CPACK_GENERATOR ZIP)
 include(CPack)
