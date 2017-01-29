@@ -1,0 +1,422 @@
+{
+  "title": "Graphviz JSON",
+  "description": "JSON representation of a graph encoding xdot attributes",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The graph name"
+    },
+    "directed": {
+      "type": "boolean",
+      "description": "True if the graph is directed"
+    },
+    "strict": {
+      "type": "boolean",
+      "description": "True if the graph is strict"
+    },
+    "_subgraph_cnt": {
+      "type": "integer",
+      "description": "Number of subgraphs in the graph"
+    },
+    "objects": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/metanode" },
+      "description": "The graph's subgraphs followed by the graph's nodes"
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/edge"
+      }
+    },
+    "_draw_": {
+      "$ref": "#/definitions/drawops"
+    },
+    "_ldraw_": {
+      "$ref": "#/definitions/drawops"
+    },
+    "additionalProperties": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "directed",
+    "strict",
+    "_subgraph_cnt"
+  ],
+  "definitions": {
+    "edge": {
+      "title": "edge",
+      "type": "object",
+      "properties": {
+        "_gvid": {
+          "type": "integer"
+        },
+        "tail": {
+          "type": "integer",
+          "description": "_gvid of tail node"
+        },
+        "head": {
+          "type": "integer",
+          "description": "_gvid of tail head"
+        },
+        "_draw_": {
+          "$ref": "#/definitions/drawops"
+        },
+        "_ldraw_": {
+          "$ref": "#/definitions/drawops"
+        },
+        "_hdraw_": {
+          "$ref": "#/definitions/drawops"
+        },
+        "_tdraw_": {
+          "$ref": "#/definitions/drawops"
+        },
+        "_hldraw_": {
+          "$ref": "#/definitions/drawops"
+        },
+        "_tldraw_": {
+          "$ref": "#/definitions/drawops"
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "_gvid",
+        "tail",
+        "head"
+      ]
+    },
+    "metanode": {
+      "title": "node or subgraph",
+      "type": "object",
+      "properties": {
+        "_gvid": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string",
+          "description": "The node or subgraph name"
+        },
+        "subgraphs": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "index of a child subgraph"
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "index of a node in this subgraph"
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "index of an edge in this subgraph"
+        },
+        "_draw_": {
+          "$ref": "#/definitions/drawops"
+        },
+        "_ldraw_": {
+          "$ref": "#/definitions/drawops"
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "_gvid",
+        "name"
+      ]
+    },
+    "drawops": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/definitions/ellipse"
+          },
+          {
+            "$ref": "#/definitions/polygon"
+          },
+          {
+            "$ref": "#/definitions/polyline"
+          },
+          {
+            "$ref": "#/definitions/bspline"
+          },
+          {
+            "$ref": "#/definitions/text"
+          },
+          {
+            "$ref": "#/definitions/font_style"
+          },
+          {
+            "$ref": "#/definitions/drawcolor"
+          },
+          {
+            "$ref": "#/definitions/font"
+          },
+          {
+            "$ref": "#/definitions/style"
+          }
+        ]
+      }
+    },
+    "ellipse": {
+      "type": "object",
+      "properties": {
+        "op": {
+          "type": "string",
+          "pattern": "[eE]"
+        },
+        "rect": {
+          "$ref": "#/definitions/rectangle"
+        }
+      },
+      "required": [
+        "op",
+        "rect"
+      ]
+    },
+    "polygon": {
+      "type": "object",
+      "properties": {
+        "op": {
+          "type": "string",
+          "pattern": "[pP]"
+        },
+        "points": {
+          "$ref": "#/definitions/pointlist"
+        }
+      },
+      "required": [
+        "op",
+        "points"
+      ]
+    },
+    "polyline": {
+      "type": "object",
+      "properties": {
+        "op": {
+          "type": "string",
+          "pattern": "L"
+        },
+        "points": {
+          "$ref": "#/definitions/pointlist"
+        }
+      },
+      "required": [
+        "op",
+        "points"
+      ]
+    },
+    "bspline": {
+      "type": "object",
+      "properties": {
+        "op": {
+          "type": "string",
+          "pattern": "[bB]"
+        },
+        "points": {
+          "$ref": "#/definitions/pointlist"
+        }
+      },
+      "required": [
+        "op",
+        "points"
+      ]
+    },
+    "text": {
+      "type": "object",
+      "properties": {
+        "op": {
+          "type": "string",
+          "pattern": "T"
+        },
+        "pt": {
+          "$ref": "#/definitions/point"
+        },
+        "align": {
+          "type": "string",
+          "pattern": "[lcr]"
+        },
+        "text": {
+          "type": "string"
+        },
+        "width": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "op",
+        "pt",
+        "align",
+        "text",
+        "width"
+      ]
+    },
+    "font_style": {
+      "type": "object",
+      "properties": {
+        "op": {
+          "type": "string",
+          "pattern": "t"
+        },
+        "fontchar": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 127
+        }
+      },
+      "required": [
+        "op",
+        "fontchar"
+      ]
+    },
+    "drawcolor": {
+      "type": "object",
+      "properties": {
+        "op": {
+          "type": "string",
+          "pattern": "[cC]"
+        },
+        "p0": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/point"
+            },
+            {
+              "$ref": "#/definitions/point3"
+            }
+          ]
+        },
+        "p1": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/point"
+            },
+            {
+              "$ref": "#/definitions/point3"
+            }
+          ]
+        },
+        "grad": {
+          "type": "string",
+          "enum": [
+            "none",
+            "linear",
+            "radial"
+          ]
+        },
+        "color": {
+          "$ref": "#/definitions/color" 
+        },
+        "stops": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/stop"
+          }
+        }
+      },
+      "required": [
+        "op",
+        "grad"
+      ]
+    },
+    "font": {
+      "type": "object",
+      "properties": {
+        "op": {
+          "type": "string",
+          "pattern": "F"
+        },
+        "size": {
+          "type": "number",
+          "minimum": 0
+        },
+        "face": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "op",
+        "size",
+        "face"
+      ]
+    },
+    "style": {
+      "type": "object",
+      "properties": {
+        "op": {
+          "type": "string",
+          "pattern": "S"
+        },
+        "style": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "op",
+        "style"
+      ]
+    },
+    "pointlist": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/point"
+      }
+    },
+    "point": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 2,
+      "minItems": 2
+    },
+    "point3": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 3,
+      "minItems": 3
+    },
+    "rectangle": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 4,
+      "minItems": 4
+    },
+    "color": {
+      "type": "string",
+      "pattern": "(#[0-9a-f]*)|(#[0-9a-f]{8})"
+    },
+    "stop": {
+      "type": "object",
+      "properties": {
+        "frac": {
+          "type": "number"
+        },
+        "color": {
+          "$ref": "#/definitions/color"
+        }
+      },
+      "required": [
+        "frac",
+        "color"
+      ]
+    }
+  }
+}
