@@ -10,31 +10,6 @@ For building on Windows:
 <P>
 First, in the root of the repository, perform git submodule update --init. This will download all submodules, which are mostly the dependencies for the Windows build.
 Next, add the windows\dependencies\graphviz-build-utilities directory to your PATH (and restart Visual Studio or the prompt with which you execute msbuild after that). This folder contains the tools Bison, Flex and SED (and future additions) with versions that are tested.
-The final step is building libgd from the source (they do not provide Windows releases), this is a bit of a hassle. The script used in the Appveyor build assumes 7-zip is installed and in the path and that Visual Studio 14.0 is installed.
-In Powershell, cd to windows\dependencies\libgd in the Graphviz repo and run the following lines:
-
-<pre>
-mkdir deps
-cd deps
-wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/archives/freetype-2.6.2-vc14-x86.zip -O freetype.zip
-wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/libiconv-1.14-vc14-x86.zip -O iconv.zip
-wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/libjpeg-9b-vc14-x86.zip -O jpeg.zip
-wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/libpng-1.6.21-vc14-x86.zip -O png.zip
-wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/zlib-1.2.8-vc14-x86.zip -O zlib.zip
-7z x freetype.zip
-7z x iconv.zip
-7z x jpeg.zip
-7z x png.zip
-7z x zlib.zip
-</pre>
-Then, using the cmd command prompt, cd to the same directory and run the following lines (change the path in the first line if you use a different Visual Studio version):
-
-<pre>
-call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86
-set WITH_DEVEL=deps
-set WITH_BUILD=build
-nmake /f windows/Makefile.vc build_libs
-</pre>
 If all went right, the dependencies are now set up and you can build Graphviz.
 
 <P>
