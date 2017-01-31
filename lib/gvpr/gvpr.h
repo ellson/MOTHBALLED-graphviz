@@ -18,6 +18,16 @@ extern "C" {
 #ifndef GVPR_H
 #define GVPR_H
 
+#ifdef _WIN32
+#   ifdef EXPORT_GVPR
+#       define GVPR_API __declspec(dllexport)
+#   else
+#       define GVPR_API __declspec(dllimport)
+#   endif
+#else
+#   define GVPR_API extern
+#endif
+
 #include "cgraph.h"
 #ifdef _MSC_VER
 typedef int ssize_t;
@@ -54,7 +64,7 @@ typedef struct {
     gvprbinding* bindings;    /* array of bindings, terminated with {NULL,NULL} */
 } gvpropts;
 
-    extern int gvpr (int argc, char *argv[], gvpropts* opts);
+GVPR_API int gvpr (int argc, char *argv[], gvpropts* opts);
 
 #endif
 
