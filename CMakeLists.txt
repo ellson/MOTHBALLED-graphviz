@@ -33,9 +33,11 @@ endif (with_smyrna)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 # ============================= Build dependencies =============================
-find_package(Git REQUIRED)
+find_package(AWK REQUIRED)
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
+find_package(Git REQUIRED)
+find_package(Perl REQUIRED)
 
 # ================== Convenient values for CMake configuration =================
 set(BINARY_INSTALL_DIR      bin)
@@ -57,6 +59,14 @@ else()
 endif()
 
 find_package(ANN)
+find_package(EXPAT)
+find_package(ZLIB)
+
+# Find DLLs on Windows
+if (WIN32)
+    find_file(EXPAT_RUNTIME_LIBRARY NAMES libexpat.dll expat.dll)
+    find_file(ZLIB_RUNTIME_LIBRARY NAMES zlib1.dll zlib.dll)
+endif()
 
 # ============================ Set Graphviz version ============================
 set(GRAPHVIZ_VERSION_MAJROR 2)

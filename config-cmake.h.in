@@ -4,7 +4,9 @@
 // Include headers
 #cmakedefine HAVE_MALLOC_H
 #cmakedefine HAVE_STAT_H
+#cmakedefine HAVE_STRINGS_H
 #cmakedefine HAVE_SYS_STAT_H
+#cmakedefine HAVE_SYS_TYPES_H
 #cmakedefine HAVE_UNISTD_H
 
 // Functions
@@ -14,8 +16,11 @@
 #cmakedefine HAVE_MALLINFO
 #cmakedefine HAVE_MALLOPT
 #cmakedefine HAVE_MSTATS
+#cmakedefine HAVE_SINCOS
 #cmakedefine HAVE_SRAND48
 #cmakedefine HAVE_STRCASECMP
+#cmakedefine HAVE_STRNCASECMP
+#cmakedefine HAVE_VSNPRINTF
 
 // Types
 #cmakedefine HAVE_SSIZE_T
@@ -28,3 +33,8 @@ typedef int ssize_t;
 
 // Libraries
 #cmakedefine HAVE_ANN
+#cmakedefine HAVE_EXPAT
+#cmakedefine HAVE_ZLIB
+
+// Values
+#define DEFAULT_DPI @DEFAULT_DPI@

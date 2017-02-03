@@ -1,6 +1,7 @@
 # No dependencies
 add_subdirectory(cdt)
 add_subdirectory(circogen)
+add_subdirectory(common)
 add_subdirectory(dotgen)
 add_subdirectory(fdpgen)
 add_subdirectory(ingraphs)

@@ -1,0 +1,14 @@
+file(READ @CMAKE_CURRENT_BINARY_DIR@/svgcolor_lib svgcolor_lib)
+file(READ @CMAKE_CURRENT_BINARY_DIR@/brewer_lib brewer_lib)
+file(READ @CMAKE_CURRENT_SOURCE_DIR@/color_names color_names)
+
+# Do not ignore empty elements in list
+cmake_policy(SET CMP0007 NEW)
+
+# Make it a list for sorting
+string(REPLACE "\n" ";" color_lib ${svgcolor_lib} ${brewer_lib} ${color_names})
+file(WRITE @CMAKE_CURRENT_BINARY_DIR@/color_lib-temp "${color_lib}")
+list(SORT color_lib)
+file(WRITE @CMAKE_CURRENT_BINARY_DIR@/color_lib-sort "${color_lib}")
+string(REGEX REPLACE ";" "\\n" color_lib "${color_lib}")
+file(WRITE @CMAKE_CURRENT_BINARY_DIR@/color_lib ${color_lib})
