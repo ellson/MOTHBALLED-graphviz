@@ -35,7 +35,7 @@ function rgb_to_hsv(r,g,b) {
 	v = v * 255.0;
 }
 
-BEGIN	{ s = ARGV[1]; gsub("\\.","_",s); printf("static hsvrgbacolor_t %s[] = {\n",s); }
+BEGIN	{ gsub("\\.","_",s); printf("static hsvrgbacolor_t color_lib[] = {\n",s); }
 /^$/	{ next; }
 /^#/	{ next; }
 		{
