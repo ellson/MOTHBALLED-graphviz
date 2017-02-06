@@ -18,9 +18,7 @@
 extern "C" {
 #endif
 
-#if defined HAVE_STDBOOL_H && ! defined __cplusplus
 #include <stdbool.h>
-#endif
 
 #ifndef NOT
 #define NOT(v) (!(v))
