@@ -36,6 +36,11 @@ set( HAVE_ANN       ${ANN_FOUND}        )
 set( HAVE_EXPAT     ${EXPAT_FOUND}      )
 set( HAVE_ZLIB      ${ZLIB_FOUND}       )
 
+if (LTDL_FOUND)
+    set(ENABLE_LTDL 1)
+    set(LTDL_H 1)
+endif()
+
 # Values
 set(DEFAULT_DPI 96)
 

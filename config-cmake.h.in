@@ -1,4 +1,5 @@
 // Values
+#define GVPLUGIN_CONFIG_FILE "@GVPLUGIN_CONFIG_FILE@"
 #define PACKAGE_VERSION "@GRAPHVIZ_VERSION_FULL@"
 
 // Include headers

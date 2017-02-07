@@ -25,3 +25,6 @@ add_subdirectory(xdot)
 
 # Dependent on: cdt
 add_subdirectory(cgraph)
+
+# Multiple dependencies
+add_subdirectory(gvc)

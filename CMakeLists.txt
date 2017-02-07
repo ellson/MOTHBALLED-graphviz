@@ -2,11 +2,16 @@ cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
 project (Graphviz)
 
 # =============================== Build options ================================
+option(enable_ltdl     "Support on-demand plugin loading" ON)
 option(with_digcola    "DIGCOLA features in neato layout engine" ON )
 option(with_ipsepcola  "IPSEPCOLA features in neato layout engine (disabled by default - C++ portability issues)." OFF )
 option(with_ortho      "ORTHO features in neato layout engine." ON )
 option(with_sfdp       "sfdp layout engine." ON )
 option(with_smyrna     "SMYRNA large graph viewer (disabled by default - experimental)" OFF)
+
+if (enable_ltdl)
+    add_definitions(-DENABLE_LTDL)
+endif (enable_ltdl)
 
 if (with_digcola)
     add_definitions(-DDIGCOLA)
@@ -50,6 +55,9 @@ set(TOP_SOURCE_DIR          "${CMAKE_SOURCE_DIR}")
 set(GRAPHVIZ_LIB_DIR        "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 set(WINDOWS_DEPENDENCY_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/windows/dependencies/libraries")
 
+# Name of the config file used by Graphviz
+set(GVPLUGIN_CONFIG_FILE config6)
+
 # ============================ Library dependencies ============================
 if (WIN32)
     list(APPEND CMAKE_LIBRARY_PATH ${WINDOWS_DEPENDENCY_DIR}/lib)
@@ -60,12 +68,16 @@ endif()
 
 find_package(ANN)
 find_package(EXPAT)
+find_package(LTDL)
 find_package(ZLIB)
 
-# Find DLLs on Windows
 if (WIN32)
-    find_file(EXPAT_RUNTIME_LIBRARY NAMES libexpat.dll expat.dll)
-    find_file(ZLIB_RUNTIME_LIBRARY NAMES zlib1.dll zlib.dll)
+    # Find Windows specific dependencies
+    find_package(RxSpencer REQUIRED)
+
+    # Find DLLs on Windows
+    find_file(EXPAT_RUNTIME_LIBRARIES NAMES libexpat.dll expat.dll)
+    find_file(ZLIB_RUNTIME_LIBRARIES NAMES zlib1.dll zlib.dll)
 endif()
 
 # ============================ Set Graphviz version ============================
@@ -88,6 +100,7 @@ if(NOT git_result EQUAL 0)
 endif()
 
 set(GRAPHVIZ_VERSION_FULL "${GRAPHVIZ_VERSION_MAJROR}.${GRAPHVIZ_VERSION_MINOR}.${GRAPHVIZ_VERSION_BUILD}")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/builddate.h "#define BUILDDATE \"${GRAPHVIZ_VERSION_BUILD}\"")
 
 message(STATUS "Graphviz version: ${GRAPHVIZ_VERSION_FULL}")
 
@@ -112,6 +125,9 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
     # we suppress this warning.
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /wd4996")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996")
+else()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 endif()
 
 # ============================ Packaging information ===========================
