@@ -49,29 +49,7 @@
 
 #include "SFinternal.h"
 
-#if HAVE_DIRENT_H
 #include <dirent.h>
-#define DIRENT_DONE
-#else
-#define dirent direct
-#  if HAVE_SYS_NDIR_H
-#  include <sys/ndir.h>
-#  define DIRENT_DONE
-#  endif
-#  if HAVE_NDIR_H
-#  include <ndir.h>
-#  define DIRENT_DONE
-#  endif
-#endif
-
-#ifndef DIRENT_DONE
-#if defined (SVR4) || defined (SYSV) || defined (USG) || defined (__osf__) || defined (__svr4__) || defined (__FreeBSD__) || defined (SCO)
-#include <dirent.h>
-#else /* defined (SVR4) || defined (SYSV) || defined (USG) */
-#include <sys/dir.h>
-#define dirent direct
-#endif /* defined (SVR4) || defined (SYSV) || defined (USG) */
-#endif
 
 #include <sys/stat.h>
 

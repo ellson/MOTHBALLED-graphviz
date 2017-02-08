@@ -46,10 +46,6 @@
 /* Define if you have the DevIL library */
 /* #undef HAVE_DEVIL */
 
-/* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
-   */
-#define HAVE_DIRENT_H 1
-
 /* Define to 1 if you have the <dlfcn.h> header file. */
 /* #undef HAVE_DLFCN_H */
 
