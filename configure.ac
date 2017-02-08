@@ -423,7 +423,6 @@ AC_CHECK_HEADERS(malloc.h \
 	sys/time.h sys/types.h sys/select.h \
 	sys/stat.h sys/mman.h sys/vfork.h \
 	sys/ioctl.h sys/inotify.h crt_externs.h)
-AC_HEADER_TIME
 AC_HEADER_DIRENT
 
 # Internationalization macros
