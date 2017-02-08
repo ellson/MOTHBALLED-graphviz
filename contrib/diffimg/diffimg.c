@@ -45,9 +45,7 @@
 #include <sysexits.h>
 #endif
 #include <gd.h>
-#if defined HAVE_STDBOOL_H && ! defined __cplusplus
 #include <stdbool.h>
-#endif
 
 #define NOT(v) (!(v))
 #ifndef false

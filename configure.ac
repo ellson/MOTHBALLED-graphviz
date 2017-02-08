@@ -425,7 +425,6 @@ AC_CHECK_HEADERS(malloc.h \
 	sys/ioctl.h sys/inotify.h crt_externs.h)
 AC_HEADER_TIME
 AC_HEADER_DIRENT
-AC_HEADER_STDBOOL
 
 # Internationalization macros
 # AM_GNU_GETTEXT

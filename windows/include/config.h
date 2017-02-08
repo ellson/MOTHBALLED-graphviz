@@ -213,9 +213,6 @@
 /* Define to 1 if you have the `srand48' function. */
 /* #undef HAVE_SRAND48 */
 
-/* Define to 1 if stdbool.h conforms to C99. */
-//#define HAVE_STDBOOL_H 1
-
 /* Define to 1 if you have the `strcasecmp' function. */
 //#define HAVE_STRCASECMP 1
 
