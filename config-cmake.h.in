@@ -3,12 +3,25 @@
 #define PACKAGE_VERSION "@GRAPHVIZ_VERSION_FULL@"
 
 // Include headers
+#cmakedefine HAVE_CRT_EXTERNS_H
+#cmakedefine HAVE_FCNTL_H
 #cmakedefine HAVE_MALLOC_H
+#cmakedefine HAVE_SEARCH_H
 #cmakedefine HAVE_STAT_H
 #cmakedefine HAVE_STRINGS_H
+#cmakedefine HAVE_SYS_INOTIFY_H
+#cmakedefine HAVE_SYS_IOCTL_H
+#cmakedefine HAVE_SYS_MMAN_H
+#cmakedefine HAVE_SYS_SELECT_H
 #cmakedefine HAVE_SYS_STAT_H
+#cmakedefine HAVE_SYS_TIME_H
 #cmakedefine HAVE_SYS_TYPES_H
+#cmakedefine HAVE_SYS_VFORK_H
+#cmakedefine HAVE_TERMIOS_H
 #cmakedefine HAVE_UNISTD_H
+#cmakedefine HAVE_VFORK_H
+#cmakedefine HAVE_X11_INTRINSIC_H
+#cmakedefine HAVE_X11_XAW_TEXT_H
 
 // Functions
 #cmakedefine HAVE_DRAND48
