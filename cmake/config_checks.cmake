@@ -24,12 +24,17 @@ check_include_file( X11/Xaw/Text.h      HAVE_X11_XAW_TEXT_H     )
 # Function checks
 include(CheckFunctionExists)
 
+check_function_exists( _NSGetEnviron    HAVE__NSGETENVIRON  )
 check_function_exists( drand48          HAVE_DRAND48        )
 check_function_exists( cbrt             HAVE_CBRT           )
 check_function_exists( getpagesize      HAVE_GETPAGESIZE    )
+check_function_exists( getenv           HAVE_GETENV         )
+check_function_exists( lrand48          HAVE_LRAND48        )
 check_function_exists( mallinfo         HAVE_MALLINFO       )
 check_function_exists( mallopt          HAVE_MALLOPT        )
 check_function_exists( mstats           HAVE_MSTATS         )
+check_function_exists( setenv           HAVE_SETENV         )
+check_function_exists( setmode          HAVE_SETMODE        )
 check_function_exists( sincos           HAVE_SINCOS         )
 check_function_exists( srand48          HAVE_SRAND48        )
 check_function_exists( strcasecmp       HAVE_STRCASECMP     )
@@ -55,6 +60,14 @@ if (LTDL_FOUND)
 endif()
 
 # Values
+if (WIN32)
+    set(BROWSER start)
+elseif (APPLE)
+    set(BROWSER open)
+else ()
+    set(BROWSER xdg-open)
+endif ()
+
 set(DEFAULT_DPI 96)
 
 # Write check results to config.h header

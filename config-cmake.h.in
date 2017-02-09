@@ -1,7 +1,3 @@
-// Values
-#define GVPLUGIN_CONFIG_FILE "@GVPLUGIN_CONFIG_FILE@"
-#define PACKAGE_VERSION "@GRAPHVIZ_VERSION_FULL@"
-
 // Include headers
 #cmakedefine HAVE_CRT_EXTERNS_H
 #cmakedefine HAVE_FCNTL_H
@@ -24,12 +20,17 @@
 #cmakedefine HAVE_X11_XAW_TEXT_H
 
 // Functions
+#cmakedefine HAVE__NSGETENVIRON
 #cmakedefine HAVE_DRAND48
 #cmakedefine HAVE_CBRT
 #cmakedefine HAVE_GETPAGESIZE
+#cmakedefine HAVE_GETENV
+#cmakedefine HAVE_LRAND48
 #cmakedefine HAVE_MALLINFO
 #cmakedefine HAVE_MALLOPT
 #cmakedefine HAVE_MSTATS
+#cmakedefine HAVE_SETENV
+#cmakedefine HAVE_SETMODE
 #cmakedefine HAVE_SINCOS
 #cmakedefine HAVE_SRAND48
 #cmakedefine HAVE_STRCASECMP
@@ -51,4 +52,7 @@ typedef int ssize_t;
 #cmakedefine HAVE_ZLIB
 
 // Values
+#define BROWSER "@BROWSER@"
 #define DEFAULT_DPI @DEFAULT_DPI@
+#define GVPLUGIN_CONFIG_FILE "@GVPLUGIN_CONFIG_FILE@"
+#define PACKAGE_VERSION "@GRAPHVIZ_VERSION_FULL@"
