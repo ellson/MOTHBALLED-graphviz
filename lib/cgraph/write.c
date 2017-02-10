@@ -451,7 +451,10 @@ static int write_edge_name(Agedge_t * e, iochan_t * ofile, int terminate)
     p = agnameof(e);
     g = agraphof(e);
     if (NOT(EMPTY(p))) {
-	CHKRV(ioput(g, ofile, " [key="));
+	if (!terminate) {
+	    Level++;
+	}
+	CHKRV(ioput(g, ofile, "\t[key="));
 	CHKRV(write_canonstr(g, ofile, p));
 	if (terminate)
 	    CHKRV(ioput(g, ofile, "]"));
@@ -489,8 +492,7 @@ static int write_nondefault_attrs(void *obj, iochan_t * ofile,
 	    }
 	    if (data->str[sym->id] != sym->defval) {
 		if (cnt++ == 0) {
-		    CHKRV(indent(g, ofile));
-		    CHKRV(ioput(g, ofile, " ["));
+		    CHKRV(ioput(g, ofile, "\t["));
 		    Level++;
 		} else {
 		    CHKRV(ioput(g, ofile, ",\n"));
