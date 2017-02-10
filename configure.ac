@@ -3040,11 +3040,6 @@ fi
 rm -f conftest*
 
 # -----------------------------------------------------------------------
-AC_CHECK_SIZEOF([long long])
-AC_CHECK_SIZEOF([int])
-SIZEOF_INT_BITS=$(( $ac_cv_sizeof_int * 8 ))
-AC_SUBST([SIZEOF_INT_BITS])
-# -----------------------------------------------------------------------
 
 # This is a historical artifact ... there are no other choices these days
 # This #define is never used in our sources,
