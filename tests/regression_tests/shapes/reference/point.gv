@@ -1,7 +1,7 @@
 graph G {
 	graph [bb="0,0,3.6,3.6"];
 	node [label="\N"];
-	a	 [height=0.05,
+	a	[height=0.05,
 		label="",
 		pos="1.8,1.8",
 		shape=point,
