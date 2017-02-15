@@ -326,6 +326,9 @@ of the layout programs.
  <TR><TD><A NAME=a:mosek HREF=#d:mosek>mosek</A>
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>neato only</TD> </TR>
+ <TR><TD><A NAME=a:newrank HREF=#d:newrank>newrank</A>
+</TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
+</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:nodesep HREF=#d:nodesep>nodesep</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.25</TD><TD>0.02</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:nojustify HREF=#d:nojustify>nojustify</A>
@@ -1325,6 +1328,17 @@ of the layout programs.
 <DT><A NAME=d:mosek HREF=#a:mosek><STRONG>mosek</STRONG></A>
 <DD>  If Graphviz is built with MOSEK defined, mode=ipsep and mosek=true,
   the Mosek software (www.mosek.com) is use to solve the ipsep constraints.
+
+<DT><A NAME=d:newrank HREF=#a:newrank><STRONG>newrank</STRONG></A>
+<DD>  The original ranking algorithm in dot is recursive on clusters. This can produce fewer ranks
+  and a more compact layout, but sometimes at the cost of a head node being place on a higher
+  rank than the tail node. It also assumes that a node is not constrained in separate, 
+  incompatible subgraphs. For example, a node cannot be in a cluster and also be constrained by
+  <TT>rank=same</TT> with a node not in the cluster.
+  <P>
+  If <TT>newrank=true</TT>, the ranking algorithm does a single global ranking, ignoring clusters.
+  This allows nodes to be subject to multiple constraints. Rank constraints will usually take
+  precedence over edge constraints.
 
 <DT><A NAME=d:nodesep HREF=#a:nodesep><STRONG>nodesep</STRONG></A>
 <DD>  In dot, this specifies the minimum space between two adjacent nodes in the same rank, in inches.
