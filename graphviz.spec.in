@@ -292,6 +292,10 @@ When used alone, this is intended for mimimalist web-server apps with no X11 on 
 %dir %{_datadir}/graphviz
 %{_datadir}/graphviz/gvpr/*
 
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config6
+%post
+LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
+
 #-- graphviz-libs rpm --------------------------------------------------
 %package libs
 Group:            Applications/Multimedia
@@ -321,14 +325,14 @@ Requires:         %{name} = %{version}-%{release}
 %description plugins-core
 Graphviz plugins - core layout engines and text renderers
 
-# run "dot -c" to generate plugin config in {_libdir}/graphviz/config
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config6
 %post
 LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
 # if there is no dot after everything else is done, then remove config
 %postun
 if [ $1 -eq 0 ]; then
-        rm -f $RPM_INSTALL_PREFIX0/%{_lib}/graphviz/config || :
+        rm -f $RPM_INSTALL_PREFIX0/%{_lib}/graphviz/config6 || :
 fi
 
 %files plugins-core
@@ -381,7 +385,7 @@ Requires:         %{name} = %{version}-%{release}
 %description plugins-x
 Graphviz plugins that depend on x11 - most installations will want this.
 
-# run "dot -c" to generate plugin config in {_libdir}/graphviz/config
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config6
 %post plugins-x
 LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
@@ -447,7 +451,7 @@ to use GIF, you are recommended to use the PNG format instead because
 of the better quality anti-aliased lines provided by the cairo+pango
 based renderer.)
 
-# run "dot -c" to generate plugin config in {_libdir}/graphviz/config
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config6
 %post plugins-gd
 LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
@@ -470,7 +474,7 @@ Obsoletes:        %{name}-webp
 %description plugins-webp
 Graphviz plugin for webp image rendering. 
 
-# run "dot -c" to generate plugin config in {_libdir}/graphviz/config
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config6
 %post plugins-webp
 LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
@@ -496,7 +500,7 @@ Graphviz plugin for renderers based on DevIL.  (Unless you absolutely have
 to use BMP, TIF, or TGA, you are recommended to use the PNG format instead
 supported directly by the cairo+pango based renderer in the base graphviz rpm.)
 
-# run "dot -c" to generate plugin config in {_libdir}/graphviz/config
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config6
 %post plugins-devil
 LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
@@ -520,7 +524,7 @@ Obsoletes:        %{name}-ming
 %description plugins-ming
 Graphviz plugin for -Tswf (flash) renderer based on ming.
 
-# run "dot -c" to generate plugin config in {_libdir}/graphviz/config
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config6
 %post plugins-ming
 LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
