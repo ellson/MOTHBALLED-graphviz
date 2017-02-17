@@ -320,7 +320,7 @@ Graphviz core libs
 %package plugins-core
 Group:            Applications/Multimedia
 Summary:          Graphviz plugins - core layout engines and text renderers
-Requires:         %{name} = %{version}-%{release}
+Requires:         %{name}-nox = %{version}-%{release}
 
 %description plugins-core
 Graphviz plugins - core layout engines and text renderers
