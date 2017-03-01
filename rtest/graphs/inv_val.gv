@@ -1,4 +1,4 @@
-graph G { imagepath="/home/dperry/work_related/graphviz_repos/graphviz/rtest/imagepath_test/imagepath_dir/"
+graph G { imagepath="imagepath_test/imagepath_dir/"
 
 a[shape=plaintext,label=<<TABLE CELLSPACING="2" CELLPADDING="2" BORDER="0" 
 CELLBORDER="0"><TR><TD><TABLE CELLSPACING="3" CELLPADDING="1" BORDER="0" 

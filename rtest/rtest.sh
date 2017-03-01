@@ -5,8 +5,6 @@
 # Also relies on strps.awk.
 #
 # TODO:
-#  Fix to allow multiple test data sets depending
-# on architecture, etc. Maintain common ones in REFDIR.
 #  Report differences with shared version and with new output.
 
 # bsh, linux-ksh filter
@@ -25,12 +23,11 @@ TESTFILE=tests.txt     # Test specifications
 GRAPHDIR=graphs        # Directory of input graphs and data
 OUTDIR=ndata           # Directory for test output
 OUTHTML=nhtml          # Directory for html test report
-REFDIR=nshare          # Directory for expected test output
+REFDIR=${REFDIR-""}    # Directory for expected test output
 GENERATE=              # If set, generate test data
 VERBOSE=               # If set, give verbose output
 NOOP=                  # If set, just print list of tests
-DOT=../cmd/dot/dot # build tree version with a builtin set of plugins
-		       # should be $(top_builddir)/cmd/dot/dot_static
+DOT=${DOT-$(whence dot)} # should be $(top_builddir)/cmd/dot/dot_static
 DIFFIMG=../contrib/diffimg/diffimg # build tree version
 
 TESTNAME=   # name of test
@@ -316,6 +313,24 @@ Usage='rtest [-gvn] [TESTFILE]\n
  -v : verbose\n
  -n : print test'
 
+# Set REFDIR
+if [[ ! "$REFDIR" ]]
+then
+  SYSTYPE=$(uname -s)
+  case "$SYSTYPE" in
+  Linux*)
+    REFDIR=linux.x86
+    ;;
+  Darwin*)
+    REFDIR=macosx
+    ;;
+  *)
+    print "Unrecognized system \"$SYSTYPE\""
+    REFDIR=nshare
+    ;;
+  esac
+fi
+
 while getopts :gnv c
 do
   case $c in
@@ -383,6 +398,11 @@ then
 fi
 rm -f $OUTHTML/*
 
+if [[ ! "$DOT" ]]
+then
+  print -u 2 "Could not find a value for DOT"
+  exit
+fi
 if [[ ! -x $DOT ]]
 then
   print -u 2 "$DOT program is not executable"
