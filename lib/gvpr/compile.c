@@ -1501,6 +1501,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		v.integer = -1;
 	    break;
 	default:
+		v.integer = -1;
 	    exerror("unknown function call: %s", sym->name);
 	}
 	return v;

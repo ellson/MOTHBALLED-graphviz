@@ -1285,7 +1285,7 @@ int colorxlate(char *str, gvcolor_t * color, color_type_t target_type)
  */
 char *colorx (Expr_t* ex, char* incolor, char* fmt, Sfio_t* fp)
 {
-    gvcolor_t color = {0};
+    gvcolor_t color = {{{0}},0};
     color_type_t type;
     int rc;
     int alpha;
