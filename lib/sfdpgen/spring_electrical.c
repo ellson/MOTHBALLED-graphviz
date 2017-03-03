@@ -99,7 +99,7 @@ void spring_electrical_control_print(spring_electrical_control ctrl){
   fprintf (stderr, "  beautify_leaves %d node weights %d rotation %.03f\n",
     ctrl->beautify_leaves, ctrl->use_node_weights, ctrl->rotation);
   fprintf (stderr, "  smoothing %s overlap %d initial_scaling %.03f do_shrinking %d\n",
-    smoothings[ctrl->smoothing], ctrl->overlap, ctrl->do_shrinking, ctrl->initial_scaling);
+    smoothings[ctrl->smoothing], ctrl->overlap, ctrl->initial_scaling, ctrl->do_shrinking);
   fprintf (stderr, "  octree scheme %s method %s\n", tschemes[ctrl->tscheme], methods[ctrl->method]);
   fprintf (stderr, "  edge_labeling_scheme %d\n", ctrl->edge_labeling_scheme);
 }
