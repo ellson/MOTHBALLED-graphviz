@@ -404,7 +404,7 @@ char *el(GVJ_t* job, char *template, ...)
 
 static char *pov_color_as_str(GVJ_t * job, gvcolor_t color, float transparency)
 {
-	char *pov, *c;
+	char *pov, *c = NULL;
 	switch (color.type) {
 	case COLOR_STRING:
 #ifdef DEBUG
