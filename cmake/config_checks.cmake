@@ -61,11 +61,37 @@ endif()
 
 # Values
 if (WIN32)
-    set(BROWSER start)
+
+    set( BROWSER            start                                   )
+    set( DEFAULT_FONTPATH   "C:/Windows/Fonts"                      )
+
 elseif (APPLE)
-    set(BROWSER open)
+
+    set( BROWSER            open                                    )
+    set( DEFAULT_FONTPATH   "~/Library/Fonts:/Library/Fonts:"
+                            "/Network/Library/Fonts:"
+                            "/System/Library/Fonts"                 )
+    set( DARWIN             1                                       )
+    set( DARWIN_DYLIB       1                                       )
+
 else ()
-    set(BROWSER xdg-open)
+
+    set( BROWSER            xdg-open                                )
+    set( DEFAULT_FONTPATH   "/usr/share/fonts/sun/TrueType:"
+                            "/usr/share/fonts/TrueType:"
+                            "/usr/X11/lib/X11/fonts/TrueType:"
+                            "/usr/share/fonts/sun/Type1:"
+                            "/usr/openwin/lib/X11/fonts/Type1:"
+                            "/usr/share/fonts/X11/Type1:"
+                            "/usr/share/fonts/default/Type1:"
+                            "/usr/X11R6/lib/X11/fonts/TrueType:"
+                            "/usr/X11R6/lib/X11/fonts/truetype:"
+                            "/usr/X11R6/lib/X11/fonts/TTF:"
+                            "/usr/share/fonts/truetype:"
+                            "/usr/openwin/lib/X11/fonts/TrueType:"
+                            "/usr/X11R6/lib/X11/fonts/Type1:"
+                            "/usr/common/share/fonts/ttf"           )
+
 endif ()
 
 set(DEFAULT_DPI 96)

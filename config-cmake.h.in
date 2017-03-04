@@ -54,5 +54,10 @@ typedef int ssize_t;
 // Values
 #define BROWSER "@BROWSER@"
 #define DEFAULT_DPI @DEFAULT_DPI@
+#define DEFAULT_FONTPATH "@DEFAULT_FONTPATH@"
 #define GVPLUGIN_CONFIG_FILE "@GVPLUGIN_CONFIG_FILE@"
 #define PACKAGE_VERSION "@GRAPHVIZ_VERSION_FULL@"
+
+// Conditional values
+#cmakedefine DARWIN
+#cmakedefine DARWIN_DYLIB
