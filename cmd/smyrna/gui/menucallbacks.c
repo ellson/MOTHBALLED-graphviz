@@ -99,15 +99,12 @@ void mQuitSlot(GtkWidget * widget, gpointer user_data)
 int show_close_nosavedlg(void)
 {
     GtkWidget *dialog;
-    char buf[512];
     int rv;			/*return value */
-    sprintf(buf,
-	    "%s has been modified. Do you want to save it before closing?",
-	    view->Topview->Graphdata.GraphFileName);
     dialog =
 	gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL,
 			       GTK_MESSAGE_QUESTION, GTK_BUTTONS_NONE,
-			       buf);
+			       "%s has been modified. Do you want to save it before closing?",
+                               view->Topview->Graphdata.GraphFileName);
 
     gtk_window_set_title(GTK_WINDOW(dialog), "Smyrna Warning");
     gtk_dialog_add_button((GtkDialog *) dialog, "Yes", 0);
