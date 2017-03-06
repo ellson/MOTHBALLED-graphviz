@@ -135,6 +135,8 @@ gvContext
 gvcVersion    
 GvExitOnUsage
 Gvfilepath    
+gvCloneGVC
+gvFreeCloneGVC
 gvFreeContext    
 gvFreeLayout    
 gvLayout    

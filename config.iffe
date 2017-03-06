@@ -20,7 +20,6 @@ lib sincos
 lib strcasecmp
 lib strncasecmp
 
-hdr dirent
 hdr dlfcn
 hdr errno
 hdr fenv

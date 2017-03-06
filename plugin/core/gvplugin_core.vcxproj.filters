@@ -53,6 +53,9 @@
     <ClCompile Include="gvrender_core_vml.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="gvrender_core_json.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="gvplugin_core.def">

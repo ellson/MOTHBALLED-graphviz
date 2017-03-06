@@ -120,7 +120,7 @@ void PrintRect(Rect_t * r)
 | Calculate the n-dimensional area of a rectangle
 -----------------------------------------------------------------------------*/
 
-#if SIZEOF_LONG_LONG > SIZEOF_INT
+#if LLONG_MAX > UINT_MAX
 unsigned int RectArea(Rect_t * r)
 {
   register int i;
@@ -168,7 +168,7 @@ unsigned int RectArea(Rect_t * r)
     }
     return area;
 }
-#endif /*SIZEOF_LONG_LONG > SIZEOF_INT*/
+#endif /*LLONG_MAX > UINT_MAX*/
 #if 0 /*original code*/
 int RectArea(Rect_t * r)
 {

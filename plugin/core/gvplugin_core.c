@@ -16,14 +16,10 @@
 extern gvplugin_installed_t gvdevice_dot_types[];
 extern gvplugin_installed_t gvdevice_fig_types[];
 extern gvplugin_installed_t gvdevice_map_types[];
-#if !defined(_WIN32)
 extern gvplugin_installed_t gvdevice_mp_types[];
-#endif
 extern gvplugin_installed_t gvdevice_ps_types[];
 extern gvplugin_installed_t gvdevice_svg_types[];
-#if !defined(_WIN32)
 extern gvplugin_installed_t gvdevice_json_types[];
-#endif
 extern gvplugin_installed_t gvdevice_tk_types[];
 extern gvplugin_installed_t gvdevice_vml_types[];
 extern gvplugin_installed_t gvdevice_pic_types[];
@@ -32,14 +28,10 @@ extern gvplugin_installed_t gvdevice_pov_types[];
 extern gvplugin_installed_t gvrender_dot_types[];
 extern gvplugin_installed_t gvrender_fig_types[];
 extern gvplugin_installed_t gvrender_map_types[];
-#if !defined(_WIN32)
 extern gvplugin_installed_t gvrender_mp_types[];
-#endif
 extern gvplugin_installed_t gvrender_ps_types[];
 extern gvplugin_installed_t gvrender_svg_types[];
-#if !defined(_WIN32)
 extern gvplugin_installed_t gvrender_json_types[];
-#endif
 extern gvplugin_installed_t gvrender_tk_types[];
 extern gvplugin_installed_t gvrender_vml_types[];
 extern gvplugin_installed_t gvrender_pic_types[];

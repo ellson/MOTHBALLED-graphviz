@@ -68,6 +68,4 @@ deploy:
 
 notifications:
   email:
-    recipients:
-      - john.ellson@comcast.net
     on_success: always

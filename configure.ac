@@ -423,9 +423,6 @@ AC_CHECK_HEADERS(malloc.h \
 	sys/time.h sys/types.h sys/select.h \
 	sys/stat.h sys/mman.h sys/vfork.h \
 	sys/ioctl.h sys/inotify.h crt_externs.h)
-AC_HEADER_TIME
-AC_HEADER_DIRENT
-AC_HEADER_STDBOOL
 
 # Internationalization macros
 # AM_GNU_GETTEXT
@@ -3042,11 +3039,6 @@ else
 fi
 rm -f conftest*
 
-# -----------------------------------------------------------------------
-AC_CHECK_SIZEOF([long long])
-AC_CHECK_SIZEOF([int])
-SIZEOF_INT_BITS=$(( $ac_cv_sizeof_int * 8 ))
-AC_SUBST([SIZEOF_INT_BITS])
 # -----------------------------------------------------------------------
 
 # This is a historical artifact ... there are no other choices these days

@@ -46,10 +46,6 @@
 /* Define if you have the DevIL library */
 /* #undef HAVE_DEVIL */
 
-/* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
-   */
-#define HAVE_DIRENT_H 1
-
 /* Define to 1 if you have the <dlfcn.h> header file. */
 /* #undef HAVE_DLFCN_H */
 
@@ -213,9 +209,6 @@
 /* Define to 1 if you have the `srand48' function. */
 /* #undef HAVE_SRAND48 */
 
-/* Define to 1 if stdbool.h conforms to C99. */
-//#define HAVE_STDBOOL_H 1
-
 /* Define to 1 if you have the `strcasecmp' function. */
 //#define HAVE_STRCASECMP 1
 
@@ -341,9 +334,6 @@
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
-
-/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
-#define TIME_WITH_SYS_TIME 1
 
 /* Define if you want CGRAPH */
 #define WITH_CGRAPH 1
