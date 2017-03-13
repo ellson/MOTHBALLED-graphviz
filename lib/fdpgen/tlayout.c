@@ -593,17 +593,17 @@ static pointf initPositions(graph_t * g, bport_t * pp)
 		if (cnt > 1) {
 		    ND_pos(np)[0] = p.x;
 		    ND_pos(np)[1] = p.y;
-/* fprintf (stderr, "%s 1 (%g,%g)\n", np->name, p.x, p.y); */
+/* fprintf (stderr, "%s 1 (%g,%g)\n", agnameof(np), p.x, p.y); */
 		} else if (cnt == 1) {
 		    ND_pos(np)[0] = 0.98 * p.x + 0.1 * ctr.x;
 		    ND_pos(np)[1] = 0.9 * p.y + 0.1 * ctr.y;
-/* fprintf (stderr, "%s %d (%g,%g)\n", np->name, cnt, ND_pos(np)[0], ND_pos(np)[1]); */
+/* fprintf (stderr, "%s %d (%g,%g)\n", agnameof(np), cnt, ND_pos(np)[0], ND_pos(np)[1]); */
 		} else {
 		    double angle = PItimes2 * drand48();
 		    double radius = 0.9 * drand48();
 		    ND_pos(np)[0] = radius * T_Wd * cos(angle);
 		    ND_pos(np)[1] = radius * T_Ht * sin(angle);
-/* fprintf (stderr, "%s 0 (%g,%g)\n", np->name, ND_pos(np)[0], ND_pos(np)[1]); */
+/* fprintf (stderr, "%s 0 (%g,%g)\n", agnameof(np), ND_pos(np)[0], ND_pos(np)[1]); */
 		}
 		ND_pinned(np) = P_SET;
 	    }
