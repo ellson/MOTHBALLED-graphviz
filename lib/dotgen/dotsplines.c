@@ -231,7 +231,8 @@ setEdgeLabelPos (graph_t * g)
 	if (ND_node_type(n) == VIRTUAL) {
 	    if (ND_alg(n)) {   // label of non-adjacent flat edge
 		edge_t* fe = (edge_t*)ND_alg(n);
-		assert ((l = ED_label(fe)));
+		l = ED_label(fe);
+		assert (l);
 		l->pos = ND_coord(n);
 		l->set = TRUE;
 	    }
