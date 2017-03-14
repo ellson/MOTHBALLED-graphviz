@@ -136,3 +136,4 @@ include(CPack)
 
 # ======================= Specify subdirectories to build ======================
 add_subdirectory(lib)
+add_subdirectory(plugin)
