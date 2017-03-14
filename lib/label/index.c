@@ -432,7 +432,7 @@ RTreeDelete2(RTree_t * rtp, Rect_t * r, void *data, Node_t * n,
     register int i;
 
     assert(r && n && ee);
-    assert(data >= 0);
+    assert(data);
     assert(n->level >= 0);
 
     if (rtp->StatFlag)
