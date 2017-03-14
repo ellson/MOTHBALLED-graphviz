@@ -36,7 +36,7 @@ extern "C" {
     extern void edgeinit(void);
     extern void endpoint(Edge *, int, Site *);
     extern void clip_line(Edge * e);
-    extern Edge *bisect(Site *, Site *);
+    extern Edge *gvbisect(Site *, Site *);
 
 #endif
 

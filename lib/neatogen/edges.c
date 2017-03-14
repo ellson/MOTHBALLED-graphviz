@@ -29,7 +29,7 @@ void edgeinit()
     nedges = 0;
 }
 
-Edge *bisect(Site * s1, Site * s2)
+Edge *gvbisect(Site * s1, Site * s2)
 {
     double dx, dy, adx, ady;
     Edge *newedge;

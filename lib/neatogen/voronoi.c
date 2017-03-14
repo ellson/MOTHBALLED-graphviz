@@ -56,7 +56,7 @@ void voronoi(int triangulate, Site * (*nextsite) (void))
 	    lbnd = ELleftbnd(&(newsite->coord));
 	    rbnd = ELright(lbnd);
 	    bot = rightreg(lbnd);
-	    e = bisect(bot, newsite);
+	    e = gvbisect(bot, newsite);
 	    bisector = HEcreate(e, le);
 	    ELinsert(lbnd, bisector);
 	    if ((p = hintersect(lbnd, bisector)) != (struct Site *) NULL) {
@@ -94,7 +94,7 @@ void voronoi(int triangulate, Site * (*nextsite) (void))
 		top = temp;
 		pm = re;
 	    }
-	    e = bisect(bot, top);
+	    e = gvbisect(bot, top);
 	    bisector = HEcreate(e, pm);
 	    ELinsert(llbnd, bisector);
 	    endpoint(e, re - pm, v);
