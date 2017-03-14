@@ -131,7 +131,8 @@ void dot_position(graph_t * g, aspect_t* asp)
     create_aux_edges(g);
     if (rank(g, 2, nsiter2(g))) { /* LR balance == 2 */
 	connectGraph (g);
-	assert(rank(g, 2, nsiter2(g)) == 0);
+	const int rank_result = rank(g, 2, nsiter2(g));
+	assert(rank_result == 0);
     }
     set_xcoords(g);
     set_aspect(g, asp);
