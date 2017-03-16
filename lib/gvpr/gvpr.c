@@ -800,7 +800,7 @@ static int traverse(Gpr_t * state, Expr_t* prog, comp_block * bp, int cleanup)
 	break;
     case TV_postrev:
 	if (cleanup) doCleanup (state->curgraph);
-	REVfns.visit = POST_VISIT | PRE_VISIT;
+	REVfns.visit = POST_VISIT;
 	travDFS(state, prog, bp, &REVfns);
 	cleanup = 1;
 	break;
@@ -818,7 +818,7 @@ static int traverse(Gpr_t * state, Expr_t* prog, comp_block * bp, int cleanup)
 	break;
     case TV_prepostrev:
 	if (cleanup) doCleanup (state->curgraph);
-	REVfns.visit = POST_VISIT;
+	REVfns.visit = POST_VISIT | PRE_VISIT;
 	travDFS(state, prog, bp, &REVfns);
 	cleanup = 1;
 	break;
