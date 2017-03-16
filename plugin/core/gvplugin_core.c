@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -80,7 +80,7 @@ static gvplugin_api_t apis[] = {
     {(api_t)0, 0},
 };
 
-#ifdef WIN32_DLL
+#ifdef _WIN32
 #ifndef GVPLUGIN_CORE_EXPORTS
 __declspec(dllimport) gvplugin_library_t gvplugin_core_LTX_library = { "core", apis };
 #else
@@ -90,12 +90,10 @@ __declspec(dllexport) gvplugin_library_t gvplugin_core_LTX_library = { "core", a
 
 
 
-#ifndef WIN32_DLL
+#ifndef _WIN32
 #ifdef GVDLL
 __declspec(dllexport) gvplugin_library_t gvplugin_core_LTX_library = { "core", apis };
 #else
 gvplugin_library_t gvplugin_core_LTX_library = { "core", apis };
 #endif
 #endif
-
-
