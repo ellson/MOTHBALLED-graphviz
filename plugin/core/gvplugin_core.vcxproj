@@ -111,6 +111,7 @@
     <ClCompile Include="gvrender_core_fig.c" />
     <ClCompile Include="gvrender_core_json.c" />
     <ClCompile Include="gvrender_core_map.c" />
+    <ClCompile Include="gvrender_core_mp.c" />
     <ClCompile Include="gvrender_core_pic.c" />
     <ClCompile Include="gvrender_core_pov.c" />
     <ClCompile Include="gvrender_core_ps.c" />
