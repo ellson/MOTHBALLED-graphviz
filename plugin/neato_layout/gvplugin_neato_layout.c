@@ -20,17 +20,11 @@ static gvplugin_api_t apis[] = {
     {(api_t)0, 0},
 };
 
-#ifdef WIN32_DLL /*visual studio*/
-#ifndef GVPLUGIN_NEATO_LAYOUT_EXPORTS
-__declspec(dllimport) gvplugin_library_t gvplugin_neato_layout_LTX_library = { "neato_layout", apis };
+#ifdef _WIN32
+#   define GVPLUGIN_NEATO_LAYOUT_API __declspec(dllexport)
 #else
-__declspec(dllexport) gvplugin_library_t gvplugin_neato_layout_LTX_library = { "neato_layout", apis };
+#   define GVPLUGIN_NEATO_LAYOUT_API
 #endif
-#else /*end visual studio*/
-#ifdef GVDLL
-__declspec(dllexport) gvplugin_library_t gvplugin_neato_layout_LTX_library = { "neato_layout", apis };
-#else
-gvplugin_library_t gvplugin_neato_layout_LTX_library = { "neato_layout", apis };
-#endif
-#endif
+
+GVPLUGIN_NEATO_LAYOUT_API gvplugin_library_t gvplugin_neato_layout_LTX_library = { "neato_layout", apis };
 

@@ -42,9 +42,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="gvplugin_gdiplus.def">
-      <Filter>Source Files</Filter>
-    </None>
-  </ItemGroup>
 </Project>

@@ -34,9 +34,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="gvplugin_gd.def">
-      <Filter>Source Files</Filter>
-    </None>
-  </ItemGroup>
 </Project>
