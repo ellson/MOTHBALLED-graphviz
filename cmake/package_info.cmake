@@ -1,0 +1,11 @@
+set(CPACK_PACKAGE_NAME                  ${PROJECT_NAME}                 )
+SET(CPACK_PACKAGE_VERSION_MAJOR         ${GRAPHVIZ_VERSION_MAJOR}       )
+SET(CPACK_PACKAGE_VERSION_MINOR         ${GRAPHVIZ_VERSION_MINOR}       )
+SET(CPACK_PACKAGE_VERSION_PATCH         ${GRAPHVIZ_VERSION_BUILD}       )
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY   "Graph Visualization Tools"     )
+set(CPACK_PACKAGE_VENDOR                Graphviz                        )
+set(CPACK_PACKAGE_CONTACT               http://www.graphviz.org/        )
+set(CPACK_RESOURCE_FILE_LICENSE         "${TOP_SOURCE_DIR}/LICENSE"     )
+set(CPACK_RESOURCE_FILE_README          "${TOP_SOURCE_DIR}/README.md"   )
+
+set(CPACK_GENERATOR ZIP)

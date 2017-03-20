@@ -81,7 +81,7 @@ if (WIN32)
 endif()
 
 # ============================ Set Graphviz version ============================
-set(GRAPHVIZ_VERSION_MAJROR 2)
+set(GRAPHVIZ_VERSION_MAJOR 2)
 set(GRAPHVIZ_VERSION_MINOR 41)
 
 # Set GRAPHVIZ_VERSION_BUILD to time of last commit, or to 0 if that fails.
@@ -99,7 +99,7 @@ if(NOT git_result EQUAL 0)
     set(GRAPHVIZ_VERSION_BUILD 0)
 endif()
 
-set(GRAPHVIZ_VERSION_FULL "${GRAPHVIZ_VERSION_MAJROR}.${GRAPHVIZ_VERSION_MINOR}.${GRAPHVIZ_VERSION_BUILD}")
+set(GRAPHVIZ_VERSION_FULL "${GRAPHVIZ_VERSION_MAJOR}.${GRAPHVIZ_VERSION_MINOR}.${GRAPHVIZ_VERSION_BUILD}")
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/builddate.h "#define BUILDDATE \"${GRAPHVIZ_VERSION_BUILD}\"")
 
 message(STATUS "Graphviz version: ${GRAPHVIZ_VERSION_FULL}")
@@ -131,7 +131,7 @@ else()
 endif()
 
 # ============================ Packaging information ===========================
-set(CPACK_GENERATOR ZIP)
+include(package_info)
 include(CPack)
 
 # ======================= Specify subdirectories to build ======================
