@@ -481,6 +481,8 @@ static void svg_textspan(GVJ_t * job, pointf p, textspan_t * span)
 	gvprintf(job, " fill=\"#%02x%02x%02x\"",
 		 obj->pencolor.u.rgba[0], obj->pencolor.u.rgba[1],
 		 obj->pencolor.u.rgba[2]);
+	if (obj->pencolor.u.rgba[3] > 0 && obj->pencolor.u.rgba[3] < 255)
+	    gvprintf(job, " fill-opacity=\"%f\"", ((float) obj->pencolor.u.rgba[3] / 255.0));
 	break;
     default:
 	assert(0);		/* internal error */
