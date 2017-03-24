@@ -10,7 +10,7 @@ option(with_sfdp       "sfdp layout engine." ON )
 option(with_smyrna     "SMYRNA large graph viewer (disabled by default - experimental)" OFF)
 
 if (enable_ltdl)
-    add_definitions(-DENABLE_LTDL)
+        add_definitions(-DENABLE_LTDL)
 endif (enable_ltdl)
 
 if (with_digcola)
@@ -138,3 +138,6 @@ include(CPack)
 add_subdirectory(lib)
 add_subdirectory(plugin)
 add_subdirectory(cmd)
+
+enable_testing()
+add_subdirectory(tests)
