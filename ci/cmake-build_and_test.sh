@@ -34,6 +34,10 @@ else
     exit 1
 fi
 
+# Not all platforms include this directory when running ldconfig, the CentOS
+# docker image for example.
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+
 if ldconfig ; then
     echo "'ldconfig' succesfull."
 else
