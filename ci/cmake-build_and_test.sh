@@ -34,6 +34,13 @@ else
     exit 1
 fi
 
+if ldconfig ; then
+    echo "'ldconfig' succesfull."
+else
+    echo "Error: 'ldconfig' failed." >&2
+    exit 1
+fi
+
 if dot -c ; then
     echo "'dot -c' succesfull."
 else
