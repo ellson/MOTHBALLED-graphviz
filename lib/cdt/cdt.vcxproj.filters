@@ -23,11 +23,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="cdt.def">
-      <Filter>Source Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="dtclose.c">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -52,7 +52,6 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;CDT_EXPORTS;WIN32_DLL;_BLD_cdt ;__EXPORT__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
@@ -60,24 +59,24 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <EnablePREfast>true</EnablePREfast>
       <DisableSpecificWarnings>4996;4706</DisableSpecificWarnings>
+      <PreprocessorDefinitions>EXPORT_CDT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
-      <ModuleDefinitionFile>cdt.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;CDT_EXPORTS;WIN32_DLL;_BLD_cdt;__EXPORT__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
       <EnablePREfast>true</EnablePREfast>
       <DisableSpecificWarnings>4996;4706</DisableSpecificWarnings>
+      <PreprocessorDefinitions>EXPORT_CDT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>
@@ -88,15 +87,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
-      <ModuleDefinitionFile>cdt.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="cdt.h" />
     <ClInclude Include="dthdr.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="cdt.def" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dtclose.c" />
