@@ -47,6 +47,7 @@ find_package(Perl REQUIRED)
 # ================== Convenient values for CMake configuration =================
 set(BINARY_INSTALL_DIR      bin)
 set(LIBRARY_INSTALL_DIR     lib)
+set(PLUGIN_INSTALL_DIR      ${LIBRARY_INSTALL_DIR}/graphviz)
 set(HEADER_INSTALL_DIR      include/graphviz)
 set(MAN_INSTALL_DIR         share/man/man3)
 # TODO: Find a way to check for groff and ps2pdf for manpage pdf generation
