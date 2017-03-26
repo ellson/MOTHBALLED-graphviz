@@ -29,7 +29,7 @@ add_custom_command(
 )
 
 
-add_definitions(-DCGRAPH_EXPORTS -DYY_NO_UNISTD_H)
+add_definitions(-DEXPORT_CGRAPH -DEXPORT_AGXBUF -DEXPORT_CGHDR -DYY_NO_UNISTD_H)
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -67,9 +67,6 @@ add_library(cgraph SHARED
     # Generated files
     ${BISON_Grammar_OUTPUTS}
     ${FLEX_Scan_OUTPUTS}
-
-    # Link definition file for Windows
-    cgraph.def
 )
 
 target_link_libraries(cgraph cdt)
