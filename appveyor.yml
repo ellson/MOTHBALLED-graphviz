@@ -1,4 +1,4 @@
-version: 2.38.{build}
+version: 2.41.{build}
 
 image: Visual Studio 2015
 
@@ -22,7 +22,7 @@ install:
   #- cinst ghostscript
 
 before_build:
-# This file is deleted to reduce noise in the build output. Otherwise several 
+# This file is deleted to reduce noise in the build output. Otherwise several
 # "target does not exist and will be ignored" messages are printed.
 - del "C:\Program Files (x86)\MSBuild\14.0\Microsoft.Common.targets\ImportAfter\Xamarin.Common.targets"
 
@@ -34,7 +34,7 @@ build_script:
   ##- SET PATH="%PATH%;C:\Program Files\gs\gs9.19\lib;C:\Program Files\gs\gs9.19\bin;"
   ##- mklink "C:\Program Files\gs\gs9.19\bin\gs" "C:\Program Files\gs\gs9.19\bin\gswin64c.exe"
   - ps: >-
-      cd $env:APPVEYOR_BUILD_FOLDER 
+      cd $env:APPVEYOR_BUILD_FOLDER
 
       if($env:build_system -eq "msbuild") {
         $env:Path += ";" + $env:APPVEYOR_BUILD_FOLDER + "\windows\dependencies\graphviz-build-utilities";
@@ -46,13 +46,13 @@ build_script:
           rm Release\Graphviz\bin\*.ilk;
         }
 
-        # Append build destination to the PATH, configure dot and execute regression tests 
+        # Append build destination to the PATH, configure dot and execute regression tests
         $env:Path += ";" + $env:APPVEYOR_BUILD_FOLDER + "\" + $env:configuration + "\Graphviz\bin";
         dot -c;
         cd tests\regression_tests;
-        ./regression_tests.bat; 
+        ./regression_tests.bat;
       }
-      
+
       if($env:build_system -eq "cmake") {
         $env:Path += ";" + $env:APPVEYOR_BUILD_FOLDER + "\windows\dependencies\graphviz-build-utilities";
         mkdir build;
@@ -63,7 +63,7 @@ build_script:
           cpack;
         }
       }
-      
+
       if ($env:build_system -eq "msys2" -Or $env:compiler -eq "cygwin") {
         $BashPath = ""
 
@@ -83,7 +83,7 @@ build_script:
         Write-Output "Execute ./autogen.sh, which also executes ./configure"
 
         & $BashPath -lc "./autogen.sh"
-        
+
         Write-Output "Execute make"
 
         & $BashPath -lc "make"
