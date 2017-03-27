@@ -21,35 +21,46 @@ before_build:
 - del "C:\Program Files (x86)\MSBuild\14.0\Microsoft.Common.targets\ImportAfter\Xamarin.Common.targets"
 
 build_script:
-  - ps: >-
-      cd $env:APPVEYOR_BUILD_FOLDER
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - set PATH=%PATH%;%APPVEYOR_BUILD_FOLDER%\windows\dependencies\graphviz-build-utilities
 
-      if($env:build_system -eq "msbuild") {
-        $env:Path += ";" + $env:APPVEYOR_BUILD_FOLDER + "\windows\dependencies\graphviz-build-utilities";
-        msbuild /p:Configuration=$env:configuration;
-        if($env:configuration -eq "Release") {
+  # Build
+  - ps: >-
+      if($env:build_system -eq "cmake") {
+        mkdir build;
+        cd build;
+        cmake ..;
+        cmake --build . --config $env:configuration;
+      }
+      elseif($env:build_system -eq "msbuild") {
+        msbuild /p:Configuration=$env:configuration
+      }
+
+  # Package
+  - ps: >-
+      if($env:configuration -eq "Release") {
+        if($env:build_system -eq "cmake") {
+          cpack
+        }
+        elseif($env:build_system -eq "msbuild") {
           rm Release\Graphviz\bin\*.lastcodeanalysissucceeded;
           rm Release\Graphviz\bin\*.iobj;
           rm Release\Graphviz\bin\*.ipdb;
           rm Release\Graphviz\bin\*.ilk;
         }
+      }
 
+  # Test
+  - ps: >-
+      if($env:build_system -eq "cmake") {
+        # No tests yet
+      }
+      elseif($env:build_system -eq "msbuild") {
         # Append build destination to the PATH, configure dot and execute regression tests
         $env:Path += ";" + $env:APPVEYOR_BUILD_FOLDER + "\" + $env:configuration + "\Graphviz\bin";
         dot -c;
         cd tests\regression_tests;
         ./regression_tests.bat;
-      }
-
-      if($env:build_system -eq "cmake") {
-        $env:Path += ";" + $env:APPVEYOR_BUILD_FOLDER + "\windows\dependencies\graphviz-build-utilities";
-        mkdir build;
-        cd build;
-        cmake ..;
-        cmake --build . --config $env:configuration;
-        if($env:configuration -eq "Release") {
-          cpack;
-        }
       }
 
 artifacts:
