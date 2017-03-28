@@ -18,6 +18,16 @@ extern "C" {
 #ifndef         AGXBUF_H
 #define         AGXBUF_H
 
+#ifdef _WIN32
+#   ifdef EXPORT_AGXBUF
+#       define AGXBUF_API __declspec(dllexport)
+#   else
+#       define AGXBUF_API __declspec(dllimport)
+#   endif
+#else
+#   define AGXBUF_API extern
+#endif
+
 /* Extensible buffer:
  *  Malloc'ed memory is never released until agxbfree is called.
  */
@@ -32,33 +42,33 @@ extern "C" {
  * Initializes new agxbuf; caller provides memory.
  * Assume if init is non-null, hint = sizeof(init[])
  */
-    extern void agxbinit(agxbuf * xb, unsigned int hint,
+    AGXBUF_API void agxbinit(agxbuf * xb, unsigned int hint,
 			 unsigned char *init);
 
 /* agxbput_n:
  * Append string s of length n into xb
  */
-    extern size_t agxbput_n(agxbuf * xb, const char *s, size_t n);
+    AGXBUF_API size_t agxbput_n(agxbuf * xb, const char *s, size_t n);
 
 /* agxbput:
  * Append string s into xb
  */
-    extern size_t agxbput(agxbuf * xb, const char *s);
+    AGXBUF_API size_t agxbput(agxbuf * xb, const char *s);
 
 /* agxbfree:
  * Free any malloced resources.
  */
-    extern void agxbfree(agxbuf * xb);
+    AGXBUF_API void agxbfree(agxbuf * xb);
 
 /* agxbpop:
  * Removes last character added, if any.
  */
-    extern int agxbpop(agxbuf * xb);
+    AGXBUF_API int agxbpop(agxbuf * xb);
 
 /* agxbmore:
  * Expand buffer to hold at least ssz more bytes.
  */
-    extern int agxbmore(agxbuf * xb, size_t ssz);
+    AGXBUF_API int agxbmore(agxbuf * xb, size_t ssz);
 
 /* agxbputc:
  * Add character to buffer.

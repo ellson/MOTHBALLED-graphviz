@@ -19,6 +19,16 @@
 #define EXTERN extern
 #endif
 
+#ifdef _WIN32
+#   ifdef EXPORT_CGHDR
+#       define CGHDR_API __declspec(dllexport)
+#   else
+#       define CGHDR_API __declspec(dllimport)
+#   endif
+#else
+#   define CGHDR_API extern
+#endif
+
 #include "config.h"
 
 #include <cgraph.h>
@@ -61,7 +71,7 @@
 
 	/* functional definitions */
 typedef Agobj_t *(*agobjsearchfn_t) (Agraph_t * g, Agobj_t * obj);
-int agapply(Agraph_t * g, Agobj_t * obj, agobjfn_t fn, void *arg,
+CGHDR_API int agapply(Agraph_t * g, Agobj_t * obj, agobjfn_t fn, void *arg,
 	    int preorder);
 
 	/* global variables */
@@ -103,8 +113,8 @@ void *agdictobjmem(Dict_t * dict, void * p, size_t size,
 void agdictobjfree(Dict_t * dict, void * p, Dtdisc_t * disc);
 
 	/* name-value pair operations */
-Agdatadict_t *agdatadict(Agraph_t * g, int cflag);
-Agattr_t *agattrrec(void *obj);
+CGHDR_API Agdatadict_t *agdatadict(Agraph_t * g, int cflag);
+CGHDR_API Agattr_t *agattrrec(void *obj);
 
 void agraphattr_init(Agraph_t * g);
 int agraphattr_delete(Agraph_t * g);
@@ -140,7 +150,7 @@ void agedgesetop(Agraph_t * g, Agedge_t * e, int insertion);
 void agdelnodeimage(Agraph_t * g, Agnode_t * node, void *ignored);
 void agdeledgeimage(Agraph_t * g, Agedge_t * edge, void *ignored);
 void *agrebind0(Agraph_t * g, void *obj);	/* unsafe */
-int agrename(Agobj_t * obj, char *newname);
+CGHDR_API int agrename(Agobj_t * obj, char *newname);
 void agrecclose(Agobj_t * obj);
 
 void agmethod_init(Agraph_t * g, void *obj);

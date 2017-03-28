@@ -59,7 +59,6 @@ if WITH_DARWIN9
 libgvplugin_core_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_core_LTX_library
 endif
 
-EXTRA_DIST = ps.h gvplugin_core.vcxproj* gvplugin_core.def
+EXTRA_DIST = ps.h gvplugin_core.vcxproj*
 
 DISTCLEANFILES = ps.h
-

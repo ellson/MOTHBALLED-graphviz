@@ -16,10 +16,13 @@ extern "C" {
 #include <string.h>
 
 #ifdef _WIN32
-#undef __EXPORT__
-#undef __IMPORT__
-#define __EXPORT__  __declspec (dllexport)
-#define __IMPORT__	__declspec (dllimport)
+#   ifdef EXPORT_CDT
+#       define CDT_API __declspec(dllexport)
+#   else
+#       define CDT_API __declspec(dllimport)
+#   endif
+#else
+#   define CDT_API extern
 #endif
 
 typedef struct _dtlink_s	Dtlink_t;
@@ -158,63 +161,46 @@ struct _dtstat_s
 #define DT_ENDCLOSE	6	/* dtclose() is done			*/
 #define DT_HASHSIZE	7	/* setting hash table size		*/
 
-/* public data */
-#if defined(_BLD_cdt) && defined(__EXPORT__)
-#define extern	__EXPORT__
-#endif
-#if !defined(_BLD_cdt) && defined(__IMPORT__)
-#define extern	__IMPORT__
-#endif
-
-extern Dtmethod_t* 	Dtset;
-extern Dtmethod_t* 	Dtbag;
-extern Dtmethod_t* 	Dtoset;
-extern Dtmethod_t* 	Dtobag;
-extern Dtmethod_t*	Dtlist;
-extern Dtmethod_t*	Dtstack;
-extern Dtmethod_t*	Dtqueue;
-extern Dtmethod_t*	Dtdeque;
+CDT_API Dtmethod_t* 	Dtset;
+CDT_API Dtmethod_t* 	Dtbag;
+CDT_API Dtmethod_t* 	Dtoset;
+CDT_API Dtmethod_t* 	Dtobag;
+CDT_API Dtmethod_t*	Dtlist;
+CDT_API Dtmethod_t*	Dtstack;
+CDT_API Dtmethod_t*	Dtqueue;
+CDT_API Dtmethod_t*	Dtdeque;
 
 /* compatibility stuff; will go away */
 #ifndef KPVDEL
-extern Dtmethod_t*	Dtorder;
-extern Dtmethod_t*	Dttree;
-extern Dtmethod_t*	Dthash;
-extern Dtmethod_t	_Dttree;
-extern Dtmethod_t	_Dthash;
-extern Dtmethod_t	_Dtlist;
-extern Dtmethod_t	_Dtqueue;
-extern Dtmethod_t	_Dtstack;
+CDT_API Dtmethod_t*	Dtorder;
+CDT_API Dtmethod_t*	Dttree;
+CDT_API Dtmethod_t*	Dthash;
+CDT_API Dtmethod_t	_Dttree;
+CDT_API Dtmethod_t	_Dthash;
+CDT_API Dtmethod_t	_Dtlist;
+CDT_API Dtmethod_t	_Dtqueue;
+CDT_API Dtmethod_t	_Dtstack;
 #endif
 
-#undef extern
+CDT_API Dt_t*		dtopen(Dtdisc_t*, Dtmethod_t*);
+CDT_API int		dtclose(Dt_t*);
+CDT_API Dt_t*		dtview(Dt_t*, Dt_t*);
+CDT_API Dtdisc_t*	dtdisc(Dt_t* dt, Dtdisc_t*, int);
+CDT_API Dtmethod_t*	dtmethod(Dt_t*, Dtmethod_t*);
 
-/* public functions */
-#if defined(_BLD_cdt) && defined(__EXPORT__)
-#define extern	__EXPORT__
-#endif
+CDT_API Dtlink_t*	dtflatten(Dt_t*);
+CDT_API Dtlink_t*	dtextract(Dt_t*);
+CDT_API int		dtrestore(Dt_t*, Dtlink_t*);
 
-extern Dt_t*		dtopen(Dtdisc_t*, Dtmethod_t*);
-extern int		dtclose(Dt_t*);
-extern Dt_t*		dtview(Dt_t*, Dt_t*);
-extern Dtdisc_t*	dtdisc(Dt_t* dt, Dtdisc_t*, int);
-extern Dtmethod_t*	dtmethod(Dt_t*, Dtmethod_t*);
+CDT_API int		dttreeset(Dt_t*, int, int);
 
-extern Dtlink_t*	dtflatten(Dt_t*);
-extern Dtlink_t*	dtextract(Dt_t*);
-extern int		dtrestore(Dt_t*, Dtlink_t*);
+CDT_API int		dtwalk(Dt_t*, int(*)(Dt_t*,void*,void*), void*);
 
-extern int		dttreeset(Dt_t*, int, int);
+CDT_API void*		dtrenew(Dt_t*, void*);
 
-extern int		dtwalk(Dt_t*, int(*)(Dt_t*,void*,void*), void*);
-
-extern void*		dtrenew(Dt_t*, void*);
-
-extern int		dtsize(Dt_t*);
-extern int		dtstat(Dt_t*, Dtstat_t*, int);
-extern unsigned int	dtstrhash(unsigned int, void*, int);
-
-#undef extern
+CDT_API int		dtsize(Dt_t*);
+CDT_API int		dtstat(Dt_t*, Dtstat_t*, int);
+CDT_API unsigned int	dtstrhash(unsigned int, void*, int);
 
 /* internal functions for translating among holder, object and key */
 #define _DT(dt)		((Dt_t*)(dt))

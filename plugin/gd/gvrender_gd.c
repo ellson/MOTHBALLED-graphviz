@@ -293,7 +293,12 @@ static void gdgen_missingfont(char *err, char *fontreq)
 /* fontsize at which text is rendered by a simple line */
 #define FONTSIZE_TOO_SMALL 1.5
 
-extern gdFontPtr gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge, gdFontGiant;
+#ifdef _WIN32
+#   define GD_IMPORT __declspec(dllimport)
+#else
+#   define GD_IMPORT extern
+#endif
+GD_IMPORT gdFontPtr gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge, gdFontGiant;
 
 void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fontsize, int fontdpi, double fontangle, char *fontname, char *str)
 {

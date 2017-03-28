@@ -32,18 +32,10 @@ static gvplugin_api_t apis[] = {
     {(api_t)0, 0},
 };
 
-#ifdef WIN32_DLL /*visual studio*/
-#ifndef GVPLUGIN_GD_EXPORTS
-__declspec(dllimport) gvplugin_library_t gvplugin_gd_LTX_library = { "gd", apis };
+#ifdef _WIN32
+#   define GVPLUGIN_GD_API __declspec(dllexport)
 #else
-__declspec(dllexport) gvplugin_library_t gvplugin_gd_LTX_library = { "gd", apis };
-#endif
-#else /*end visual studio*/
-#ifdef GVDLL
-__declspec(dllexport) gvplugin_library_t gvplugin_gd_LTX_library = { "gd", apis };
-#else
-gvplugin_library_t gvplugin_gd_LTX_library = { "gd", apis };
-#endif
+#   define GVPLUGIN_GD_API
 #endif
 
-
+GVPLUGIN_GD_API gvplugin_library_t gvplugin_gd_LTX_library = { "gd", apis };

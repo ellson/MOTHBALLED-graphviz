@@ -21,6 +21,16 @@
 extern "C" {
 #endif
 
+#ifdef _WIN32
+#   ifdef EXPORT_CGRAPH
+#       define CGRAPH_API __declspec(dllexport)
+#   else
+#       define CGRAPH_API __declspec(dllimport)
+#   endif
+#else
+#   define CGRAPH_API extern
+#endif
+
 #ifndef FALSE
 #define FALSE (0)
 #endif
@@ -184,18 +194,11 @@ struct Agdisc_s {		/* user's discipline */
 
 	/* default resource disciplines */
 
-/*visual studio*/
-#if defined(_MSC_VER) && !defined(CGRAPH_EXPORTS)
-#define extern __declspec(dllimport)
-#endif
-/*end visual studio*/
+CGRAPH_API Agmemdisc_t AgMemDisc;
+CGRAPH_API Agiddisc_t AgIdDisc;
+CGRAPH_API Agiodisc_t AgIoDisc;
 
-extern Agmemdisc_t AgMemDisc;
-extern Agiddisc_t AgIdDisc;
-extern Agiodisc_t AgIoDisc;
-
-extern Agdisc_t AgDefaultDisc;
-#undef extern
+CGRAPH_API Agdisc_t AgDefaultDisc;
 
 struct Agdstate_s {
     void *mem;
@@ -245,71 +248,71 @@ struct Agraph_s {
     Agclos_t *clos;		/* shared resources */
 };
 
-extern void agpushdisc(Agraph_t * g, Agcbdisc_t * disc, void *state);
-extern int agpopdisc(Agraph_t * g, Agcbdisc_t * disc);
-extern int agcallbacks(Agraph_t * g, int flag);	/* return prev value */
+CGRAPH_API void agpushdisc(Agraph_t * g, Agcbdisc_t * disc, void *state);
+CGRAPH_API int agpopdisc(Agraph_t * g, Agcbdisc_t * disc);
+CGRAPH_API int agcallbacks(Agraph_t * g, int flag);	/* return prev value */
 
 /* graphs */
-extern Agraph_t *agopen(char *name, Agdesc_t desc, Agdisc_t * disc);
-extern int agclose(Agraph_t * g);
-extern Agraph_t *agread(void *chan, Agdisc_t * disc);
-extern Agraph_t *agmemread(const char *cp);
-extern void agreadline(int);
-extern void agsetfile(char *);
-extern Agraph_t *agconcat(Agraph_t * g, void *chan, Agdisc_t * disc);
-extern int agwrite(Agraph_t * g, void *chan);
-extern int agisdirected(Agraph_t * g);
-extern int agisundirected(Agraph_t * g);
-extern int agisstrict(Agraph_t * g);
-extern int agissimple(Agraph_t * g);
+CGRAPH_API Agraph_t *agopen(char *name, Agdesc_t desc, Agdisc_t * disc);
+CGRAPH_API int agclose(Agraph_t * g);
+CGRAPH_API Agraph_t *agread(void *chan, Agdisc_t * disc);
+CGRAPH_API Agraph_t *agmemread(const char *cp);
+CGRAPH_API void agreadline(int);
+CGRAPH_API void agsetfile(char *);
+CGRAPH_API Agraph_t *agconcat(Agraph_t * g, void *chan, Agdisc_t * disc);
+CGRAPH_API int agwrite(Agraph_t * g, void *chan);
+CGRAPH_API int agisdirected(Agraph_t * g);
+CGRAPH_API int agisundirected(Agraph_t * g);
+CGRAPH_API int agisstrict(Agraph_t * g);
+CGRAPH_API int agissimple(Agraph_t * g);
 
 /* nodes */
-extern Agnode_t *agnode(Agraph_t * g, char *name, int createflag);
-extern Agnode_t *agidnode(Agraph_t * g, IDTYPE id, int createflag);
-extern Agnode_t *agsubnode(Agraph_t * g, Agnode_t * n, int createflag);
-extern Agnode_t *agfstnode(Agraph_t * g);
-extern Agnode_t *agnxtnode(Agraph_t * g, Agnode_t * n);
-extern Agnode_t *aglstnode(Agraph_t * g);
-extern Agnode_t *agprvnode(Agraph_t * g, Agnode_t * n);
+CGRAPH_API Agnode_t *agnode(Agraph_t * g, char *name, int createflag);
+CGRAPH_API Agnode_t *agidnode(Agraph_t * g, IDTYPE id, int createflag);
+CGRAPH_API Agnode_t *agsubnode(Agraph_t * g, Agnode_t * n, int createflag);
+CGRAPH_API Agnode_t *agfstnode(Agraph_t * g);
+CGRAPH_API Agnode_t *agnxtnode(Agraph_t * g, Agnode_t * n);
+CGRAPH_API Agnode_t *aglstnode(Agraph_t * g);
+CGRAPH_API Agnode_t *agprvnode(Agraph_t * g, Agnode_t * n);
 
-extern Agsubnode_t *agsubrep(Agraph_t * g, Agnode_t * n);
-extern int agnodebefore(Agnode_t *u, Agnode_t *v); /* we have no shame */
+CGRAPH_API Agsubnode_t *agsubrep(Agraph_t * g, Agnode_t * n);
+CGRAPH_API int agnodebefore(Agnode_t *u, Agnode_t *v); /* we have no shame */
 
 /* edges */
-extern Agedge_t *agedge(Agraph_t * g, Agnode_t * t, Agnode_t * h,
+CGRAPH_API Agedge_t *agedge(Agraph_t * g, Agnode_t * t, Agnode_t * h,
 			char *name, int createflag);
-extern Agedge_t *agidedge(Agraph_t * g, Agnode_t * t, Agnode_t * h,
+CGRAPH_API Agedge_t *agidedge(Agraph_t * g, Agnode_t * t, Agnode_t * h,
               IDTYPE id, int createflag);
-extern Agedge_t *agsubedge(Agraph_t * g, Agedge_t * e, int createflag);
-extern Agedge_t *agfstin(Agraph_t * g, Agnode_t * n);
-extern Agedge_t *agnxtin(Agraph_t * g, Agedge_t * e);
-extern Agedge_t *agfstout(Agraph_t * g, Agnode_t * n);
-extern Agedge_t *agnxtout(Agraph_t * g, Agedge_t * e);
-extern Agedge_t *agfstedge(Agraph_t * g, Agnode_t * n);
-extern Agedge_t *agnxtedge(Agraph_t * g, Agedge_t * e, Agnode_t * n);
+CGRAPH_API Agedge_t *agsubedge(Agraph_t * g, Agedge_t * e, int createflag);
+CGRAPH_API Agedge_t *agfstin(Agraph_t * g, Agnode_t * n);
+CGRAPH_API Agedge_t *agnxtin(Agraph_t * g, Agedge_t * e);
+CGRAPH_API Agedge_t *agfstout(Agraph_t * g, Agnode_t * n);
+CGRAPH_API Agedge_t *agnxtout(Agraph_t * g, Agedge_t * e);
+CGRAPH_API Agedge_t *agfstedge(Agraph_t * g, Agnode_t * n);
+CGRAPH_API Agedge_t *agnxtedge(Agraph_t * g, Agedge_t * e, Agnode_t * n);
 
 /* generic */
-extern Agraph_t *agraphof(void* obj);
-extern Agraph_t *agroot(void* obj);
-extern int agcontains(Agraph_t *, void *);
-extern char *agnameof(void *);
-extern int agrelabel(void *obj, char *name);	/* scary */
-extern int agrelabel_node(Agnode_t * n, char *newname);
-extern int agdelete(Agraph_t * g, void *obj);
-extern long agdelsubg(Agraph_t * g, Agraph_t * sub);	/* could be agclose */
-extern int agdelnode(Agraph_t * g, Agnode_t * arg_n);
-extern int agdeledge(Agraph_t * g, Agedge_t * arg_e);
-extern int agobjkind(void *);
+CGRAPH_API Agraph_t *agraphof(void* obj);
+CGRAPH_API Agraph_t *agroot(void* obj);
+CGRAPH_API int agcontains(Agraph_t *, void *);
+CGRAPH_API char *agnameof(void *);
+CGRAPH_API int agrelabel(void *obj, char *name);	/* scary */
+CGRAPH_API int agrelabel_node(Agnode_t * n, char *newname);
+CGRAPH_API int agdelete(Agraph_t * g, void *obj);
+CGRAPH_API long agdelsubg(Agraph_t * g, Agraph_t * sub);	/* could be agclose */
+CGRAPH_API int agdelnode(Agraph_t * g, Agnode_t * arg_n);
+CGRAPH_API int agdeledge(Agraph_t * g, Agedge_t * arg_e);
+CGRAPH_API int agobjkind(void *);
 
 /* strings */
-extern char *agstrdup(Agraph_t *, char *);
-extern char *agstrdup_html(Agraph_t *, char *);
-extern int aghtmlstr(char *);
-extern char *agstrbind(Agraph_t * g, char *);
-extern int agstrfree(Agraph_t *, char *);
-extern char *agcanon(char *, int);
-extern char *agstrcanon(char *, char *);
-extern char *agcanonStr(char *str);  /* manages its own buf */
+CGRAPH_API char *agstrdup(Agraph_t *, char *);
+CGRAPH_API char *agstrdup_html(Agraph_t *, char *);
+CGRAPH_API int aghtmlstr(char *);
+CGRAPH_API char *agstrbind(Agraph_t * g, char *);
+CGRAPH_API int agstrfree(Agraph_t *, char *);
+CGRAPH_API char *agcanon(char *, int);
+CGRAPH_API char *agstrcanon(char *, char *);
+CGRAPH_API char *agcanonStr(char *str);  /* manages its own buf */
 
 /* definitions for dynamic string attributes */
 struct Agattr_s {		/* dynamic string attributes */
@@ -335,45 +338,45 @@ struct Agdatadict_s {		/* set of dictionaries per graph */
     } dict;
 };
 
-extern Agsym_t *agattr(Agraph_t * g, int kind, char *name, char *value);
-extern Agsym_t *agattrsym(void *obj, char *name);
-extern Agsym_t *agnxtattr(Agraph_t * g, int kind, Agsym_t * attr);
-extern int      agcopyattr(void *oldobj, void *newobj);
+CGRAPH_API Agsym_t *agattr(Agraph_t * g, int kind, char *name, char *value);
+CGRAPH_API Agsym_t *agattrsym(void *obj, char *name);
+CGRAPH_API Agsym_t *agnxtattr(Agraph_t * g, int kind, Agsym_t * attr);
+CGRAPH_API int      agcopyattr(void *oldobj, void *newobj);
 
-extern void *agbindrec(void *obj, char *name, unsigned int size,
+CGRAPH_API void *agbindrec(void *obj, char *name, unsigned int size,
 		       int move_to_front);
-extern Agrec_t *aggetrec(void *obj, char *name, int move_to_front);
-extern int agdelrec(void *obj, char *name);
-extern void aginit(Agraph_t * g, int kind, char *rec_name, int rec_size,
+CGRAPH_API Agrec_t *aggetrec(void *obj, char *name, int move_to_front);
+CGRAPH_API int agdelrec(void *obj, char *name);
+CGRAPH_API void aginit(Agraph_t * g, int kind, char *rec_name, int rec_size,
 		   int move_to_front);
-extern void agclean(Agraph_t * g, int kind, char *rec_name);
+CGRAPH_API void agclean(Agraph_t * g, int kind, char *rec_name);
 
-extern char *agget(void *obj, char *name);
-extern char *agxget(void *obj, Agsym_t * sym);
-extern int agset(void *obj, char *name, char *value);
-extern int agxset(void *obj, Agsym_t * sym, char *value);
-extern int agsafeset(void* obj, char* name, char* value, char* def);
+CGRAPH_API char *agget(void *obj, char *name);
+CGRAPH_API char *agxget(void *obj, Agsym_t * sym);
+CGRAPH_API int agset(void *obj, char *name, char *value);
+CGRAPH_API int agxset(void *obj, Agsym_t * sym, char *value);
+CGRAPH_API int agsafeset(void* obj, char* name, char* value, char* def);
 
 /* defintions for subgraphs */
-extern Agraph_t *agsubg(Agraph_t * g, char *name, int cflag);	/* constructor */
-extern Agraph_t *agidsubg(Agraph_t * g, IDTYPE id, int cflag);	/* constructor */
-extern Agraph_t *agfstsubg(Agraph_t * g), *agnxtsubg(Agraph_t * subg);
-extern Agraph_t *agparent(Agraph_t * g);
+CGRAPH_API Agraph_t *agsubg(Agraph_t * g, char *name, int cflag);	/* constructor */
+CGRAPH_API Agraph_t *agidsubg(Agraph_t * g, IDTYPE id, int cflag);	/* constructor */
+CGRAPH_API Agraph_t *agfstsubg(Agraph_t * g), *agnxtsubg(Agraph_t * subg);
+CGRAPH_API Agraph_t *agparent(Agraph_t * g);
 
 /* set cardinality */
-extern int agnnodes(Agraph_t * g), agnedges(Agraph_t * g), agnsubg(Agraph_t * g);
-extern int agdegree(Agraph_t * g, Agnode_t * n, int in, int out);
-extern int agcountuniqedges(Agraph_t * g, Agnode_t * n, int in, int out);
+CGRAPH_API int agnnodes(Agraph_t * g), agnedges(Agraph_t * g), agnsubg(Agraph_t * g);
+CGRAPH_API int agdegree(Agraph_t * g, Agnode_t * n, int in, int out);
+CGRAPH_API int agcountuniqedges(Agraph_t * g, Agnode_t * n, int in, int out);
 
 /* memory */
-extern void *agalloc(Agraph_t * g, size_t size);
-extern void *agrealloc(Agraph_t * g, void *ptr, size_t oldsize,
+CGRAPH_API void *agalloc(Agraph_t * g, size_t size);
+CGRAPH_API void *agrealloc(Agraph_t * g, void *ptr, size_t oldsize,
 		       size_t size);
-extern void agfree(Agraph_t * g, void *ptr);
-extern struct _vmalloc_s *agheap(Agraph_t * g);
+CGRAPH_API void agfree(Agraph_t * g, void *ptr);
+CGRAPH_API struct _vmalloc_s *agheap(Agraph_t * g);
 
 /* an engineering compromise is a joy forever */
-extern void aginternalmapclearlocalnames(Agraph_t * g);
+CGRAPH_API void aginternalmapclearlocalnames(Agraph_t * g);
 
 #define agnew(g,t)		((t*)agalloc(g,sizeof(t)))
 #define agnnew(g,n,t)	((t*)agalloc(g,(n)*sizeof(t)))
@@ -381,14 +384,14 @@ extern void aginternalmapclearlocalnames(Agraph_t * g);
 /* error handling */
 typedef enum { AGWARN, AGERR, AGMAX, AGPREV } agerrlevel_t;
 typedef int (*agusererrf) (char*);
-extern agerrlevel_t agseterr(agerrlevel_t);
-extern char *aglasterr(void);
-extern int agerr(agerrlevel_t level, const char *fmt, ...);
-extern void agerrorf(const char *fmt, ...);
-extern void agwarningf(const char *fmt, ...);
-extern int agerrors(void);
-extern int agreseterrors(void);
-extern agusererrf agseterrf(agusererrf);
+CGRAPH_API agerrlevel_t agseterr(agerrlevel_t);
+CGRAPH_API char *aglasterr(void);
+CGRAPH_API int agerr(agerrlevel_t level, const char *fmt, ...);
+CGRAPH_API void agerrorf(const char *fmt, ...);
+CGRAPH_API void agwarningf(const char *fmt, ...);
+CGRAPH_API int agerrors(void);
+CGRAPH_API int agreseterrors(void);
+CGRAPH_API agusererrf agseterrf(agusererrf);
 
 /* data access macros */
 /* this assumes that e[0] is out and e[1] is inedge, see edgepair in edge.c  */
@@ -409,14 +412,8 @@ extern agusererrf agseterrf(agusererrf);
 #define TAILPORT_ID		"tailport"
 #define HEADPORT_ID		"headport"
 
-#if defined(_MSC_VER) && !defined(CGRAPH_EXPORTS)
-#define extern __declspec(dllimport)
-#endif
-
-extern Agdesc_t Agdirected, Agstrictdirected, Agundirected,
+CGRAPH_API Agdesc_t Agdirected, Agstrictdirected, Agundirected,
     Agstrictundirected;
-
-#undef extern
 
 /* fast graphs */
 void agflatten(Agraph_t * g, int flag);
@@ -445,8 +442,6 @@ typedef Dtlink_t	Agedgeref_t;
 and edges are embedded in main graph objects but allocated separately in subgraphs */
 #define AGSNMAIN(sn)        ((sn)==(&((sn)->node->mainsub)))
 #define EDGEOF(sn,rep)		(AGSNMAIN(sn)?((Agedge_t*)((unsigned char*)(rep) - offsetof(Agedge_t,seq_link))) : ((Dthold_t*)(rep))->obj)
-
-#undef extern
 
 #ifdef __cplusplus
 }

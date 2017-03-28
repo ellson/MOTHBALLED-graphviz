@@ -1,8 +1,5 @@
 #ifndef _DTHDR_H
 #define _DTHDR_H	1
-#ifndef _BLD_cdt
-#define _BLD_cdt	1
-#endif
 
 /*	Internal definitions for libcdt.
 **	Written by Kiem-Phong Vo (5/25/96)

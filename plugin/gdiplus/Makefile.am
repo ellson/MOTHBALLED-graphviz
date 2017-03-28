@@ -8,7 +8,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt
-	
+
 if WITH_GDIPLUS
 PATCHES = GdiPlusEnums.h.patch GdiPlusHeaders.h.patch GdiPlusimageAttributes.h.patch GdiPlusImaging.h.patch
 PATCHED_HEADS = $(PATCHES:.h.patch=.h)
@@ -57,7 +57,7 @@ gvrender_gdiplus.lo : $(GDIPLUS_HEADS)
 if WITH_GDIPLUS
 # patched GDI+ headers are dependent on the patches
 $(PATCHED_HEADS) : %.h : %.h.patch
-	
+
 # all the local GDI+ headers are dependent on the originals in PlatformSDK
 # if the GDI+ header needs to be patched, patch it, else just copy it over
 $(GDIPLUS_HEADS) : %.h : $(PLATFORMSDKINCLUDE_ESCAPED)/%.h
@@ -66,5 +66,5 @@ $(GDIPLUS_HEADS) : %.h : $(PLATFORMSDKINCLUDE_ESCAPED)/%.h
 	else cp "$(PLATFORMSDKINCLUDE)\$*.h" $*.h; \
 	fi
 endif
-	
-EXTRA_DIST = $(PATCHES) gvplugin_gdiplus.vcxproj* gvplugin_gdiplus.def
+
+EXTRA_DIST = $(PATCHES) gvplugin_gdiplus.vcxproj*

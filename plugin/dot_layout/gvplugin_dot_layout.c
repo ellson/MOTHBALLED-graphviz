@@ -19,26 +19,12 @@ static gvplugin_api_t apis[] = {
     {API_layout, gvlayout_dot_layout},
     {(api_t)0, 0},
 };
-/*visual studio*/
-#ifdef WIN32_DLL
-#ifndef GVPLUGIN_DOT_LAYOUT_EXPORTS
-__declspec(dllimport) gvplugin_library_t gvplugin_dot_layout_LTX_library = { "dot_layout", apis };
+
+
+#ifdef _WIN32
+#   define GVPLUGIN_DOT_LAYOUT_API __declspec(dllexport)
 #else
-__declspec(dllexport) gvplugin_library_t gvplugin_dot_layout_LTX_library = { "dot_layout", apis };
-#endif
-#endif
-
-
-
-/*end visual studio*/
-
-
-#ifndef WIN32_DLL
-#ifdef GVDLL
-__declspec(dllexport) gvplugin_library_t gvplugin_dot_layout_LTX_library = { "dot_layout", apis };
-#else
-gvplugin_library_t gvplugin_dot_layout_LTX_library = { "dot_layout", apis };
-#endif
+#   define GVPLUGIN_DOT_LAYOUT_API
 #endif
 
-
+GVPLUGIN_DOT_LAYOUT_API gvplugin_library_t gvplugin_dot_layout_LTX_library = { "dot_layout", apis };

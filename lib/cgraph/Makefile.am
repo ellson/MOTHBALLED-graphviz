@@ -1,4 +1,4 @@
-# $Id$ $Revision$ 
+# $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
 CGRAPH_VERSION="6:0:0"
@@ -53,6 +53,6 @@ cgraph.3.pdf: $(srcdir)/cgraph.3
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) cmpnd.c \
 	main.c tester.c grammar.c grammar.h scan.c \
-	y.tab.c y.tab.h y.output cgraph.vcxproj* cgraph.def
+	y.tab.c y.tab.h y.output cgraph.vcxproj*
 
 DISTCLEANFILES = $(pdf_DATA) grammar.[ch] scan.c y.output y.tab.[ch]

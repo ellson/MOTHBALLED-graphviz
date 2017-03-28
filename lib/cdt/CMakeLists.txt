@@ -1,4 +1,4 @@
-add_definitions(-D_BLD_cdt)
+add_definitions(-DEXPORT_CDT)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -24,9 +24,6 @@ add_library(cdt SHARED
     dttree.c
     dtview.c
     dtwalk.c
-
-    # Link definition file for Windows
-    cdt.def
 )
 
 # Installation location of library files

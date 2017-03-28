@@ -52,7 +52,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)windows\include;$(SolutionDir)lib\cdt</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;CGRAPH_EXPORTS;WIN32_DLL;YY_NO_UNISTD_H;_DLL_BLD;_dll_import;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EXPORT_CGRAPH;EXPORT_AGXBUF;EXPORT_CGHDR;YY_NO_UNISTD_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -68,7 +68,6 @@
       <SubSystem>Windows</SubSystem>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
-      <ModuleDefinitionFile>cgraph.def</ModuleDefinitionFile>
     </Link>
     <PreBuildEvent>
       <Command>bison -dy grammar.y -o grammar.c
@@ -78,7 +77,7 @@ flex -oscan.c scan.l</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)windows\include;$(SolutionDir)lib\cdt</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;CGRAPH_EXPORTS;WIN32_DLL;YY_NO_UNISTD_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EXPORT_CGRAPH;EXPORT_AGXBUF;EXPORT_CGHDR;YY_NO_UNISTD_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
@@ -93,7 +92,6 @@ flex -oscan.c scan.l</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
-      <ModuleDefinitionFile>cgraph.def</ModuleDefinitionFile>
     </Link>
     <PreBuildEvent>
       <Command>bison -dy grammar.y -o grammar.c
@@ -128,9 +126,6 @@ flex -oscan.c scan.l</Command>
     <ClCompile Include="subg.c" />
     <ClCompile Include="utils.c" />
     <ClCompile Include="write.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="cgraph.def" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cdt\cdt.vcxproj">

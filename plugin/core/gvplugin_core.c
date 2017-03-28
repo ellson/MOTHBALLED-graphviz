@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -46,14 +46,10 @@ static gvplugin_api_t apis[] = {
     {API_device, gvdevice_dot_types},
     {API_device, gvdevice_fig_types},
     {API_device, gvdevice_map_types},
-#if !defined(_WIN32)
     {API_device, gvdevice_mp_types},
-#endif
     {API_device, gvdevice_ps_types},
     {API_device, gvdevice_svg_types},
-#if !defined(_WIN32)
     {API_device, gvdevice_json_types},
-#endif
     {API_device, gvdevice_tk_types},
     {API_device, gvdevice_vml_types},
     {API_device, gvdevice_pic_types},
@@ -62,14 +58,10 @@ static gvplugin_api_t apis[] = {
     {API_render, gvrender_dot_types},
     {API_render, gvrender_fig_types},
     {API_render, gvrender_map_types},
-#if !defined(_WIN32)
     {API_render, gvrender_mp_types},
-#endif
     {API_render, gvrender_ps_types},
     {API_render, gvrender_svg_types},
-#if !defined(_WIN32)
     {API_render, gvrender_json_types},
-#endif
     {API_render, gvrender_tk_types},
     {API_render, gvrender_vml_types},
     {API_render, gvrender_pic_types},
@@ -80,22 +72,10 @@ static gvplugin_api_t apis[] = {
     {(api_t)0, 0},
 };
 
-#ifdef WIN32_DLL
-#ifndef GVPLUGIN_CORE_EXPORTS
-__declspec(dllimport) gvplugin_library_t gvplugin_core_LTX_library = { "core", apis };
+#ifdef _WIN32
+#   define GVPLUGIN_CORE_API __declspec(dllexport)
 #else
-__declspec(dllexport) gvplugin_library_t gvplugin_core_LTX_library = { "core", apis };
-#endif
-#endif
-
-
-
-#ifndef WIN32_DLL
-#ifdef GVDLL
-__declspec(dllexport) gvplugin_library_t gvplugin_core_LTX_library = { "core", apis };
-#else
-gvplugin_library_t gvplugin_core_LTX_library = { "core", apis };
-#endif
+#   define GVPLUGIN_CORE_API
 #endif
 
-
+GVPLUGIN_CORE_API gvplugin_library_t gvplugin_core_LTX_library = { "core", apis };
