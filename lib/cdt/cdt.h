@@ -56,7 +56,7 @@ struct _dthold_s
 };
 
 /* method to manipulate dictionary structure */
-struct _dtmethod_s 
+struct _dtmethod_s
 {	Dtsearch_f	searchf; /* search function	*/
 	int		type;	/* type of operation	*/
 };
@@ -191,8 +191,6 @@ CDT_API Dtmethod_t*	dtmethod(Dt_t*, Dtmethod_t*);
 CDT_API Dtlink_t*	dtflatten(Dt_t*);
 CDT_API Dtlink_t*	dtextract(Dt_t*);
 CDT_API int		dtrestore(Dt_t*, Dtlink_t*);
-
-CDT_API int		dttreeset(Dt_t*, int, int);
 
 CDT_API int		dtwalk(Dt_t*, int(*)(Dt_t*,void*,void*), void*);
 
