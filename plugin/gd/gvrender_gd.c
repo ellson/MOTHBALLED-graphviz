@@ -13,9 +13,6 @@
 
 #include "config.h"
 
-#ifdef _WIN32
-#include <io.h>
-#endif
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdint.h>
