@@ -31,6 +31,6 @@ install(
 
 # Specify library version and soversion
 set_target_properties(gvplugin_dot_layout PROPERTIES
-    VERSION 6.0.0
-    SOVERSION 6
+    VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
+    SOVERSION ${GRAPHVIZ_PLUGIN_VERSION}
 )

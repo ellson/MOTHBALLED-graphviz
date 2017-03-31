@@ -56,8 +56,9 @@ set(TOP_SOURCE_DIR          "${CMAKE_SOURCE_DIR}")
 set(GRAPHVIZ_LIB_DIR        "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 set(WINDOWS_DEPENDENCY_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/windows/dependencies/libraries")
 
+set(GRAPHVIZ_PLUGIN_VERSION 6)
 # Name of the config file used by Graphviz
-set(GVPLUGIN_CONFIG_FILE config6)
+set(GVPLUGIN_CONFIG_FILE config${GRAPHVIZ_PLUGIN_VERSION})
 
 # ============================ Library dependencies ============================
 if (WIN32)
