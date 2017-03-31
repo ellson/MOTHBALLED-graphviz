@@ -16,7 +16,6 @@
 #include "gvplugin_device.h"
 #include "gvio.h"
 
-#ifdef HAVE_LIBGD
 #include "gd.h"
 
 int gvdevice_gd_putBuf (gdIOCtx *context, const void *buffer, int len)
@@ -182,10 +181,8 @@ static gvdevice_features_t device_features_gd_no_writer = {
     {96.,96.},                  /* dpi */
 };
 #endif
-#endif
 
 gvplugin_installed_t gvdevice_gd_types[] = {
-#ifdef HAVE_LIBGD
 #ifdef HAVE_PANGOCAIRO
 
 #ifdef HAVE_GD_GIF
@@ -213,7 +210,6 @@ gvplugin_installed_t gvdevice_gd_types[] = {
 #endif
 #endif
 
-#endif
 #endif
     {0, NULL, 0, NULL, NULL}
 };

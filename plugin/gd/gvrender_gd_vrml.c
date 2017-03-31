@@ -21,8 +21,6 @@
 
 #include "gvplugin_render.h"
 #include "gvio.h"
-
-#ifdef HAVE_LIBGD
 #include "gd.h"
 
 #ifdef HAVE_GD_PNG
@@ -838,22 +836,17 @@ static gvdevice_features_t device_features_vrml = {
     {72.,72.},                  /* default dpi */
 };
 #endif				/* HAVE_GD_PNG */
-#endif				/* HAVE_LIBGD */
 
 gvplugin_installed_t gvrender_vrml_types[] = {
-#ifdef HAVE_LIBGD
 #ifdef HAVE_GD_PNG
     {FORMAT_VRML, "vrml", 1, &vrml_engine, &render_features_vrml},
-#endif
 #endif
     {0, NULL, 0, NULL, NULL}
 };
 
 gvplugin_installed_t gvdevice_vrml_types[] = {
-#ifdef HAVE_LIBGD
 #ifdef HAVE_GD_PNG
     {FORMAT_VRML, "vrml:vrml", 1, NULL, &device_features_vrml},
-#endif
 #endif
     {0, NULL, 0, NULL, NULL}
 };
