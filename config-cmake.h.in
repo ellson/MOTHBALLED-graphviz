@@ -49,6 +49,7 @@ typedef int ssize_t;
 // Libraries
 #cmakedefine HAVE_ANN
 #cmakedefine HAVE_EXPAT
+#cmakedefine HAVE_LIBGD
 #cmakedefine HAVE_ZLIB
 
 // Values

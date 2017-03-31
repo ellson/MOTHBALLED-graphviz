@@ -70,6 +70,7 @@ endif()
 
 find_package(ANN)
 find_package(EXPAT)
+find_package(GD)
 find_package(LTDL)
 find_package(ZLIB)
 
