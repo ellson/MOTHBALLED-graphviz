@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,7 +19,6 @@ extern "C" {
 #endif
 #include "adjust.h"
 
-    extern int allow_edits(int);
     extern void avoid_cycling(graph_t *, Agnode_t *, double *);
     extern int checkStart(graph_t * G, int nG, int);
     extern Agnode_t *choose_node(graph_t *, int);
