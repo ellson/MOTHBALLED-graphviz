@@ -31,6 +31,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "circogen", "lib\circogen\gvcircogen.vcxproj", "{3A011065-B75E-49C8-B480-1A7C8EBD6699}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "neatogen", "lib\neatogen\gvneatogen.vcxproj", "{C5CEB09E-79AF-4091-ACCF-D28EC3D7D90F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2D29953F-2D74-471E-A064-5D184E762DFF} = {2D29953F-2D74-471E-A064-5D184E762DFF}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "twopigen", "lib\twopigen\gvtwopigen.vcxproj", "{24E8C882-CD11-475A-A383-FF52AC05DFE3}"
 EndProject
@@ -182,6 +185,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvprlib", "lib\gvpr\gvprlib
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dotgen", "lib\dotgen\gvdotgen.vcxproj", "{4B6103EF-590B-4916-92CB-D06934459928}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2D29953F-2D74-471E-A064-5D184E762DFF} = {2D29953F-2D74-471E-A064-5D184E762DFF}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvortho", "lib\ortho\gvortho.vcxproj", "{2D29953F-2D74-471E-A064-5D184E762DFF}"
 EndProject

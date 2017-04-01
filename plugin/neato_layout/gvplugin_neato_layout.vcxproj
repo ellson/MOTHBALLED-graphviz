@@ -63,7 +63,6 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\dependencies\libraries\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>gvplugin_neato_layout.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <DataExecutionPrevention />
@@ -82,7 +81,6 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\dependencies\libraries\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>gvplugin_neato_layout.def</ModuleDefinitionFile>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -95,9 +93,6 @@
   <ItemGroup>
     <ClCompile Include="gvlayout_neato_layout.c" />
     <ClCompile Include="gvplugin_neato_layout.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="gvplugin_neato_layout.def" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\lib\gvc.vcxproj">
