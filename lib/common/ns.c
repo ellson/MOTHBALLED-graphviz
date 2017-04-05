@@ -484,6 +484,7 @@ subtree_t *merge_trees(Agedge_t *e)   /* entering tree edge */
 /* Construct initial tight tree. Graph must be connected, feasible.
  * Adjust ND_rank(v) as needed.  add_tree_edge() on tight tree edges.
  * trees are basically lists of nodes stored in nodequeues.
+ * Return 1 if input graph is not connected; 0 on success.
  */
 static
 int feasible_tree(void)
@@ -787,7 +788,7 @@ graphSize (graph_t * g, int* nn, int* ne)
  *   Out and in edges lists stored in ND_out and ND_in, even if the node
  *  doesn't have any out or in edges.
  * The node rank values are stored in ND_rank.
- * Returns 0 if successful; returns 1 if `he graph was not connected;
+ * Returns 0 if successful; returns 1 if the graph was not connected;
  * returns 2 if something seriously wrong;
  */
 int rank2(graph_t * g, int balance, int maxiter, int search_size)
