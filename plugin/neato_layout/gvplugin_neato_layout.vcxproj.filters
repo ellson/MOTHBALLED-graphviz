@@ -22,9 +22,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="gvplugin_neato_layout.def">
-      <Filter>Source Files</Filter>
-    </None>
-  </ItemGroup>
 </Project>

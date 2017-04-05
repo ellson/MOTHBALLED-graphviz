@@ -39,7 +39,7 @@ libgvplugin_neato_layout_la_LIBADD = $(libgvplugin_neato_layout_C_la_LIBADD) \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
 	$(GTS_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
-	
+
 if WITH_SFDP
 libgvplugin_neato_layout_C_la_LIBADD += $(top_builddir)/lib/sfdpgen/libsfdpgen_C.la
 endif
@@ -53,4 +53,4 @@ if WITH_DARWIN9
 libgvplugin_neato_layout_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_neato_layout_LTX_library -Wl,-exported_symbol,_neato_init_node -Wl,-exported_symbol,_init_nop -Wl,-exported_symbol,_user_pos
 endif
 
-EXTRA_DIST = gvplugin_neato_layout.vcxproj* gvplugin_neato_layout.def
+EXTRA_DIST = gvplugin_neato_layout.vcxproj*
