@@ -26,7 +26,7 @@ if (UNIX)
     target_link_libraries(dot m)
 endif (UNIX)
 
-# Installation location of library files
+# Installation location of executables
 install(
     TARGETS dot
     RUNTIME DESTINATION ${BINARY_INSTALL_DIR}

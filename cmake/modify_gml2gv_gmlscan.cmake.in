@@ -1,0 +1,3 @@
+file(READ @CMAKE_CURRENT_BINARY_DIR@/gmlscan.c file_contents)
+string(REPLACE "yy" "gml" file_contents "${file_contents}")
+file(WRITE @CMAKE_CURRENT_BINARY_DIR@/gmlscan.c "${file_contents}")
