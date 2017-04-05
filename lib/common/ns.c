@@ -493,6 +493,7 @@ int feasible_tree(void)
   subtree_t **tree, *tree0, *tree1;
   int i, subtree_count = 0;
   STheap_t *heap;
+  int error = 0;
 
   /* initialization */
   for (n = GD_nlist(G); n; n = ND_next(n)) {
@@ -512,7 +513,10 @@ int feasible_tree(void)
   heap = STbuildheap(tree,subtree_count);
   while (STheapsize(heap) > 1) {
     tree0 = STextractmin(heap);
-    ee = inter_tree_edge(tree0);
+    if (!(ee = inter_tree_edge(tree0))) {
+      error = 1;
+      break;
+    }
     tree1 = merge_trees(ee);
     STheapify(heap,tree1->heap_index);
   }
@@ -520,6 +524,7 @@ int feasible_tree(void)
   free(heap);
   for (i = 0; i < subtree_count; i++) free(tree[i]);
   free(tree);
+  if (error) return 1;
   assert(Tree_edge.size == N_nodes - 1);
   init_cutvalues();
   return 0;
