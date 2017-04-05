@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -360,11 +360,14 @@ CGRAPH_API int agsafeset(void* obj, char* name, char* value, char* def);
 /* defintions for subgraphs */
 CGRAPH_API Agraph_t *agsubg(Agraph_t * g, char *name, int cflag);	/* constructor */
 CGRAPH_API Agraph_t *agidsubg(Agraph_t * g, IDTYPE id, int cflag);	/* constructor */
-CGRAPH_API Agraph_t *agfstsubg(Agraph_t * g), *agnxtsubg(Agraph_t * subg);
+CGRAPH_API Agraph_t *agfstsubg(Agraph_t * g);
+CGRAPH_API Agraph_t *agnxtsubg(Agraph_t * subg);
 CGRAPH_API Agraph_t *agparent(Agraph_t * g);
 
 /* set cardinality */
-CGRAPH_API int agnnodes(Agraph_t * g), agnedges(Agraph_t * g), agnsubg(Agraph_t * g);
+CGRAPH_API int agnnodes(Agraph_t * g);
+CGRAPH_API int agnedges(Agraph_t * g);
+CGRAPH_API int agnsubg(Agraph_t * g);
 CGRAPH_API int agdegree(Agraph_t * g, Agnode_t * n, int in, int out);
 CGRAPH_API int agcountuniqedges(Agraph_t * g, Agnode_t * n, int in, int out);
 
@@ -412,8 +415,10 @@ CGRAPH_API agusererrf agseterrf(agusererrf);
 #define TAILPORT_ID		"tailport"
 #define HEADPORT_ID		"headport"
 
-CGRAPH_API Agdesc_t Agdirected, Agstrictdirected, Agundirected,
-    Agstrictundirected;
+CGRAPH_API Agdesc_t Agdirected;
+CGRAPH_API Agdesc_t Agstrictdirected;
+CGRAPH_API Agdesc_t Agundirected;
+CGRAPH_API Agdesc_t Agstrictundirected;
 
 /* fast graphs */
 void agflatten(Agraph_t * g, int flag);
