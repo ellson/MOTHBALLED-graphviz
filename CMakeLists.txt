@@ -138,6 +138,7 @@ else()
 endif()
 
 # ============================ Packaging information ===========================
+include(InstallRequiredSystemLibraries)
 include(package_info)
 include(CPack)
 
