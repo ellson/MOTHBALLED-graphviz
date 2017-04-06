@@ -23,8 +23,6 @@
 
 #include "gvplugin_loadimage.h"
 #include "gvio.h"
-
-#ifdef HAVE_LIBGD
 #include "gd.h"
 
 typedef enum {
@@ -267,11 +265,7 @@ static gvloadimage_engine_t engine_cairo = {
 };
 #endif
 
-#endif
-
 gvplugin_installed_t gvloadimage_gd_types[] = {
-#ifdef HAVE_LIBGD
-
     {FORMAT_GD_GD, "gd:gd", 1, &engine, NULL},
     {FORMAT_GD2_GD, "gd2:gd", 1, &engine, NULL},
 #ifdef HAVE_GD_GIF
@@ -342,7 +336,5 @@ gvplugin_installed_t gvloadimage_gd_types[] = {
     {FORMAT_XBM_CAIRO, "xbm:cairo", 1, &engine_cairo, NULL},
 #endif
 #endif /* HAVE_PANGOCAIRO */
-
-#endif /* HAVE_LIBGD */
     {0, NULL, 0, NULL, NULL}
 };

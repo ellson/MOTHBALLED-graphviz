@@ -41,7 +41,6 @@ void        dtclear(dt);
 Dtmethod_t* dtmethod(Dt_t* dt, const Dtmethod_t* meth);
 Dtdisc_t*   dtdisc(Dt_t* dt, const Dtdisc_t* disc, int type);
 Dt_t*       dtview(Dt_t* dt, Dt_t* view);
-int         dttreeset(Dt_t* dt, int minp, int balance);
 .Ce
 .Ss "STORAGE METHODS"
 .Cs
@@ -178,20 +177,6 @@ In addition, dictionaries on the same view path should
 treat objects in a consistent manner with respect to comparison or hashing.
 If not, undefined behaviors may result.
 .PP
-.Ss "  int dttreeset(Dt_t* dt, int minp, int balance)"
-This function only applies to dictionaries operated under the method \f5Dtoset\fP
-which uses top-down splay trees (see below). It returns 0 on success and -1 on error.
-.Tp
-\f5minp\fP:
-This parameter defines the minimum path length before a search path is adjusted.
-For example, \f5minp\fP equal 0 would mean that search paths are always adjusted.
-If \f5minp\fP is negative, the minimum search path is internally computed based
-on a function of the current dictionary size. This computed value is such that
-if the tree is balanced, it will never require adjusting.
-.Tp
-\f5balance\fP:
-If this is non-zero, the tree will be made balanced.
-.PP
 .Ss "STORAGE METHODS"
 .PP
 Storage methods are of type \f5Dtmethod_t*\fP.
@@ -299,7 +284,7 @@ the key as defined by the \f5Dtdisc_t.size\fP field.
 .PP
 .Ss "  void* (*memoryf)(Dt_t* dt, void* addr, size_t size, Dtdisc_t* disc)"
 If not \f5NULL\fP, \f5memoryf\fP is used to allocate and free memory.
-When \f5addr\fP is \f5NULL\fP, a memory segment of size \f5size\fP is requested. 
+When \f5addr\fP is \f5NULL\fP, a memory segment of size \f5size\fP is requested.
 If \f5addr\fP is not \f5NULL\fP and \f5size\fP is zero, \f5addr\fP is to be freed.
 If \f5addr\fP is not \f5NULL\fP and \f5size\fP is positive,
 \f5addr\fP is to be resized to the given size.
@@ -318,7 +303,7 @@ If \f5eventf\fP returns zero, the opening process proceeds in a default manner.
 A positive return value indicates special treatment of memory as follows.
 If \f5*(void**)data\fP is set to point to some memory segment
 as discussed in \f5memoryf\fP, that segment of memory is used to start
-the dictionary. If \f5*(void**)data\fP is \f5NULL\fP, 
+the dictionary. If \f5*(void**)data\fP is \f5NULL\fP,
 all memory including that of the dictionary handle itself
 will be allocated via \f5memoryf\fP.
 .Tp
@@ -430,7 +415,7 @@ For \f5Dtqueue\fP, objects are ordered in order of insertion.
 For \f5Dtlist\fP, objects are ordered by list position.
 For \f5Dtset\fP and \f5Dtbag\fP,
 objects are ordered by some internal order (more below).
-Thus, objects in a dictionary or a viewpath can be walked using 
+Thus, objects in a dictionary or a viewpath can be walked using
 a \f5for(;;)\fP loop as below.
 .Cs
     for(obj = dtfirst(dt); obj; obj = dtnext(dt,obj))

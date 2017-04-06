@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -67,7 +67,7 @@ extern "C" {
     typedef struct port {	/* internal edge endpoint specification */
 	pointf p;		/* aiming point relative to node center */
 	double theta;		/* slope in radians */
-	boxf *bp;		/* if not null, points to bbox of 
+	boxf *bp;		/* if not null, points to bbox of
 				 * rectangular area that is port target
 				 */
 	boolean	defined;        /* if true, edge has port info at this end */
@@ -77,7 +77,7 @@ extern "C" {
 	unsigned char order;	/* for mincross */
 	unsigned char side;	/* if port is on perimeter of node, this
                                  * contains the bitwise OR of the sides (TOP,
-                                 * BOTTOM, etc.) it is on. 
+                                 * BOTTOM, etc.) it is on.
                                  */
 	char *name;		/* port name, if it was explicitly given, otherwise NULL */
     } port;
@@ -98,7 +98,8 @@ extern "C" {
     } pathend_t;
 
     typedef struct path {	/* internal specification for an edge spline */
-	port start, end;
+	port start;
+	port end;
 	int nbox;		/* number of subdivisions */
 	boxf *boxes;		/* rectangular regions of subdivision */
 	void *data;
@@ -107,8 +108,10 @@ extern "C" {
     typedef struct bezier {
 	pointf *list;
 	int size;
-	int sflag, eflag;
-	pointf sp, ep;
+	int sflag;
+	int eflag;
+	pointf sp;
+	pointf ep;
     } bezier;
 
     typedef struct splines {
@@ -118,7 +121,9 @@ extern "C" {
     } splines;
 
     typedef struct textlabel_t {
-	char *text, *fontname, *fontcolor;
+	char *text;
+	char *fontname;
+	char *fontcolor;
 	int charset;
 	double fontsize;
 	pointf dimen; /* the diagonal size of the label (estimated by layout) */
@@ -190,11 +195,15 @@ extern "C" {
 #include "usershape.h"		/* usershapes needed by gvc */
 
     typedef struct nodequeue {
-	node_t **store, **limit, **head, **tail;
+	node_t **store;
+	node_t **limit;
+	node_t **head;
+	node_t **tail;
     } nodequeue;
 
     typedef struct adjmatrix_t {
-	int nrows, ncols;
+	int nrows;
+	int ncols;
 	char *data;
     } adjmatrix_t;
 
@@ -203,8 +212,10 @@ extern "C" {
 	node_t **v;		/* ordered list of nodes in rank    */
 	int an;			/* globally allocated number of nodes   */
 	node_t **av;		/* allocated list of nodes in rank  */
-	double ht1, ht2;	/* height below/above centerline    */
-	double pht1, pht2;	/* as above, but only primitive nodes   */
+	double ht1;	/* height below/above centerline    */
+	double ht2;	/* height below/above centerline    */
+	double pht1;	/* as above, but only primitive nodes   */
+	double pht2;	/* as above, but only primitive nodes   */
 	boolean candidate;	/* for transpose () */
 	boolean valid;
 	int cache_nc;		/* caches number of crossings */
@@ -276,7 +287,8 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	boolean has_images;
 	unsigned char charset; /* input character set */
 	int rankdir;
-	double ht1, ht2;	/* below and above extremal ranks */
+	double ht1; /* below and above extremal ranks */
+	double ht2; /* below and above extremal ranks */
 	unsigned short flags;
 	void *alg;
 	GVC_t *gvc;	/* context for "globals" over multiple graphs */
@@ -286,7 +298,10 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	/* to place nodes */
 	node_t **neato_nlist;
 	int move;
-	double **dist, **spring, **sum_t, ***t;
+	double **dist;
+	double **spring;
+	double **sum_t;
+	double ***t;
 	unsigned short ndim;
 	unsigned short odim;
 #endif
@@ -299,15 +314,18 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	rank_t *rank;
 	graph_t *parent;        /* containing cluster (not parent subgraph) */
 	int level;		/* cluster nesting level (not node level!) */
-	node_t	*minrep, *maxrep;	/* set leaders for min and max rank */
+	node_t *minrep; /* set leaders for min and max rank */
+	node_t *maxrep;	/* set leaders for min and max rank */
 
 	/* fast graph node list */
 	nlist_t comp;
 	/* connected components */
-	node_t *minset, *maxset;	/* set leaders */
+	node_t *minset; /* set leaders */
+	node_t *maxset;	/* set leaders */
 	long n_nodes;
 	/* includes virtual */
-	short minrank, maxrank;
+	short minrank;
+	short maxrank;
 
 	/* various flags */
 	boolean has_flat_edges;
@@ -316,11 +334,14 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	unsigned char	showboxes;
 	fontname_kind fontnames;		/* to override mangling in SVG */
 
-	int nodesep, ranksep;
-	node_t *ln, *rn;	/* left, right nodes of bounding box */
+	int nodesep;
+	int ranksep;
+	node_t *ln; /* left nodes of bounding box */
+	node_t *rn; /* right nodes of bounding box */
 
 	/* for clusters */
-	node_t *leader, **rankleader;
+	node_t *leader;
+	node_t **rankleader;
 	boolean expanded;
 	char installed;
 	char set_type;
@@ -397,9 +418,12 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	shape_desc *shape;
 	void *shape_info;
 	pointf coord;
-	double width, height;  /* inches */
+	double width;   /* inches */
+	double height;  /* inches */
 	boxf bb;
-	double ht, lw, rw;
+	double ht;
+	double lw;
+	double rw;
 	textlabel_t *label;
 	textlabel_t *xlabel;
 	void *alg;
@@ -409,8 +433,11 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 
 #ifndef DOT_ONLY
 	unsigned char pinned;
-	int id, heapindex, hops;
-	double *pos, dist;
+	int id;
+	int heapindex;
+	int hops;
+	double *pos;
+	double dist;
 #endif
 #ifndef NEATO_ONLY
 	unsigned char showboxes;
@@ -419,26 +446,39 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	node_t *set;
 
 	/* fast graph */
-	char node_type, mark, onstack;
-	char ranktype, weight_class;
-	node_t *next, *prev;
-	elist in, out, flat_out, flat_in, other;
+	char node_type;
+	char mark;
+	char onstack;
+	char ranktype;
+	char weight_class;
+	node_t *next;
+	node_t *prev;
+	elist in;
+	elist out;
+	elist flat_out;
+	elist flat_in;
+	elist other;
 	graph_t *clust;
 
 	/* for union-find and collapsing nodes */
 	int UF_size;
 	node_t *UF_parent;
-	node_t *inleaf, *outleaf;
+	node_t *inleaf;
+	node_t *outleaf;
 
 	/* for placing nodes */
-	int rank, order;	/* initially, order = 1 for ordered edges */
+	int rank;
+	int order;	/* initially, order = 1 for ordered edges */
 	double mval;
-	elist save_in, save_out;
+	elist save_in;
+	elist save_out;
 
 	/* for network-simplex */
-	elist tree_in, tree_out;
+	elist tree_in;
+	elist tree_out;
 	edge_t *par;
-	int low, lim;
+	int low;
+	int lim;
 	int priority;
 
 	double pad[1];
@@ -506,8 +546,12 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
     typedef struct Agedgeinfo_t {
 	Agrec_t hdr;
 	splines *spl;
-	port tail_port, head_port;
-	textlabel_t *label, *head_label, *tail_label, *xlabel;
+	port tail_port;
+	port head_port;
+	textlabel_t *label;
+	textlabel_t *head_label;
+	textlabel_t *tail_label;
+	textlabel_t *xlabel;
 	char edge_type;
 	char adjacent;          /* true for flat edge with adjacent nodes */
 	char label_ontop;
@@ -525,7 +569,8 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	boolean conc_opp_flag;
 	short xpenalty;
 	int weight;
-	int cutvalue, tree_index;
+	int cutvalue;
+	int tree_index;
 	short count;
 	unsigned short minlen;
 	edge_t *to_virt;

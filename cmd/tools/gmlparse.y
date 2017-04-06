@@ -31,8 +31,9 @@ static gmlnode* N;
 static gmledge* E;
 static Dt_t* L;
 static Dt_t** liststk;
-static int liststk_sz, liststk_cnt;
- 
+static int liststk_sz;
+static int liststk_cnt;
+
 static void free_attr (Dt_t*d, gmlattr* p, Dtdisc_t* ds); /* forward decl */
 static char* sortToStr (int sort);    /* forward decl */
 
