@@ -136,10 +136,10 @@ static gdImagePtr imageLoad (char *filename)
 }
 
 static bool imageDiff (gdImagePtr A, gdImagePtr B, gdImagePtr C,
-	unsigned int w, unsigned int h,
-	unsigned char black, unsigned char white)
+	int w, int h,
+	int black, int white)
 {
-    unsigned int x, y;
+    int x, y;
     bool d, rc;
 
     rc = false;
@@ -157,8 +157,8 @@ static bool imageDiff (gdImagePtr A, gdImagePtr B, gdImagePtr C,
 int main(int argc, char **argv)
 {
     gdImagePtr A, B, C;
-    unsigned char black, white;
-    unsigned int minSX, minSY, maxSX, maxSY;
+    int black, white;
+    int minSX, minSY, maxSX, maxSY;
     bool rc;
 #ifdef HAVE_GD_PNG
     FILE *f;
