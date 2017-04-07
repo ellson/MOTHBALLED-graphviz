@@ -1,11 +1,14 @@
 version: 2.41.{build}
+clone_depth: 25
 
 image: Visual Studio 2015
 
 environment:
+  CTEST_OUTPUT_ON_FAILURE: TRUE
+  graphviz_install_dir: C:\Graphviz
   matrix:
-    - build_system: msbuild
     - build_system: cmake
+    - build_system: msbuild
 
 configuration:
   - Debug
@@ -52,8 +55,16 @@ build_script:
 
   # Test
   - ps: >-
-      if($env:build_system -eq "cmake") {
-        # No tests yet
+      if($env:build_system -eq "cmake" -and $env:configuration -eq "Release") {
+        mv Graphviz-*.exe Graphviz-install.exe;
+        # Install using installer and add bin directory to path.
+        # Piping the output of the installer to Out-Null, makes the script wait
+        # for the .exe to exit, instead continuing to the next command (which
+        # will then fail because the install hasn't finished)
+        ./Graphviz-install.exe /S /D=$env:graphviz_install_dir | Out-Null;
+        $env:Path += ";" + $env:graphviz_install_dir + "\bin"
+        dot -c;
+        ctest -C $env:configuration;
       }
       elseif($env:build_system -eq "msbuild") {
         # Append build destination to the PATH, configure dot and execute regression tests
@@ -68,3 +79,5 @@ artifacts:
     name: graphviz-windows
   - path: Debug
     name: graphviz-windows-debug
+  - path: build/Graphviz-install.exe
+    name: Graphviz-Windows-install

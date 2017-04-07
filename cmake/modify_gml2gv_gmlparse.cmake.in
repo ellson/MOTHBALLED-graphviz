@@ -1,0 +1,11 @@
+file(READ @CMAKE_CURRENT_BINARY_DIR@/gmlparse.h file_contents)
+string(REPLACE "yy" "gml" file_contents "${file_contents}")
+string(REPLACE "unsigned long int" "uint_64_t" file_contents "${file_contents}")
+string(REPLACE "unsigned long" "uint_64_t" file_contents "${file_contents}")
+file(WRITE @CMAKE_CURRENT_BINARY_DIR@/gmlparse.h "${file_contents}")
+
+file(READ @CMAKE_CURRENT_BINARY_DIR@/gmlparse.c file_contents)
+string(REPLACE "yy" "gml" file_contents "${file_contents}")
+string(REPLACE "unsigned long int" "uint_64_t" file_contents "${file_contents}")
+string(REPLACE "unsigned long" "uint_64_t" file_contents "${file_contents}")
+file(WRITE @CMAKE_CURRENT_BINARY_DIR@/gmlparse.c "${file_contents}")
