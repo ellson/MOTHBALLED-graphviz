@@ -54,7 +54,12 @@ set(MAN_INSTALL_DIR         share/man/man3)
 # set(MAN_PDF_INSTALL_DIR share/graphviz/doc/pdf)
 set(TOP_SOURCE_DIR          "${CMAKE_SOURCE_DIR}")
 set(GRAPHVIZ_LIB_DIR        "${CMAKE_CURRENT_SOURCE_DIR}/lib")
-set(WINDOWS_DEPENDENCY_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/windows/dependencies/libraries/x86")
+set(WINDOWS_DEPENDENCY_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/windows/dependencies/libraries")
+if (CMAKE_CL_64)
+    set(WINDOWS_DEPENDENCY_DIR "${WINDOWS_DEPENDENCY_DIR}/x64")
+else()
+    set(WINDOWS_DEPENDENCY_DIR "${WINDOWS_DEPENDENCY_DIR}/x86")
+endif()
 
 set(GRAPHVIZ_PLUGIN_VERSION 6)
 # Name of the config file used by Graphviz
