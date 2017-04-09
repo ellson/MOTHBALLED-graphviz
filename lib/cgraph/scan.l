@@ -277,6 +277,7 @@ void yyerror(char *str)
 	agxbputc (&xb, '\n');
 	agerr(AGERR, "%s", agxbuse(&xb));
 	agxbfree(&xb);
+    BEGIN(INITIAL);
 }
 /* must be here to see flex's macro defns */
 void aglexeof() { unput(GRAPH_EOF_TOKEN); }
