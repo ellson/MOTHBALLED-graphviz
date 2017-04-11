@@ -85,6 +85,9 @@ if (WIN32)
 
     # Find DLLs on Windows
     find_file(EXPAT_RUNTIME_LIBRARIES NAMES libexpat.dll expat.dll)
+    if (CMAKE_CL_64)
+        find_file(MSYS_RUNTIME_LIBRARIES NAMES msys-2.0.dll)
+    endif()
 endif()
 
 # ============================ Set Graphviz version ============================

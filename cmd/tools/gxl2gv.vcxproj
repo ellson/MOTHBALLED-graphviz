@@ -70,10 +70,10 @@
       <SubSystem>Console</SubSystem>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>getopt.lib;cdt.lib;cgraph.lib;ingraphs.lib;gvc.lib;libexpat.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>getopt.lib;cdt.lib;cgraph.lib;ingraphs.lib;gvc.lib;expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libexpat.dll $(OutDir)libexpat.dll</Command>
+      <Command>copy $(SolutionDir)windows\dependencies\libraries\x86\bin\expat.dll $(OutDir)libexpat.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -94,10 +94,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>getopt.lib;cdt.lib;cgraph.lib;ingraphs.lib;gvc.lib;libexpat.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>getopt.lib;cdt.lib;cgraph.lib;ingraphs.lib;gvc.lib;expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libexpat.dll $(OutDir)libexpat.dll</Command>
+      <Command>copy $(SolutionDir)windows\dependencies\libraries\x86\bin\expat.dll $(OutDir)libexpat.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

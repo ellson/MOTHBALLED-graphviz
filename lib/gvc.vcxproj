@@ -69,7 +69,7 @@
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
       <ModuleDefinitionFile>gvc.def</ModuleDefinitionFile>
-      <AdditionalDependencies>cdt.lib;cgraph.lib;ltdl.lib;xml2.lib;libexpat.lib;zlib.lib;rxspencer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cdt.lib;cgraph.lib;ltdl.lib;xml2.lib;expat.lib;zlib.lib;rxspencer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>bison -dy common\htmlparse.y -o common\htmlparse-intermediate.c
@@ -84,8 +84,7 @@ awk -f $(SolutionDir)awk\colortbl.awk color_lib &gt; common\colortbl.h</Command>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libltdl3.dll $(OutDir)libltdl3.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\rxspencer.dll $(OutDir)rxspencer.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libexpat.dll $(OutDir)libexpat.dll</Command>
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\expat.dll $(OutDir)expat.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -107,7 +106,7 @@ copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libexpat.dll $(OutDir)
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
       <ModuleDefinitionFile>gvc.def</ModuleDefinitionFile>
-      <AdditionalDependencies>cdt.lib;cgraph.lib;ltdl.lib;xml2.lib;libexpat.lib;zlib.lib;rxspencer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cdt.lib;cgraph.lib;ltdl.lib;xml2.lib;expat.lib;zlib.lib;rxspencer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>bison -dy common\htmlparse.y -o common\htmlparse-intermediate.c
@@ -122,8 +121,7 @@ awk -f $(SolutionDir)awk\colortbl.awk color_lib &gt; common\colortbl.h</Command>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libltdl3.dll $(OutDir)libltdl3.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\rxspencer.dll $(OutDir)rxspencer.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libexpat.dll $(OutDir)libexpat.dll</Command>
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\expat.dll $(OutDir)expat.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
