@@ -64,7 +64,7 @@
       <EnablePREfast>true</EnablePREfast>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>getopt.lib;ast.lib;atk-1.0.lib;libcairo-2.lib;cdt.lib;cgraph.lib;expr.lib;fontconfig.lib;freetype.lib;gdk_pixbuf-2.0.lib;gdkglext-win32-1.0.lib;gdk-win32-2.0.lib;glade-2.0.lib;gladeui-1.lib;glcomp.lib;glib-2.0.lib;glu32.lib;gmodule-2.0.lib;gobject-2.0.lib;gtkglext-win32-1.0.lib;gtk-win32-2.0.lib;gvprlib.lib;iconv.lib;ingraphs.lib;jpeg.lib;neatogen.lib;opengl32.lib;pango-1.0.lib;pangocairo-1.0.lib;sfio.lib;topfish.lib;vmalloc.lib;xdot.lib;xml2.lib;z.lib;gvc.lib</AdditionalDependencies>
+      <AdditionalDependencies>getopt.lib;ast.lib;atk-1.0.lib;libcairo-2.lib;cdt.lib;cgraph.lib;expr.lib;fontconfig.lib;freetype.lib;gdk_pixbuf-2.0.lib;gdkglext-win32-1.0.lib;gdk-win32-2.0.lib;glade-2.0.lib;gladeui-1.lib;glcomp.lib;glib-2.0.lib;glu32.lib;gmodule-2.0.lib;gobject-2.0.lib;gtkglext-win32-1.0.lib;gtk-win32-2.0.lib;gvprlib.lib;iconv.lib;ingraphs.lib;jpeg.lib;neatogen.lib;opengl32.lib;pango-1.0.lib;pangocairo-1.0.lib;sfio.lib;topfish.lib;vmalloc.lib;xdot.lib;xml2.lib;zlib.lib;gvc.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\getopt;$(SolutionDir)windows\dependencies\libraries\x86\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
@@ -76,7 +76,6 @@
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libpng12.dll $(OutDir)libpng12.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\zlib1.dll $(OutDir)zlib1.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libxml2.dll $(OutDir)libxml2.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\iconv.dll $(OutDir)iconv.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libglib-2.0-0.dll $(OutDir)libglib-2.0-0.dll
@@ -110,7 +109,7 @@ $(SolutionDir)windows\dependencies\libraries\x86\bin\pango-querymodules.exe &gt;
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>getopt.lib;ast.lib;atk-1.0.lib;libcairo-2.lib;cdt.lib;cgraph.lib;expr.lib;fontconfig.lib;freetype.lib;gdk_pixbuf-2.0.lib;gdkglext-win32-1.0.lib;gdk-win32-2.0.lib;glade-2.0.lib;gladeui-1.lib;glcomp.lib;glib-2.0.lib;glu32.lib;gmodule-2.0.lib;gobject-2.0.lib;gtkglext-win32-1.0.lib;gtk-win32-2.0.lib;gvprlib.lib;iconv.lib;ingraphs.lib;jpeg.lib;neatogen.lib;opengl32.lib;pango-1.0.lib;pangocairo-1.0.lib;sfio.lib;topfish.lib;vmalloc.lib;xdot.lib;xml2.lib;z.lib;gvc.lib</AdditionalDependencies>
+      <AdditionalDependencies>getopt.lib;ast.lib;atk-1.0.lib;libcairo-2.lib;cdt.lib;cgraph.lib;expr.lib;fontconfig.lib;freetype.lib;gdk_pixbuf-2.0.lib;gdkglext-win32-1.0.lib;gdk-win32-2.0.lib;glade-2.0.lib;gladeui-1.lib;glcomp.lib;glib-2.0.lib;glu32.lib;gmodule-2.0.lib;gobject-2.0.lib;gtkglext-win32-1.0.lib;gtk-win32-2.0.lib;gvprlib.lib;iconv.lib;ingraphs.lib;jpeg.lib;neatogen.lib;opengl32.lib;pango-1.0.lib;pangocairo-1.0.lib;sfio.lib;topfish.lib;vmalloc.lib;xdot.lib;xml2.lib;zlib.lib;gvc.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\getopt;$(SolutionDir)windows\dependencies\libraries\x86\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
@@ -124,7 +123,6 @@ $(SolutionDir)windows\dependencies\libraries\x86\bin\pango-querymodules.exe &gt;
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libpng12.dll $(OutDir)libpng12.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\zlib1.dll $(OutDir)zlib1.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libxml2.dll $(OutDir)libxml2.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\iconv.dll $(OutDir)iconv.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libglib-2.0-0.dll $(OutDir)libglib-2.0-0.dll

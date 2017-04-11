@@ -85,7 +85,6 @@ if (WIN32)
 
     # Find DLLs on Windows
     find_file(EXPAT_RUNTIME_LIBRARIES NAMES libexpat.dll expat.dll)
-    find_file(ZLIB_RUNTIME_LIBRARIES NAMES zlib1.dll zlib.dll)
 endif()
 
 # ============================ Set Graphviz version ============================

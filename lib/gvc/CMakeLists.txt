@@ -109,7 +109,6 @@ if (WIN32)
             ${EXPAT_RUNTIME_LIBRARIES}
             ${LTDL_RUNTIME_LIBRARIES}
             ${RXSPENCER_RUNTIME_LIBRARIES}
-            ${ZLIB_RUNTIME_LIBRARIES}
         DESTINATION ${BINARY_INSTALL_DIR}
     )
 endif()

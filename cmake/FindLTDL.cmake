@@ -1,6 +1,6 @@
 find_path(LTDL_INCLUDE_DIR ltdl.h)
 find_library(LTDL_LIBRARY NAMES libtldl ltdl)
-find_file(LTDL_RUNTIME_LIBRARY libltdl3.dll)
+find_file(LTDL_RUNTIME_LIBRARY NAMES libltdl3.dll ltdl.dll)
 
 include(FindPackageHandleStandardArgs)
 if (WIN32)
