@@ -34,6 +34,18 @@ extern "C" {
 	IMAGESCALE_BOTH    /* scale image to fit without regard for aspect ratio */
     } imagescale_t;
 
+    typedef enum {
+        IMAGEPOS_TOP_LEFT,      /* top left */
+        IMAGEPOS_TOP_CENTER,    /* top center */
+        IMAGEPOS_TOP_RIGHT,     /* top right */
+        IMAGEPOS_MIDDLE_LEFT,   /* middle left */
+        IMAGEPOS_MIDDLE_CENTER, /* middle center (true center, the default)*/
+        IMAGEPOS_MIDDLE_RIGHT,  /* middle right */
+        IMAGEPOS_BOTTOM_LEFT,   /* bottom left */
+        IMAGEPOS_BOTTOM_CENTER, /* bottom center */
+        IMAGEPOS_BOTTOM_RIGHT   /* bottom right */
+    } imagepos_t;
+
     typedef struct usershape_s usershape_t;
 
     struct usershape_s {

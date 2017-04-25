@@ -674,11 +674,37 @@ static imagescale_t get_imagescale(char *s)
     return IMAGESCALE_FALSE;
 }
 
+static imagepos_t get_imagepos(char *s)
+{
+    if (*s == '\0')
+	return IMAGEPOS_MIDDLE_CENTER;
+    if (!strcasecmp(s, "tl"))
+	return IMAGEPOS_TOP_LEFT;
+    if (!strcasecmp(s, "tc"))
+	return IMAGEPOS_TOP_CENTER;
+    if (!strcasecmp(s, "tr"))
+	return IMAGEPOS_TOP_RIGHT;
+    if (!strcasecmp(s, "ml"))
+	return IMAGEPOS_MIDDLE_LEFT;
+    if (!strcasecmp(s, "mc"))
+	return IMAGEPOS_MIDDLE_CENTER;
+    if (!strcasecmp(s, "mr"))
+	return IMAGEPOS_MIDDLE_RIGHT;
+    if (!strcasecmp(s, "bl"))
+	return IMAGEPOS_BOTTOM_LEFT;
+    if (!strcasecmp(s, "bc"))
+	return IMAGEPOS_BOTTOM_CENTER;
+    if (!strcasecmp(s, "br"))
+	return IMAGEPOS_BOTTOM_RIGHT;
+    return IMAGEPOS_MIDDLE_CENTER;
+}
+
 /* gvrender_usershape:
- * Scale image to fill polygon bounding box according to "imagescale"
+ * Scale image to fill polygon bounding box according to "imagescale",
+ * positioned at "imagepos"
  */
 void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n,
-			boolean filled, char *imagescale)
+			boolean filled, char *imagescale, char *imagepos)
 {
     gvrender_engine_t *gvre = job->render.engine;
     usershape_t *us;
@@ -687,6 +713,7 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n,
     boxf b;			/* target box */
     int i;
     point isz;
+    imagepos_t position;
 
     assert(job);
     assert(name);
@@ -744,14 +771,45 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n,
 	break;
     }
 
-    /* if image is smaller than target area then center it */
+    /* if image is smaller in any dimension, apply the specified positioning */
+    position = get_imagepos(imagepos);
     if (iw < pw) {
-	b.LL.x += (pw - iw) / 2.0;
-	b.UR.x -= (pw - iw) / 2.0;
+        switch (position) {
+        case IMAGEPOS_TOP_LEFT:
+        case IMAGEPOS_MIDDLE_LEFT:
+        case IMAGEPOS_BOTTOM_LEFT:
+            b.UR.x = b.LL.x + iw;
+            break;
+        case IMAGEPOS_TOP_RIGHT:
+        case IMAGEPOS_MIDDLE_RIGHT:
+        case IMAGEPOS_BOTTOM_RIGHT:
+            b.LL.x += (pw - iw);
+            b.UR.x = b.LL.x + iw;
+            break;
+        default:
+            b.LL.x += (pw - iw) / 2.0;
+            b.UR.x -= (pw - iw) / 2.0;
+            break;
+        }
     }
     if (ih < ph) {
-	b.LL.y += (ph - ih) / 2.0;
-	b.UR.y -= (ph - ih) / 2.0;
+        switch (position) {
+        case IMAGEPOS_TOP_LEFT:
+        case IMAGEPOS_TOP_CENTER:
+        case IMAGEPOS_TOP_RIGHT:
+            b.LL.y = b.UR.y - ih;
+            break;
+        case IMAGEPOS_BOTTOM_LEFT:
+        case IMAGEPOS_BOTTOM_CENTER:
+        case IMAGEPOS_BOTTOM_RIGHT:
+            b.LL.y += ih;
+            b.UR.y = b.LL.y - ih;
+            break;
+        default:
+            b.LL.y += (ph - ih) / 2.0;
+            b.UR.y -= (ph - ih) / 2.0;
+            break;
+        }
     }
 
     /* convert from graph to device coordinates */

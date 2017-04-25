@@ -511,6 +511,21 @@ a semicolon (for Windows) or a colon (all other OS).
 The first directory in which a file of the given name is found will be used to
 load the image. If <tt>imagepath</tt> is not set, relative pathnames for the image
 file will be interpreted with respect to the current working directory.
+:imagepos:N:string:"mc":;
+Attribute controlling how an image is positioned within its containing node.  This
+only has an effect when the image is smaller than the containing node.  The
+default is to be centered both horizontally and vertically.  Valid values:
+<TABLE>
+<TR><TD>tl</TD><TD>Top Left</TD></TR>
+<TR><TD>tc</TD><TD>Top Centered</TD></TR>
+<TR><TD>tr</TD><TD>Top Right</TD></TR>
+<TR><TD>ml</TD><TD>Middle Left</TD></TR>
+<TR><TD>mc</TD><TD>Middle Centered <I>(the default)</I></TD></TR>
+<TR><TD>mr</TD><TD>Middle Right</TD></TR>
+<TR><TD>bl</TD><TD>Bottom Left</TD></TR>
+<TR><TD>bc</TD><TD>Bottom Centered</TD></TR>
+<TR><TD>br</TD><TD>Bottom Right</TD></TR>
+</TABLE>
 :imagescale:N:bool/string:false:;
 Attribute controlling how an image fills its
 containing node. In general, the image is given its natural size,
