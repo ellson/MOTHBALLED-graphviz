@@ -100,7 +100,7 @@ extern "C" {
 	*N_fontsize, *N_fontname, *N_fontcolor, *N_margin,
 	*N_label, *N_xlabel, *N_nojustify, *N_style, *N_showboxes,
 	*N_sides, *N_peripheries, *N_ordering, *N_orientation,
-	*N_skew, *N_distortion, *N_fixed, *N_imagescale, *N_layer,
+	*N_skew, *N_distortion, *N_fixed, *N_imagescale, *N_imagepos, *N_layer,
 	*N_group, *N_comment, *N_vertices, *N_z,
 	*N_penwidth, *N_gradientangle;
     EXTERN Agsym_t

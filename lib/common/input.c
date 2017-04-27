@@ -792,6 +792,7 @@ void graph_init(graph_t * g, boolean use_rankdir)
     N_distortion = agfindnodeattr(g, "distortion");
     N_fixed = agfindnodeattr(g, "fixedsize");
     N_imagescale = agfindnodeattr(g, "imagescale");
+    N_imagepos = agfindnodeattr(g, "imagepos");
     N_nojustify = agfindnodeattr(g, "nojustify");
     N_layer = agfindnodeattr(g, "layer");
     N_group = agfindnodeattr(g, "group");
