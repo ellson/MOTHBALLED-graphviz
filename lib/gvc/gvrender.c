@@ -183,6 +183,18 @@ pointf *gvrender_ptf_A(GVJ_t * job, pointf * af, pointf * AF, int n)
     return AF;
 }
 
+static int gvrender_comparestr(const void *s1, const void *s2)
+{
+    return strcmp(*(char **) s1, *(char **) s2);
+}
+
+/* gvrender_resolve_color:
+ * N.B. strcmp cannot be used in bsearch, as it will pass a pointer
+ * to an element in the array features->knowncolors (i.e., a char**)
+ * as an argument of the compare function, while the arguments to 
+ * strcmp are both char*. Given this, the first argument to
+ * bsearch must also be char**, so we use &tok.
+ */
 static void gvrender_resolve_color(gvrender_features_t * features,
 				   char *name, gvcolor_t * color)
 {
@@ -195,8 +207,8 @@ static void gvrender_resolve_color(gvrender_features_t * features,
     if (!features->knowncolors
 	||
 	(bsearch
-	 (tok, features->knowncolors, features->sz_knowncolors,
-	  sizeof(char *), (int(*)(const void*, const void*)) strcmp)) == NULL) {
+	 (&tok, features->knowncolors, features->sz_knowncolors,
+	  sizeof(char *), gvrender_comparestr)) == NULL) {
 	/* if tok was not found in known_colors */
 	rc = colorxlate(name, color, features->color_type);
 	if (rc != COLOR_OK) {
