@@ -27,6 +27,7 @@
 #include "color.h"
 #include "colorprocs.h"
 #include "colortbl.h"
+#include "macros.h"
 #include "memory.h"
 
 static char* colorscheme;
@@ -228,9 +229,9 @@ static char* resolveColor (char* str)
     char* ss;   /* second slash */
     char* c2;   /* second char */
 
-    if ((*str == 'b') || !strncmp(str+1,"lack",4)) return str;
-    if ((*str == 'w') || !strncmp(str+1,"hite",4)) return str;
-    if ((*str == 'l') || !strncmp(str+1,"ightgrey",8)) return str;
+    if (streq(str, "black")) return str;
+    if (streq(str, "white")) return str;
+    if (streq(str, "lightgrey")) return str;
     if (*str == '/') {   /* if begins with '/' */
 	c2 = str+1;
         if ((ss = strchr(c2, '/'))) {  /* if has second '/' */
