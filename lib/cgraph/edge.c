@@ -498,7 +498,7 @@ and to expose them to foreign languages without C preprocessor. */
 #ifdef ageqedge
 #undef ageqedge
 #endif
-Agnode_t *ageqedge(Agedge_t * e, Agedge_t * f)
+CGRAPH_API Agnode_t *ageqedge(Agedge_t * e, Agedge_t * f)
 {
     return AGEQEDGE(e, f);
 }
@@ -506,7 +506,7 @@ Agnode_t *ageqedge(Agedge_t * e, Agedge_t * f)
 #ifdef agtail
 #undef agtail
 #endif
-Agnode_t *agtail(Agedge_t * e)
+CGRAPH_API Agnode_t *agtail(Agedge_t * e)
 {
     return AGTAIL(e);
 }
@@ -514,7 +514,7 @@ Agnode_t *agtail(Agedge_t * e)
 #ifdef aghead
 #undef aghead
 #endif
-Agnode_t *aghead(Agedge_t * e)
+CGRAPH_API Agnode_t *aghead(Agedge_t * e)
 {
     return AGHEAD(e);
 }
@@ -522,7 +522,7 @@ Agnode_t *aghead(Agedge_t * e)
 #ifdef agopp
 #undef agopp
 #endif
-Agedge_t *agopp(Agedge_t * e)
+CGRAPH_API Agedge_t *agopp(Agedge_t * e)
 {
     return AGOPP(e);
 }
