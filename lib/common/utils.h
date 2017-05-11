@@ -90,7 +90,7 @@ extern "C" {
 
     extern void get_gradient_points(pointf * A, pointf * G, int n, float angle, int flags);
 
-    extern int processClusterEdges(graph_t * g);
+    extern void processClusterEdges(graph_t * g);
 
     extern char *latin1ToUTF8(char *);
     extern char *htmlEntityUTF8(char *, graph_t* g);

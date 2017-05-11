@@ -574,7 +574,7 @@ static int write_nodes(Agraph_t * g, GVJ_t * job, int top, int has_subgs, state_
 	indent(job, sp->Level);
     }
     for (; n; n = agnxtnode(g, n)) {
-	if (IS_CLUSTER(n)) continue;
+	if (IS_CLUST_NODE(n)) continue;
 	if (not_first) 
             if (top)
 	        gvputs(job, ",\n");
@@ -672,7 +672,7 @@ static void write_graph(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
 	aginit(g, AGRAPH, ID, -((int)sizeof(gvid_t)), FALSE);
 	sgcnt = label_subgs(g, sgcnt, map);
 	for (np = agfstnode(g); np; np = agnxtnode(g,np)) {
-	    if (IS_CLUSTER(np)) {
+	    if (IS_CLUST_NODE(np)) {
 		ND_gid(np) = lookup(map, agnameof(np));
 	    }
 	    else {

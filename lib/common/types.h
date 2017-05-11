@@ -553,6 +553,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	textlabel_t *tail_label;
 	textlabel_t *xlabel;
 	char edge_type;
+	char compound;
 	char adjacent;          /* true for flat edge with adjacent nodes */
 	char label_ontop;
 	unsigned char gui_state; /* Edge state for GUI ops */
@@ -582,6 +583,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ED_count(e) (((Agedgeinfo_t*)AGDATA(e))->count)
 #define ED_cutvalue(e) (((Agedgeinfo_t*)AGDATA(e))->cutvalue)
 #define ED_edge_type(e) (((Agedgeinfo_t*)AGDATA(e))->edge_type)
+#define ED_compound(e) (((Agedgeinfo_t*)AGDATA(e))->compound)
 #define ED_adjacent(e) (((Agedgeinfo_t*)AGDATA(e))->adjacent)
 #define ED_factor(e) (((Agedgeinfo_t*)AGDATA(e))->factor)
 #define ED_gui_state(e) (((Agedgeinfo_t*)AGDATA(e))->gui_state)

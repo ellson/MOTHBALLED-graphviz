@@ -1045,6 +1045,7 @@ static edge_t *cloneEdge(edge_t * e, node_t * ct, node_t * ch)
     edge_t *ce = agedge(g, ct, ch,NULL,1);
     agbindrec(ce, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
     agcopyattr(e, ce);
+    ED_compound(ce) = TRUE;
 
     return ce;
 }
@@ -1094,11 +1095,12 @@ static item *mapEdge(Dt_t * map, edge_t * e)
  * routing to avoid edge crossings. At present, this is not implemented,
  * so we could use a simpler model in which we create a single cluster
  * node for each cluster used in a cluster edge.
+ *
+ * Return 1 if cluster edge is created.
  */
 #define MAPC(n) (strncmp(agnameof(n),"cluster",7)?NULL:findCluster(cmap,agnameof(n)))
 
-
-static void
+static int
 checkCompound(edge_t * e, graph_t * clg, agxbuf * xb, Dt_t * map, Dt_t* cmap)
 {
     graph_t *tg;
@@ -1110,20 +1112,20 @@ checkCompound(edge_t * e, graph_t * clg, agxbuf * xb, Dt_t * map, Dt_t* cmap)
     edge_t *ce;
     item *ip;
 
-    if (IS_CLUST_NODE(h)) return;
+    if (IS_CLUST_NODE(h)) return 0;
     tg = MAPC(t);
     hg = MAPC(h);
     if (!tg && !hg)
-	return;
+	return 0;
     if (tg == hg) {
 	agerr(AGWARN, "cluster cycle %s -- %s not supported\n", agnameof(t),
 	      agnameof(t));
-	return;
+	return 0;
     }
     ip = mapEdge(map, e);
     if (ip) {
 	cloneEdge(e, ip->t, ip->h);
-	return;
+	return 1;
     }
 
     if (hg) {
@@ -1131,12 +1133,12 @@ checkCompound(edge_t * e, graph_t * clg, agxbuf * xb, Dt_t * map, Dt_t* cmap)
 	    if (agcontains(hg, tg)) {
 		agerr(AGWARN, "tail cluster %s inside head cluster %s\n",
 		      agnameof(tg), agnameof(hg));
-		return;
+		return 0;
 	    }
 	    if (agcontains(tg, hg)) {
 		agerr(AGWARN, "head cluster %s inside tail cluster %s\n",
 		      agnameof(hg),agnameof(tg));
-		return;
+		return 0;
 	    }
 	    cn = clustNode(t, tg, xb, clg);
 	    cn1 = clustNode(h, hg, xb, clg);
@@ -1146,7 +1148,7 @@ checkCompound(edge_t * e, graph_t * clg, agxbuf * xb, Dt_t * map, Dt_t* cmap)
 	    if (agcontains(hg, t)) {
 		agerr(AGWARN, "tail node %s inside head cluster %s\n",
 		      agnameof(t), agnameof(hg));
-		return;
+		return 0;
 	    }
 	    cn = clustNode(h, hg, xb, clg);
 	    ce = cloneEdge(e, t, cn);
@@ -1156,23 +1158,40 @@ checkCompound(edge_t * e, graph_t * clg, agxbuf * xb, Dt_t * map, Dt_t* cmap)
 	if (agcontains(tg, h)) {
 	    agerr(AGWARN, "head node %s inside tail cluster %s\n", agnameof(h),
 		  agnameof(tg));
-	    return;
+	    return 0;
 	}
 	cn = clustNode(t, tg, xb, clg);
 	ce = cloneEdge(e, cn, h);
 	insertEdge(map, t, h, ce);
     }
+    return 1;
+}
+
+typedef struct {
+    Agrec_t hdr;
+    int n_cluster_edges;
+} cl_edge_t;
+
+static int
+num_clust_edges(graph_t * g)
+{
+    cl_edge_t* cl_info = (cl_edge_t*)HAS_CLUST_EDGE(g);
+    if (cl_info)
+	return cl_info->n_cluster_edges;
+    else
+	return 0;
 }
 
 /* processClusterEdges:
  * Look for cluster edges. Replace cluster edge endpoints
  * corresponding to a cluster with special cluster nodes.
  * Delete original nodes.
- * Return 0 if no cluster edges; 1 otherwise.
+ * If cluster edges are found, a cl_edge_t record will be 
+ * attached to the graph, containing the count of such edges.
  */
-int processClusterEdges(graph_t * g)
+void processClusterEdges(graph_t * g)
 {
-    int rv;
+    int num_cl_edges = 0;
     node_t *n;
     node_t *nxt;
     edge_t *e;
@@ -1189,21 +1208,21 @@ int processClusterEdges(graph_t * g)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (IS_CLUST_NODE(n)) continue;
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    checkCompound(e, clg, &xb, map, cmap);
+	    num_cl_edges += checkCompound(e, clg, &xb, map, cmap);
 	}
     }
     agxbfree(&xb);
-    dtclose(map);
-    rv = agnnodes(clg);
     for (n = agfstnode(clg); n; n = nxt) {
 	nxt = agnxtnode(clg, n);
 	agdelete(g, n);
     }
     agclose(clg);
-    if (rv)
-	SET_CLUST_EDGE(g);
+    if (num_cl_edges) {
+	cl_edge_t* cl_info;
+	cl_info = agbindrec(g, CL_EDGE_TAG, sizeof(cl_edge_t), FALSE);
+	cl_info->n_cluster_edges = num_cl_edges;
+    }
     dtclose(cmap);
-    return rv;
 }
 
 /* mapN:
@@ -1231,6 +1250,7 @@ static node_t *mapN(node_t * n, graph_t * clg)
 	return nn;
     nn = agnode(g, name, 1);
     agbindrec(nn, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
+    SET_CLUST_NODE(nn);
 
     /* Set all attributes to default */
     for (sym = agnxtattr(g, AGNODE, NULL); sym;  (sym = agnxtattr(g, AGNODE, sym))) {
@@ -1248,8 +1268,6 @@ static void undoCompound(edge_t * e, graph_t * clg)
     node_t *nhead;
     edge_t* ce;
 
-    if (!(IS_CLUST_NODE(t) || IS_CLUST_NODE(h)))
-	return;
     ntail = mapN(t, clg);
     nhead = mapN(h, clg);
     ce = cloneEdge(e, ntail, nhead);
@@ -1279,14 +1297,24 @@ void undoClusterEdges(graph_t * g)
     node_t *nextn;
     edge_t *e;
     graph_t *clg;
+    edge_t **elist;
+    int ecnt = num_clust_edges(g);
+    int i = 0;
 
+    if (!ecnt) return;
     clg = agsubg(g, "__clusternodes",1);
     agbindrec(clg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+    elist = N_NEW(ecnt, edge_t*);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    undoCompound(e, clg);
+	    if (ED_compound(e))
+		elist[i++] = e;
 	}
     }
+    assert(i == ecnt);
+    for (i = 0; i < ecnt; i++)
+	undoCompound(elist[i], clg);
+    free (elist);
     for (n = agfstnode(clg); n; n = nextn) { 
 	nextn = agnxtnode(clg, n);
 	gv_cleanup_node(n);

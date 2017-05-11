@@ -261,7 +261,7 @@
 #define LT_RECD 	(2 << 1)
 
 /* Flags stored in GD_flags 
- * Bit(s):  0     HAS_CLUST_EDGE
+ * Bit(s):  0     unused
  *          1-3   ET_ 
  *          4     NEW_RANK
  */

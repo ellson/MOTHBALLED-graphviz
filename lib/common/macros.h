@@ -26,10 +26,10 @@
 #define hasPos(n)       (ND_pinned(n) > 0)
 #define isFixed(n)      (ND_pinned(n) > P_SET)
 
+#define CL_EDGE_TAG "cl_edge_info"
 #define SET_CLUST_NODE(n) (ND_clustnode(n) = TRUE)
 #define IS_CLUST_NODE(n)  (ND_clustnode(n))
-#define HAS_CLUST_EDGE(g) (GD_flags(g) & 1)
-#define SET_CLUST_EDGE(g) (GD_flags(g) |= 1)
+#define HAS_CLUST_EDGE(g) (aggetrec(g, CL_EDGE_TAG, FALSE))
 #define EDGE_TYPE(g) (GD_flags(g) & (7 << 1))
 
 #ifndef streq
