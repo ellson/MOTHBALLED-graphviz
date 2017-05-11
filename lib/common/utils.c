@@ -1212,6 +1212,7 @@ void processClusterEdges(graph_t * g)
 	}
     }
     agxbfree(&xb);
+    dtclose(map);
     for (n = agfstnode(clg); n; n = nxt) {
 	nxt = agnxtnode(clg, n);
 	agdelete(g, n);
