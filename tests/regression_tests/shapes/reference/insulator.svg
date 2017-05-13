@@ -8,14 +8,14 @@
  viewBox="0.00 0.00 62.00 44.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 40)">
 <title>G</title>
-<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-40 58,-40 58,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-40 58,-40 58,4 -4,4"/>
 <!-- a -->
 <g id="node1" class="node">
 <title>a</title>
-<polygon fill="none" stroke="#000000" points="33,-24 33,-12 21,-12 21,-24 33,-24"/>
-<polyline fill="none" stroke="#000000" points="36,-27 36,-9 18,-9 18,-27 36,-27 "/>
-<polyline fill="none" stroke="#000000" points="36,-18 54,-18 "/>
-<polyline fill="none" stroke="#000000" points="0,-18 18,-18 "/>
+<polygon fill="none" stroke="black" points="33,-24 33,-12 21,-12 21,-24 33,-24"/>
+<polyline fill="none" stroke="black" points="36,-27 36,-9 18,-9 18,-27 36,-27 "/>
+<polyline fill="none" stroke="black" points="36,-18 54,-18 "/>
+<polyline fill="none" stroke="black" points="0,-18 18,-18 "/>
 </g>
 </g>
 </svg>
