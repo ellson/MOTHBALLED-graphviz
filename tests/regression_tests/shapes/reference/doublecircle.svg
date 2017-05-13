@@ -8,12 +8,12 @@
  viewBox="0.00 0.00 52.00 52.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 48)">
 <title>G</title>
-<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-48 48,-48 48,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-48 48,-48 48,4 -4,4"/>
 <!-- a -->
 <g id="node1" class="node">
 <title>a</title>
-<ellipse fill="none" stroke="#000000" cx="22" cy="-22" rx="18" ry="18"/>
-<ellipse fill="none" stroke="#000000" cx="22" cy="-22" rx="22" ry="22"/>
+<ellipse fill="none" stroke="black" cx="22" cy="-22" rx="18" ry="18"/>
+<ellipse fill="none" stroke="black" cx="22" cy="-22" rx="22" ry="22"/>
 </g>
 </g>
 </svg>
