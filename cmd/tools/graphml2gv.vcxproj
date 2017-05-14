@@ -79,7 +79,6 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)windows\include;$(SolutionDir)windows\getopt;$(SolutionDir)windows\dependencies\libraries\x86\include;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
       <EnablePREfast>true</EnablePREfast>

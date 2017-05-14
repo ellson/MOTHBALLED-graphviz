@@ -78,7 +78,6 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\libraries\x86\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;NONDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
       <EnablePREfast>true</EnablePREfast>

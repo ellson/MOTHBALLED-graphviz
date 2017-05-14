@@ -107,7 +107,6 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>

@@ -92,7 +92,6 @@ $(SolutionDir)windows\dependencies\libraries\x86\bin\pango-querymodules.exe &gt;
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\libraries\x86\include;$(SolutionDir)windows\dependencies\libraries\x86\include\cairo;$(SolutionDir)/libltdl;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/windows/lib/cdt;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/agraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
       <EnablePREfast>true</EnablePREfast>

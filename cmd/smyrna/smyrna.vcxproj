@@ -102,7 +102,6 @@ $(SolutionDir)windows\dependencies\libraries\x86\bin\pango-querymodules.exe &gt;
     <ClCompile>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)gui;$(SolutionDir)windows\include;$(SolutionDir)windows\getopt;$(SolutionDir)windows\dependencies\libraries\x86\include;$(SolutionDir)windows\dependencies\libraries\x86\include\cairo;$(SolutionDir);$(SolutionDir)lib\ast;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\glcomp;$(SolutionDir)lib\gvpr;$(SolutionDir)lib\neatogen;$(SolutionDir)lib\sfio;$(SolutionDir)lib\topfish;$(SolutionDir)lib\xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;HAVE_TRIANGLE;HAVE_GTS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
       <EnablePREfast>true</EnablePREfast>
