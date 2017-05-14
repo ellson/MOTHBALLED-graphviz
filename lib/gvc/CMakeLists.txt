@@ -56,10 +56,13 @@ target_link_libraries(gvc
     pathplan
     xdot
     ${EXPAT_LIBRARIES}
-    ${LTDL_LIBRARIES}
     ${RXSPENCER_LIBRARIES}
     ${ZLIB_LIBRARIES}
 )
+
+if (NOT WIN32)
+    target_link_libraries(gvc ${LTDL_LIBRARIES})
+endif()
 
 if (${with_ortho})
     target_link_libraries(gvc ortho)
@@ -107,16 +110,6 @@ if (WIN32)
     install(
         FILES
             ${EXPAT_RUNTIME_LIBRARIES}
-            ${LTDL_RUNTIME_LIBRARIES}
         DESTINATION ${BINARY_INSTALL_DIR}
     )
-    # Include msys runtime when compiling 64bit on Windows, required for the
-    # 64bit version of libltdl. TODO: replace ltdl with a different dynamic
-    # loader, or find a 64bit version that doesn't need msys.
-    if (CMAKE_CL_64)
-        install(
-            FILES ${MSYS_RUNTIME_LIBRARIES}
-            DESTINATION ${BINARY_INSTALL_DIR}
-        )
-    endif()
 endif()

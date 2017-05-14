@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,7 +19,7 @@
 #include "gvc.h"
 
 #ifdef _WIN32
-#include "libltdl/lt_system.h"
+#define R_OK 4
 #endif
 
 #ifdef HAVE_UNISTD_H
@@ -105,17 +105,17 @@ double late_double(void *obj, attrsym_t * attr, double def, double low)
  * Return value for PSinputscale. If this is > 0, it has been set on the
  * command line and this value is used.
  * Otherwise, we check the graph's inputscale attribute. If this is not set
- * or has a bad value, we return -1. 
+ * or has a bad value, we return -1.
  * If the value is 0, we return the default. Otherwise, we return the value.
  * Set but negative values are treated like 0.
- */ 
+ */
 double get_inputscale (graph_t* g)
 {
     double d;
 
     if (PSinputscale > 0) return PSinputscale;  /* command line flag prevails */
     d = late_double(g, agfindgraphattr(g, "inputscale"), -1, 0);
-    if (d == 0) return POINTS_PER_INCH; 
+    if (d == 0) return POINTS_PER_INCH;
     else return d;
 }
 
@@ -212,11 +212,11 @@ pointf coord(node_t * n)
 #define W_DEGREE 5
 
 /*
- *  Bezier : 
+ *  Bezier :
  *	Evaluate a Bezier curve at a particular parameter value
  *      Fill in control points for resulting sub-curves if "Left" and
  *	"Right" are non-null.
- * 
+ *
  */
 pointf Bezier(pointf * V, int degree, double t, pointf * Left, pointf * Right)
 {
@@ -276,7 +276,7 @@ static void cleanup(void)
 
 /* Fgets:
  * Read a complete line.
- * Return pointer to line, 
+ * Return pointer to line,
  * or 0 on EOF
  */
 char *Fgets(FILE * fp)
@@ -308,23 +308,23 @@ char *Fgets(FILE * fp)
  * Check to make sure it is okay to read in files.
  * It returns NULL if the filename is trivial.
  *
- * If the application has set the SERVER_NAME environment variable, 
+ * If the application has set the SERVER_NAME environment variable,
  * this indicates it is web-active. In this case, it requires that the GV_FILE_PATH
  * environment variable be set. This gives the legal directories
  * from which files may be read. safefile then derives the rightmost component
- * of filename, where components are separated by a slash, backslash or colon, 
- * It then checks for the existence of a file consisting of a directory from 
+ * of filename, where components are separated by a slash, backslash or colon,
+ * It then checks for the existence of a file consisting of a directory from
  * GV_FILE_PATH followed by the rightmost component of filename. It returns the
  * first such found, or NULL otherwise.
  * The filename returned is thus
  * Gvfilepath concatenated with the last component of filename,
  * where a component is determined by a slash, backslash or colon
- * character.  
+ * character.
  *
  * If filename contains multiple components, the user is
  * warned, once, that everything to the left is ignored.
  *
- * For non-server applications, we use the path list in Gvimagepath to 
+ * For non-server applications, we use the path list in Gvimagepath to
  * resolve relative pathnames.
  *
  * N.B. safefile uses a fixed buffer, so functions using it should use the
@@ -385,7 +385,7 @@ const char *safefile(const char *filename)
 	return NULL;
 
     if (HTTPServerEnVar) {   /* If used as a server */
-	/* 
+	/*
 	 * If we are running in an http server we allow
 	 * files only from the directory specified in
 	 * the GV_FILE_PATH environment variable.
@@ -674,7 +674,7 @@ initFontLabelEdgeAttr(edge_t * e, struct fontinfo *fi,
  * Return true if head/tail end of edge should not be clipped
  * to node.
  */
-static boolean 
+static boolean
 noClip(edge_t *e, attrsym_t* sym)
 {
     char		*str;
@@ -692,7 +692,7 @@ noClip(edge_t *e, attrsym_t* sym)
  */
 static port
 chkPort (port (*pf)(node_t*, char*, char*), node_t* n, char* s)
-{ 
+{
     port pt;
 	char* cp=NULL;
 	if(s)
@@ -756,8 +756,8 @@ int common_init_edge(edge_t * e)
     }
     /* end vladimir */
 
-    /* We still accept ports beginning with colons but this is deprecated 
-     * That is, we allow tailport = ":abc" as well as the preferred 
+    /* We still accept ports beginning with colons but this is deprecated
+     * That is, we allow tailport = ":abc" as well as the preferred
      * tailport = "abc".
      */
     str = agget(e, TAIL_ID);
@@ -1083,7 +1083,7 @@ static item *mapEdge(Dt_t * map, edge_t * e)
 }
 
 /* checkCompound:
- * If endpoint names a cluster, mark for temporary deletion and create 
+ * If endpoint names a cluster, mark for temporary deletion and create
  * special node and insert into cluster. Then clone the edge. Real edge
  * will be deleted when we delete the original node.
  * Invariant: new edge has same sense as old. That is, given t->h with
@@ -1186,7 +1186,7 @@ num_clust_edges(graph_t * g)
  * Look for cluster edges. Replace cluster edge endpoints
  * corresponding to a cluster with special cluster nodes.
  * Delete original nodes.
- * If cluster edges are found, a cl_edge_t record will be 
+ * If cluster edges are found, a cl_edge_t record will be
  * attached to the graph, containing the count of such edges.
  */
 void processClusterEdges(graph_t * g)
@@ -1316,7 +1316,7 @@ void undoClusterEdges(graph_t * g)
     for (i = 0; i < ecnt; i++)
 	undoCompound(elist[i], clg);
     free (elist);
-    for (n = agfstnode(clg); n; n = nextn) { 
+    for (n = agfstnode(clg); n; n = nextn) {
 	nextn = agnxtnode(clg, n);
 	gv_cleanup_node(n);
 	agdelete(g, n);
@@ -1328,12 +1328,12 @@ void undoClusterEdges(graph_t * g)
  * Find the attribute belonging to graph g for objects like obj
  * with given name. If one does not exist, create it with the
  * default value def.
- */ 
+ */
 attrsym_t*
 safe_dcl(graph_t * g, int obj_kind, char *name, char *def)
 {
     attrsym_t *a = agattr(g,obj_kind,name, NULL);
-    if (!a)	/* attribute does not exist */		
+    if (!a)	/* attribute does not exist */
 	a = agattr(g,obj_kind,name,def);
     return a;
 }
@@ -1375,7 +1375,7 @@ char* scanEntity (char* t, agxbuf* xb)
 
 /* htmlEntity:
  * Check for an HTML entity for a special character.
- * Assume *s points to first byte after '&'. 
+ * Assume *s points to first byte after '&'.
  * If successful, return the corresponding value and update s to
  * point after the terminating ';'.
  * On failure, return 0 and leave s unchanged.
@@ -1538,7 +1538,7 @@ char* htmlEntityUTF8 (char* s, graph_t* g)
                     agxbputc(&xb, c);
                     c = *(unsigned char*)s++;
                 }
-                else { 
+                else {
 		            if (!warned) {
 		                agerr(AGWARN, "Invalid %d-byte UTF8 found in input of graph %s - treated as Latin-1. Perhaps \"-Gcharset=latin1\" is needed?\n", uc + 1, agnameof(g));
 		                warned = 1;
@@ -1819,7 +1819,7 @@ void setEdgeType (graph_t* g, int dflt)
  * Evaluates the extreme points of an ellipse or polygon
  * Determines the point at the center of the extreme points
  * If isRadial is true,sets the inner radius to half the distance to the min point;
- * else uses the angle parameter to identify two points on a line that defines the 
+ * else uses the angle parameter to identify two points on a line that defines the
  * gradient direction
  * By default, this assumes a left-hand coordinate system (for svg); if RHS = 2 flag
  * is set, use standard coordinate system.
@@ -1831,7 +1831,7 @@ void get_gradient_points(pointf * A, pointf * G, int n, float angle, int flags)
     pointf min,max,center;
     int isRadial = flags & 1;
     int isRHS = flags & 2;
-    
+
     if (n == 2) {
       rx = A[1].x - A[0].x;
       ry = A[1].y - A[0].y;
@@ -1839,7 +1839,7 @@ void get_gradient_points(pointf * A, pointf * G, int n, float angle, int flags)
       max.x = A[0].x + rx;
       min.y = A[0].y - ry;
       max.y = A[0].y + ry;
-    }    
+    }
     else {
       min.x = max.x = A[0].x;
       min.y = max.y = A[0].y;
@@ -1953,7 +1953,7 @@ void gv_cleanup_edge(edge_t * e)
     free_label(ED_head_label(e));
     free_label(ED_tail_label(e));
 	/*FIX HERE , shallow cleaning may not be enough here */
-	agdelrec(e, "Agedgeinfo_t");	
+	agdelrec(e, "Agedgeinfo_t");
 }
 
 void gv_cleanup_node(node_t * n)
@@ -1964,7 +1964,7 @@ void gv_cleanup_node(node_t * n)
     free_label(ND_label(n));
     free_label(ND_xlabel(n));
 	/*FIX HERE , shallow cleaning may not be enough here */
-	agdelrec(n, "Agnodeinfo_t");	
+	agdelrec(n, "Agnodeinfo_t");
 }
 
 void gv_nodesize(node_t * n, boolean flip)
@@ -1975,7 +1975,7 @@ void gv_nodesize(node_t * n, boolean flip)
         w = INCH2PS(ND_height(n));
         ND_lw(n) = ND_rw(n) = w / 2;
         ND_ht(n) = INCH2PS(ND_width(n));
-    } 
+    }
     else {
         w = INCH2PS(ND_width(n));
         ND_lw(n) = ND_rw(n) = w / 2;
@@ -1983,7 +1983,7 @@ void gv_nodesize(node_t * n, boolean flip)
     }
 }
 
-#ifdef _WIN32	
+#ifdef _WIN32
 void fix_fc(void)
 {
     char buf[28192];
@@ -2066,7 +2066,7 @@ Dt_t* mkClustMap (Agraph_t* g)
     Dt_t* map = dtopen (&strDisc, Dtoset);
 
     fillMap (g, map);
-    
+
     return map;
 }
 
