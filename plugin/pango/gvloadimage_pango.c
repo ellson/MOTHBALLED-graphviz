@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,7 +18,6 @@
 #include "gvplugin_loadimage.h"
 #include "gvio.h"
 
-#ifdef HAVE_PANGOCAIRO
 #include <cairo.h>
 
 typedef enum {
@@ -95,7 +94,7 @@ static void pango_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean 
     if (surface) {
         cairo_save(cr);
 	cairo_translate(cr, b.LL.x, -b.UR.y);
-	cairo_scale(cr, (b.UR.x - b.LL.x)/(us->w), (b.UR.y - b.LL.y)/(us->h)); 
+	cairo_scale(cr, (b.UR.x - b.LL.x)/(us->w), (b.UR.y - b.LL.y)/(us->h));
         cairo_set_source_surface (cr, surface, 0, 0);
         cairo_paint (cr);
         cairo_restore(cr);
@@ -171,13 +170,10 @@ static gvloadimage_engine_t engine_cairo = {
 static gvloadimage_engine_t engine_ps = {
     pango_loadimage_ps
 };
-#endif
 
 gvplugin_installed_t gvloadimage_pango_types[] = {
-#ifdef HAVE_PANGOCAIRO
     {FORMAT_PNG_CAIRO, "png:cairo", 1, &engine_cairo, NULL},
     {FORMAT_PNG_PS, "png:lasi", 2, &engine_ps, NULL},
     {FORMAT_PNG_PS, "png:ps", 2, &engine_ps, NULL},
-#endif
     {0, NULL, 0, NULL, NULL}
 };

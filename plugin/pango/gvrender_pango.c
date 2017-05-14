@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,7 +25,6 @@
 
 #include "gvplugin_pango.h"
 
-#ifdef HAVE_PANGOCAIRO
 #include <pango/pangocairo.h>
 
 typedef enum {
@@ -64,7 +63,7 @@ static void cairogen_set_color(cairo_t * cr, gvcolor_t * color)
                         color->u.RGBA[2], color->u.RGBA[3]);
 }
 
-static void cairogen_add_color_stop_rgba(cairo_pattern_t *pat, double stop , gvcolor_t * color) 
+static void cairogen_add_color_stop_rgba(cairo_pattern_t *pat, double stop , gvcolor_t * color)
 {
   cairo_pattern_add_color_stop_rgba (pat, stop,color->u.RGBA[0], color->u.RGBA[1],
                         color->u.RGBA[2], color->u.RGBA[3]);
@@ -88,7 +87,7 @@ static void cairogen_begin_job(GVJ_t * job)
 static void cairogen_end_job(GVJ_t * job)
 {
     cairo_t *cr = (cairo_t *) job->context;
-    
+
     if (job->external_context)
         cairo_restore(cr);
     else {
@@ -137,7 +136,7 @@ static void cairogen_begin_page(GVJ_t * job)
 		job->scale.x *= scale;
 		job->scale.y *= scale;
                 fprintf(stderr,
-                        "%s: graph is too large for cairo-renderer bitmaps. Scaling by %g to fit\n", 
+                        "%s: graph is too large for cairo-renderer bitmaps. Scaling by %g to fit\n",
                         job->common->cmdname, scale);
 	    }
 	    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
@@ -209,7 +208,7 @@ static void cairogen_end_page(GVJ_t * job)
 	    fprintf(stderr, "ERROR: cairo surface has zero area, this may indicate some problem during rendering shapes.\n");
  - jce */
 	}
-	job->imagedata = (char *)(cairo_image_surface_get_data(surface));	
+	job->imagedata = (char *)(cairo_image_surface_get_data(surface));
 	break;
        	/* formatting will be done by gvdevice_format() */
     }
@@ -291,7 +290,7 @@ static void cairo_gradient_fill (cairo_t* cr, obj_state_t* obj, int filled, poin
 	    c1.x = G[0].x +  r1 * cos(angle);
 	    c1.y = G[0].y -  r1 * sin(angle);
 	}
-	pat = cairo_pattern_create_radial(c1.x,c1.y,r1,G[0].x,G[0].y,r2); 
+	pat = cairo_pattern_create_radial(c1.x,c1.y,r1,G[0].x,G[0].y,r2);
     }
     if (obj->gradient_frac > 0) {
 	cairogen_add_color_stop_rgba(pat,obj->gradient_frac - 0.001,&(obj->fillcolor));
@@ -478,17 +477,13 @@ static gvdevice_features_t device_features_svg = {
     {0.,0.},                    /* default page width, height - points */
     {72.,72.},			/* svg 72 dpi */
 };
-#endif
 
 gvplugin_installed_t gvrender_pango_types[] = {
-#ifdef HAVE_PANGOCAIRO
     {FORMAT_CAIRO, "cairo", 10, &cairogen_engine, &render_features_cairo},
-#endif
     {0, NULL, 0, NULL, NULL}
 };
 
 gvplugin_installed_t gvdevice_pango_types[] = {
-#ifdef HAVE_PANGOCAIRO
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
     {FORMAT_PNG, "png:cairo", 10, NULL, &device_features_png},
 #endif
@@ -500,7 +495,6 @@ gvplugin_installed_t gvdevice_pango_types[] = {
 #endif
 #ifdef CAIRO_HAS_SVG_SURFACE
     {FORMAT_SVG, "svg:cairo", -10, NULL, &device_features_svg},
-#endif
 #endif
     {0, NULL, 0, NULL, NULL}
 };

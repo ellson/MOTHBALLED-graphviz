@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -52,10 +52,8 @@ char* strcasestr (const char *str, const char *pat)
 
 #include "agxbuf.h"
 #include "gvplugin_textlayout.h"
-#ifdef HAVE_PANGOCAIRO
 #include <pango/pangocairo.h>
 #include "gvgetfontlist.h"
-#endif
 
 extern unsigned char Verbose;
 
@@ -154,16 +152,16 @@ typedef struct {
     char* name;
 } face_t;
 static face_t facelist[] = {
-    { FNT_BOLD, FNT_BOLD_ST}, 
-    { FNT_BOOK, FNT_BOOK_ST}, 
-    { FNT_CONDENSED, FNT_CONDENSED_ST}, 
+    { FNT_BOLD, FNT_BOLD_ST},
+    { FNT_BOOK, FNT_BOOK_ST},
+    { FNT_CONDENSED, FNT_CONDENSED_ST},
     { FNT_DEMI, FNT_DEMI_ST},
-    { FNT_EXTRALIGHT, FNT_EXTRALIGHT_ST}, 
-    { FNT_ITALIC, FNT_ITALIC_ST}, 
-    { FNT_LIGHT, FNT_LIGHT_ST}, 
-    { FNT_MEDIUM, FNT_MEDIUM_ST}, 
-    { FNT_OBLIQUE, FNT_OBLIQUE_ST}, 
-    { FNT_REGULAR, FNT_REGULAR_ST}, 
+    { FNT_EXTRALIGHT, FNT_EXTRALIGHT_ST},
+    { FNT_ITALIC, FNT_ITALIC_ST},
+    { FNT_LIGHT, FNT_LIGHT_ST},
+    { FNT_MEDIUM, FNT_MEDIUM_ST},
+    { FNT_OBLIQUE, FNT_OBLIQUE_ST},
+    { FNT_REGULAR, FNT_REGULAR_ST},
     { FNT_ROMAN, FNT_ROMAN_ST},
 };
 #define FACELIST_SZ (sizeof(facelist)/sizeof(face_t))
@@ -172,45 +170,45 @@ static face_t facelist[] = {
    here or new equivalent fonts can be added here. Each font family used by the Graphviz
    PS fonts is set up.
 */
-static const char *PS_AVANT_E[] = { 
+static const char *PS_AVANT_E[] = {
     SAN_1, SAN_2, SAN_3, SAN_4, SAN_5, SAN_6, SAN_7, SAN_8, SAN_9, SAN_10
 };
 #define PS_AVANT_E_SZ  (sizeof(PS_AVANT_E) / sizeof(char *))
 
-static const char *PS_BOOKMAN_E[] = { 
-    SER_1, SER_2, SER_3, SER_4, SER_5, SER_6, SER_7, SER_8, SER_9 
+static const char *PS_BOOKMAN_E[] = {
+    SER_1, SER_2, SER_3, SER_4, SER_5, SER_6, SER_7, SER_8, SER_9
 };
 #define PS_BOOKMAN_E_SZ (sizeof(PS_BOOKMAN_E) / sizeof(char *))
 
-static const char *PS_COURIER_E[] = { 
-    MON_1, MON_2, MON_3, MON_4, MON_5, MON_6, MON_7, MON_8 
+static const char *PS_COURIER_E[] = {
+    MON_1, MON_2, MON_3, MON_4, MON_5, MON_6, MON_7, MON_8
 };
 #define PS_COURIER_E_SZ (sizeof(PS_COURIER_E) / sizeof(char *))
 
-static const char *PS_HELVETICA_E[] = { 
-    SAN_3, SAN_11, SAN_4, SAN_6, SAN_7, SAN_8, SAN_9, SAN_10 
+static const char *PS_HELVETICA_E[] = {
+    SAN_3, SAN_11, SAN_4, SAN_6, SAN_7, SAN_8, SAN_9, SAN_10
 };
 #define PS_HELVETICA_E_SZ (sizeof(PS_HELVETICA_E) / sizeof(char *))
 
-static const char *PS_NEWCENT_E[] = { 
+static const char *PS_NEWCENT_E[] = {
     SER_10, SER_2, SER_3, SER_4, SER_12, SER_5, SER_6, SER_7, SER_8, SER_9
 };
 #define PS_NEWCENT_E_SZ (sizeof(PS_NEWCENT_E) / sizeof(char *))
 
-static const char *PS_PALATINO_E[] = { 
+static const char *PS_PALATINO_E[] = {
     SER_13, SER_2, SER_3, SER_4, SER_14, SER_15, SER_5, SER_6, SER_7, SER_8, SER_9
 };
 #define PS_PALATINO_E_SZ (sizeof(PS_PALATINO_E) / sizeof(char *))
 
-static const char *PS_TIMES_E[] = { 
-    SER_4, SER_2, SER_11, SER_5, SER_6, SER_7, SER_8, SER_9 
+static const char *PS_TIMES_E[] = {
+    SER_4, SER_2, SER_11, SER_5, SER_6, SER_7, SER_8, SER_9
 };
 #define PS_TIMES_E_SZ (sizeof(PS_TIMES_E) / sizeof(char *))
 
 static const char *PS_SYMBOL_E[] = { SYM_1, SYM_2, SYM_3, SYM_4 };
 #define PS_SYMBOL_E_SZ (sizeof(PS_SYMBOL_E) / sizeof(char *))
 
-static const char *PS_CHANCERY_E[] = { 
+static const char *PS_CHANCERY_E[] = {
     SER_16, SER_11, SER_2, SER_3, SER_4, SER_5, SER_6, SER_7, SER_8, SER_9
 };
 #define PS_CHANCERY_E_SZ (sizeof(PS_CHANCERY_E) / sizeof(char *))
@@ -292,7 +290,7 @@ static int get_faces(PangoFontFamily * family)
 }
 
 #ifdef DEBUG
-static void 
+static void
 display_available_fonts(availfont_t* gv_af_p)
 {
     int i, j, faces;
@@ -320,7 +318,7 @@ static char *get_avail_faces(int faces, agxbuf* xb)
     int i;
     for (i = 0; i < FACELIST_SZ; i++) {
 	if (faces & facelist[i].flag) {
-	    agxbput (xb, facelist[i].name); 
+	    agxbput (xb, facelist[i].name);
 	    agxbputc(xb, ' ');
 	}
     }
@@ -328,9 +326,9 @@ static char *get_avail_faces(int faces, agxbuf* xb)
 }
 
 
-/* This function creates an array of font definitions. Each entry corresponds to one of 
-   the Graphviz PS fonts.  The font definitions contain the generic font name and a list 
-   of equivalent fonts that can be used in place of the PS font if the PS font is not 
+/* This function creates an array of font definitions. Each entry corresponds to one of
+   the Graphviz PS fonts.  The font definitions contain the generic font name and a list
+   of equivalent fonts that can be used in place of the PS font if the PS font is not
    available on the system
 */
 static availfont_t *gv_get_ps_fontlist(PangoFontMap * fontmap)
@@ -357,7 +355,7 @@ static availfont_t *gv_get_ps_fontlist(PangoFontMap * fontmap)
 	gv_ps_fontdef = gv_ps_fontdefs+j;
 	gv_afs->gv_ps_fontname = gv_ps_fontdef->fontname;
 	family_name = NULL;
-	/* Search the installed system font families for the current 
+	/* Search the installed system font families for the current
 	   Graphvis PS font family name, i.e. AvantGarde */
 	for (i = 0; i < n_families; i++) {
 	    family = families[i];
@@ -427,7 +425,7 @@ static void copyUpper (agxbuf* xb, char* s)
 	(void)agxbputc (xb, toupper(c));
 }
 
-/* Returns the font corresponding to a Graphviz PS font. 
+/* Returns the font corresponding to a Graphviz PS font.
    AvantGarde-Book may return URW Gothic L, book
    Returns NULL if no appropriate font found.
 */
@@ -440,7 +438,7 @@ static char *gv_get_font(availfont_t* gv_af_p,
     for (i = 0; i < GV_FONT_LIST_SIZE; i++) {
 	/* Searches the array of available system fonts for the one that
 	   corresponds to the current Graphviz PS font name. Sets up the
-	   font string with the available font name and the installed font 
+	   font string with the available font name and the installed font
 	   faces that match what are required by the Graphviz PS font.
 	 */
 	if (gv_af_p[i].faces && strstr(ps_alias->name, gv_af_p[i].gv_ps_fontname)) {
@@ -504,7 +502,7 @@ printFontMap (gv_font_map*gv_fmap, int sz)
 }
 
 /* Sets up a structure array that contains the Graphviz PS font name
-   and the corresponding installed font string.  
+   and the corresponding installed font string.
 */
 gv_font_map* get_font_mapping(PangoFontMap * fontmap)
 {
