@@ -1,4 +1,6 @@
-find_path(PANGOCAIRO_INCLUDE_DIR pango/pangocairo.h)
+find_path(PANGOCAIRO_INCLUDE_DIR pango/pangocairo.h PATH_SUFFIXES pango-1.0)
+find_path(GLIB_INCLUDE_DIR glib.h PATH_SUFFIXES glib-2.0)
+find_path(GLIBCONFIG_INCLUDE_DIR glibconfig.h PATH_SUFFIXES glib-2.0/include)
 
 find_library(GLIB_LIBRARY NAMES glib-2.0)
 find_library(GOBJECT_LIBRARY NAMES gobject-2.0)
@@ -16,6 +18,8 @@ find_file(PANGOWIN_RUNTIME_LIBRARY NAMES pangowin32-1.dll)
 include(FindPackageHandleStandardArgs)
 if (WIN32)
     find_package_handle_standard_args(PANGOCAIRO DEFAULT_MSG
+        GLIB_INCLUDE_DIR
+        GLIBCONFIG_INCLUDE_DIR
         PANGOCAIRO_INCLUDE_DIR
 
         GLIB_LIBRARY
@@ -33,6 +37,8 @@ if (WIN32)
     )
 else()
     find_package_handle_standard_args(PANGOCAIRO DEFAULT_MSG
+        GLIB_INCLUDE_DIR
+        GLIBCONFIG_INCLUDE_DIR
         PANGOCAIRO_INCLUDE_DIR
 
         GLIB_LIBRARY
@@ -43,6 +49,8 @@ else()
 endif()
 
 mark_as_advanced(
+    GLIB_INCLUDE_DIR
+    GLIBCONFIG_INCLUDE_DIR
     PANGOCAIRO_INCLUDE_DIR
 
     GLIB_LIBRARY
@@ -59,7 +67,11 @@ mark_as_advanced(
     PANGOWIN_RUNTIME_LIBRARY
 )
 
-set(PANGOCAIRO_INCLUDE_DIRS ${PANGOCAIRO_INCLUDE_DIR})
+set(PANGOCAIRO_INCLUDE_DIRS
+    ${GLIB_INCLUDE_DIR}
+    ${GLIBCONFIG_INCLUDE_DIR}
+    ${PANGOCAIRO_INCLUDE_DIR}
+)
 
 set(PANGOCAIRO_LIBRARIES
     ${GLIB_LIBRARY}
