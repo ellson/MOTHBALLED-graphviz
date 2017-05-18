@@ -67,16 +67,14 @@
       <SubSystem>Windows</SubSystem>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>cgraph.lib;libpng12.lib;libgd.lib;libcairo-2.lib;fontconfig.lib;gvc.lib;freetype.lib;iconv.lib;jpeg.lib;zlib.lib;pathplan.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cgraph.lib;libgd.lib;gvc.lib;pathplan.lib;cairo.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libgd.dll $(OutDir)libgd.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libpng12.dll $(OutDir)libpng12.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libxml2.dll $(OutDir)libxml2.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\iconv.dll $(OutDir)iconv.dll</Command>
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\cairo.dll $(OutDir)cairo.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\expat.dll $(OutDir)expat.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\fontconfig.dll $(OutDir)fontconfig.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\pixman-1.dll $(OutDir)pixman-1.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -96,16 +94,14 @@ copy $(SolutionDir)windows\dependencies\libraries\x86\bin\iconv.dll $(OutDir)ico
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>cgraph.lib;libpng12.lib;libgd.lib;libcairo-2.lib;fontconfig.lib;gvc.lib;freetype.lib;iconv.lib;jpeg.lib;zlib.lib;pathplan.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cgraph.lib;libgd.lib;gvc.lib;pathplan.lib;cairo.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libgd.dll $(OutDir)libgd.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libpng12.dll $(OutDir)libpng12.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libxml2.dll $(OutDir)libxml2.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\iconv.dll $(OutDir)iconv.dll</Command>
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\cairo.dll $(OutDir)cairo.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\expat.dll $(OutDir)expat.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\fontconfig.dll $(OutDir)fontconfig.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\pixman-1.dll $(OutDir)pixman-1.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

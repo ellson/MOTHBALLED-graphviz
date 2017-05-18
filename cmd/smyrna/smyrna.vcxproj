@@ -64,7 +64,7 @@
       <EnablePREfast>true</EnablePREfast>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>getopt.lib;ast.lib;atk-1.0.lib;libcairo-2.lib;cdt.lib;cgraph.lib;expr.lib;fontconfig.lib;freetype.lib;gdk_pixbuf-2.0.lib;gdkglext-win32-1.0.lib;gdk-win32-2.0.lib;glade-2.0.lib;gladeui-1.lib;glcomp.lib;glib-2.0.lib;glu32.lib;gmodule-2.0.lib;gobject-2.0.lib;gtkglext-win32-1.0.lib;gtk-win32-2.0.lib;gvprlib.lib;iconv.lib;ingraphs.lib;jpeg.lib;neatogen.lib;opengl32.lib;pango-1.0.lib;pangocairo-1.0.lib;sfio.lib;topfish.lib;vmalloc.lib;xdot.lib;xml2.lib;zlib.lib;gvc.lib</AdditionalDependencies>
+      <AdditionalDependencies>getopt.lib;ast.lib;atk-1.0.lib;cairo.lib;cdt.lib;cgraph.lib;expr.lib;fontconfig.lib;freetype.lib;gdk_pixbuf-2.0.lib;gdkglext-win32-1.0.lib;gdk-win32-2.0.lib;glade-2.0.lib;gladeui-1.lib;glcomp.lib;glib-2.0.lib;glu32.lib;gmodule-2.0.lib;gobject-2.0.lib;gtkglext-win32-1.0.lib;gtk-win32-2.0.lib;gvprlib.lib;ingraphs.lib;jpeg.lib;neatogen.lib;opengl32.lib;pango-1.0.lib;pangocairo-1.0.lib;sfio.lib;topfish.lib;vmalloc.lib;xdot.lib;xml2.lib;zlib.lib;gvc.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\getopt;$(SolutionDir)windows\dependencies\libraries\x86\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
@@ -72,30 +72,24 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libpng12.dll $(OutDir)libpng12.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libxml2.dll $(OutDir)libxml2.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\iconv.dll $(OutDir)iconv.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libglib-2.0-0.dll $(OutDir)libglib-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libpango-1.0-0.dll $(OutDir)libpango-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libpangocairo-1.0-0.dll $(OutDir)libpangocairo-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libgobject-2.0-0.dll $(OutDir)libgobject-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\intl.dll $(OutDir)intl.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libgmodule-2.0-0.dll $(OutDir)libgmodule-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libpangoft2-1.0-0.dll $(OutDir)libpangoft2-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libpangowin32-1.0-0.dll $(OutDir)libpangowin32-1.0-0.dll
+      <Command>copy $(SolutionDir)windows\dependencies\libraries\x86\bin\cairo.dll $(OutDir)cairo.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\expat.dll $(OutDir)expat.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\fontconfig.dll $(OutDir)fontconfig.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\glib-2.dll $(OutDir)glib-2.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\gobject-2.dll $(OutDir)gobject-2.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libharfbuzz-0.dll $(OutDir)libharfbuzz-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\pango-1.dll $(OutDir)pango-1.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\pangocairo-1.dll $(OutDir)pangocairo-1.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\pangoft2-1.dll $(OutDir)pango2-1.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\pangowin32-1.dll $(OutDir)pangowin32-1.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\pixman-1.dll $(OutDir)pixman-1.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libgdkglext-win32-1.0-0.dll $(OutDir)libgdkglext-win32-1.0-0.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libgdk-win32-2.0-0.dll $(OutDir)libgdk-win32-2.0-0.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libgdk_pixbuf-2.0-0.dll $(OutDir)libgdk_pixbuf-2.0-0.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libglade-2.0-0.dll $(OutDir)libglade-2.0-0.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libatk-1.0-0.dll $(OutDir)libatk-1.0-0.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libgtk-win32-2.0-0.dll $(OutDir)libgtk-win32-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\freeglut.dll $(OutDir)freeglut.dll
-xcopy /E $(SolutionDir)windows\dependencies\libraries\x86\lib\pango $(OutDir)..\lib\pango\
-if not exist "$(OutDir)..\etc\pango\" mkdir $(OutDir)..\etc\pango\
-$(SolutionDir)windows\dependencies\libraries\x86\bin\pango-querymodules.exe &gt; $(OutDir)..\etc\pango\pango.modules</Command>
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\freeglut.dll $(OutDir)freeglut.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -108,7 +102,7 @@ $(SolutionDir)windows\dependencies\libraries\x86\bin\pango-querymodules.exe &gt;
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>getopt.lib;ast.lib;atk-1.0.lib;libcairo-2.lib;cdt.lib;cgraph.lib;expr.lib;fontconfig.lib;freetype.lib;gdk_pixbuf-2.0.lib;gdkglext-win32-1.0.lib;gdk-win32-2.0.lib;glade-2.0.lib;gladeui-1.lib;glcomp.lib;glib-2.0.lib;glu32.lib;gmodule-2.0.lib;gobject-2.0.lib;gtkglext-win32-1.0.lib;gtk-win32-2.0.lib;gvprlib.lib;iconv.lib;ingraphs.lib;jpeg.lib;neatogen.lib;opengl32.lib;pango-1.0.lib;pangocairo-1.0.lib;sfio.lib;topfish.lib;vmalloc.lib;xdot.lib;xml2.lib;zlib.lib;gvc.lib</AdditionalDependencies>
+      <AdditionalDependencies>getopt.lib;ast.lib;atk-1.0.lib;cairo.lib;cdt.lib;cgraph.lib;expr.lib;fontconfig.lib;freetype.lib;gdk_pixbuf-2.0.lib;gdkglext-win32-1.0.lib;gdk-win32-2.0.lib;glade-2.0.lib;gladeui-1.lib;glcomp.lib;glib-2.0.lib;glu32.lib;gmodule-2.0.lib;gobject-2.0.lib;gtkglext-win32-1.0.lib;gtk-win32-2.0.lib;gvprlib.lib;ingraphs.lib;jpeg.lib;neatogen.lib;opengl32.lib;pango-1.0.lib;pangocairo-1.0.lib;sfio.lib;topfish.lib;vmalloc.lib;xdot.lib;xml2.lib;zlib.lib;gvc.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\getopt;$(SolutionDir)windows\dependencies\libraries\x86\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
@@ -118,30 +112,24 @@ $(SolutionDir)windows\dependencies\libraries\x86\bin\pango-querymodules.exe &gt;
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libpng12.dll $(OutDir)libpng12.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libxml2.dll $(OutDir)libxml2.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\iconv.dll $(OutDir)iconv.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libglib-2.0-0.dll $(OutDir)libglib-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libpango-1.0-0.dll $(OutDir)libpango-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libpangocairo-1.0-0.dll $(OutDir)libpangocairo-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libgobject-2.0-0.dll $(OutDir)libgobject-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\intl.dll $(OutDir)intl.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libgmodule-2.0-0.dll $(OutDir)libgmodule-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libpangoft2-1.0-0.dll $(OutDir)libpangoft2-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libpangowin32-1.0-0.dll $(OutDir)libpangowin32-1.0-0.dll
+      <Command>copy $(SolutionDir)windows\dependencies\libraries\x86\bin\cairo.dll $(OutDir)cairo.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\expat.dll $(OutDir)expat.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\fontconfig.dll $(OutDir)fontconfig.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\glib-2.dll $(OutDir)glib-2.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\gobject-2.dll $(OutDir)gobject-2.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libharfbuzz-0.dll $(OutDir)libharfbuzz-0.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\pango-1.dll $(OutDir)pango-1.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\pangocairo-1.dll $(OutDir)pangocairo-1.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\pangoft2-1.dll $(OutDir)pango2-1.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\pangowin32-1.dll $(OutDir)pangowin32-1.dll
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\pixman-1.dll $(OutDir)pixman-1.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libgdkglext-win32-1.0-0.dll $(OutDir)libgdkglext-win32-1.0-0.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libgdk-win32-2.0-0.dll $(OutDir)libgdk-win32-2.0-0.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libgdk_pixbuf-2.0-0.dll $(OutDir)libgdk_pixbuf-2.0-0.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libglade-2.0-0.dll $(OutDir)libglade-2.0-0.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libatk-1.0-0.dll $(OutDir)libatk-1.0-0.dll
 copy $(SolutionDir)windows\dependencies\libraries\x86\bin\libgtk-win32-2.0-0.dll $(OutDir)libgtk-win32-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\libraries\x86\bin\freeglut.dll $(OutDir)freeglut.dll
-xcopy /E $(SolutionDir)windows\dependencies\libraries\x86\lib\pango $(OutDir)..\lib\pango\
-if not exist "$(OutDir)..\etc\pango\" mkdir $(OutDir)..\etc\pango\
-$(SolutionDir)windows\dependencies\libraries\x86\bin\pango-querymodules.exe &gt; $(OutDir)..\etc\pango\pango.modules</Command>
+copy $(SolutionDir)windows\dependencies\libraries\x86\bin\freeglut.dll $(OutDir)freeglut.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
