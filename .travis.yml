@@ -7,6 +7,7 @@ addons:
     - libgd2-xpm-dev
     - tcl-dev
     - libdevil-dev
+    - libpango1.0-dev
     - libxaw7-dev
     - freeglut3-dev
     - colorgcc
