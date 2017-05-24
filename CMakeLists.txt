@@ -53,8 +53,14 @@ set(MAN_INSTALL_DIR         share/man/man3)
 # TODO: Find a way to check for groff and ps2pdf for manpage pdf generation
 # set(MAN_PDF_INSTALL_DIR share/graphviz/doc/pdf)
 set(TOP_SOURCE_DIR          "${CMAKE_SOURCE_DIR}")
+set(TOP_BINARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}")
 set(GRAPHVIZ_LIB_DIR        "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 set(WINDOWS_DEPENDENCY_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/windows/dependencies/libraries")
+if (CMAKE_CL_64)
+    set(WINDOWS_DEPENDENCY_DIR "${WINDOWS_DEPENDENCY_DIR}/x64")
+else()
+    set(WINDOWS_DEPENDENCY_DIR "${WINDOWS_DEPENDENCY_DIR}/x86")
+endif()
 
 set(GRAPHVIZ_PLUGIN_VERSION 6)
 # Name of the config file used by Graphviz
@@ -65,13 +71,15 @@ if (WIN32)
     list(APPEND CMAKE_LIBRARY_PATH ${WINDOWS_DEPENDENCY_DIR}/lib)
     list(APPEND CMAKE_INCLUDE_PATH ${WINDOWS_DEPENDENCY_DIR}/include ${WINDOWS_DEPENDENCY_DIR}/bin)
 else()
-    list(APPEND CMAKE_INCLUDE_PATH /usr/lib /usr/local/lib)
+    list(APPEND CMAKE_INCLUDE_PATH /usr/lib /usr/local/lib /usr/lib/x86_64-linux-gnu)
 endif()
 
 find_package(ANN)
+find_package(Cairo)
 find_package(EXPAT)
 find_package(GD)
 find_package(LTDL)
+find_package(PangoCairo)
 find_package(ZLIB)
 
 if (WIN32)
@@ -80,7 +88,9 @@ if (WIN32)
 
     # Find DLLs on Windows
     find_file(EXPAT_RUNTIME_LIBRARIES NAMES libexpat.dll expat.dll)
-    find_file(ZLIB_RUNTIME_LIBRARIES NAMES zlib1.dll zlib.dll)
+    if (CMAKE_CL_64)
+        find_file(MSYS_RUNTIME_LIBRARIES NAMES msys-2.0.dll)
+    endif()
 endif()
 
 # ============================ Set Graphviz version ============================

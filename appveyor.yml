@@ -8,6 +8,9 @@ environment:
   graphviz_install_dir: C:\Graphviz
   matrix:
     - build_system: cmake
+      generator: "Visual Studio 14 2015"
+    - build_system: cmake
+      generator: "Visual Studio 14 2015 Win64"
     - build_system: msbuild
 
 configuration:
@@ -32,7 +35,7 @@ build_script:
       if($env:build_system -eq "cmake") {
         mkdir build;
         cd build;
-        cmake ..;
+        cmake -G "$env:generator" ..;
         cmake --build . --config $env:configuration;
       }
       elseif($env:build_system -eq "msbuild") {

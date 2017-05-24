@@ -56,10 +56,13 @@ target_link_libraries(gvc
     pathplan
     xdot
     ${EXPAT_LIBRARIES}
-    ${LTDL_LIBRARIES}
     ${RXSPENCER_LIBRARIES}
     ${ZLIB_LIBRARIES}
 )
+
+if (NOT WIN32)
+    target_link_libraries(gvc ${LTDL_LIBRARIES})
+endif()
 
 if (${with_ortho})
     target_link_libraries(gvc ortho)
@@ -107,9 +110,6 @@ if (WIN32)
     install(
         FILES
             ${EXPAT_RUNTIME_LIBRARIES}
-            ${LTDL_RUNTIME_LIBRARIES}
-            ${RXSPENCER_RUNTIME_LIBRARIES}
-            ${ZLIB_RUNTIME_LIBRARIES}
         DESTINATION ${BINARY_INSTALL_DIR}
     )
 endif()

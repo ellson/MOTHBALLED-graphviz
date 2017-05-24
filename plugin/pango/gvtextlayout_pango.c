@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,6 @@
 #include "utils.h"
 #include "gvplugin_textlayout.h"
 
-#ifdef HAVE_PANGOCAIRO
 #include <pango/pangocairo.h>
 #include "gvgetfontlist.h"
 #ifdef HAVE_PANGO_FC_FONT_LOCK_FACE
@@ -149,7 +148,7 @@ static boolean pango_textlayout(textspan_t * span, char **fontpath)
 		    strcat(buf, ", ");
 		    strcat(buf, face->style_name);
 		    strcat(buf, "\" ");
-    
+
 		    stream = face->stream;
 		    if (stream) {
 			streamdesc = stream->pathname;
@@ -168,7 +167,7 @@ static boolean pango_textlayout(textspan_t * span, char **fontpath)
 	    {
     		PangoFontDescription *tdesc;
 		char *tfont;
-		
+
 	        tdesc = pango_font_describe(font);
 	        tfont = pango_font_description_to_string(tdesc);
 	        strcat(buf, "\"");
@@ -278,11 +277,8 @@ static boolean pango_textlayout(textspan_t * span, char **fontpath)
 static gvtextlayout_engine_t pango_textlayout_engine = {
     pango_textlayout,
 };
-#endif
 
 gvplugin_installed_t gvtextlayout_pango_types[] = {
-#ifdef HAVE_PANGOCAIRO
     {0, "textlayout", 10, &pango_textlayout_engine, NULL},
-#endif
     {0, NULL, 0, NULL, NULL}
 };
