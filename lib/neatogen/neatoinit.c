@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -66,7 +66,7 @@ int user_pos(attrsym_t * posptr, attrsym_t * pinptr, node_t * np, int nG)
     p = agxget(np, posptr);
     if (p[0]) {
 	c = '\0';
-	if ((Ndim >= 3) && 
+	if ((Ndim >= 3) &&
             (sscanf(p, "%lf,%lf,%lf%c", pvec, pvec+1, pvec+2, &c) >= 3)){
 	    ND_pinned(np) = P_SET;
 	    if (PSinputscale > 0.0) {
@@ -88,7 +88,7 @@ int user_pos(attrsym_t * posptr, attrsym_t * pinptr, node_t * np, int nG)
 		    pvec[i] = pvec[i] / PSinputscale;
 	    }
 	    if (Ndim > 2) {
-		if (N_z && (p = agxget(np, N_z)) && (sscanf(p,"%lf",&z) == 1)) { 
+		if (N_z && (p = agxget(np, N_z)) && (sscanf(p,"%lf",&z) == 1)) {
 		    if (PSinputscale > 0.0) {
 			pvec[2] = z / PSinputscale;
 		    }
@@ -432,7 +432,7 @@ static int chkBB(Agraph_t * g, attrsym_t * G_bb, boxf* bbp)
 	if (bb.LL.y > bb.UR.y) {
 	/* If the LL.y coordinate is bigger than the UR.y coordinate,
          * we assume the input was produced using -y, so we normalize
-	 * the bb. 
+	 * the bb.
 	 */
 	    double tmp = bb.LL.y;
 	    bb.LL.y = bb.UR.y;
@@ -517,7 +517,7 @@ nop_init_graphs(Agraph_t * g, attrsym_t * G_lp, attrsym_t * G_bb)
  * supply it.
  *
  * If adjust is false, init_nop does nothing but initialize all
- * of the basic graph information. No tweaking of positions or 
+ * of the basic graph information. No tweaking of positions or
  * filling in edge splines is done.
  *
  * Returns 0 on normal success, 1 if layout has a background, and -1
@@ -563,7 +563,7 @@ int init_nop(Agraph_t * g, int adjust)
 
     if (didAdjust) {
 	if (GD_label(g)) GD_label(g)->set = FALSE;
-/* FIX: 
+/* FIX:
  *   - if nodes are moved, clusters are no longer valid.
  */
     }
@@ -597,7 +597,7 @@ int init_nop(Agraph_t * g, int adjust)
 	}
 	if (posEdges != AllEdges)
 	    spline_edges0(g, FALSE);   /* add edges */
-	else 
+	else
 	    State = GVSPLINES;
     }
 
@@ -743,7 +743,7 @@ acyclic (vtx_data* graph, int nv, int mode, node_t* nodes[])
     }
     for (i = 0; i < nv; i++) {
 	if (ND_mark(nodes[i])) continue;
-	dfsCycle (graph, i, mode, nodes);	
+	dfsCycle (graph, i, mode, nodes);
     }
 
 }
@@ -761,7 +761,7 @@ acyclic (vtx_data* graph, int nv, int mode, node_t* nodes[])
  * In constructing graph from g, we neglect loops. We track multiedges (ignoring
  * direction). Edge weights are additive; the final edge length is the max.
  *
- * If direction is used, we set the edists field, -1 for tail, +1 for head. 
+ * If direction is used, we set the edists field, -1 for tail, +1 for head.
  * graph[i].edists[0] is left undefined. If multiedges exist, the direction
  * of the first one encountered is used. Finally, a pass is made to guarantee
  * the graph is acyclic.
@@ -976,12 +976,12 @@ setSeed (graph_t * G, int dflt, long* seedp)
     else if (isdigit(*(unsigned char *)p)) {
 	init = INIT_RANDOM;
     }
-    
+
     if (init == INIT_RANDOM) {
 	long seed;
 	/* Check for seed value */
 	if (!isdigit(*(unsigned char *)p) || sscanf(p, "%ld", &seed) < 1) {
-#if defined(MSWIN32) || defined(_WIN32)
+#if defined(_WIN32)
 	    seed = (unsigned) time(NULL);
 #else
 	    seed = (unsigned) getpid() ^ (unsigned) time(NULL);
@@ -1018,7 +1018,7 @@ static int checkExp (graph_t * G)
  *   If start is random, returns INIT_RANDOM
  *   Set RNG seed
  * else return default
- * 
+ *
  */
 int checkStart(graph_t * G, int nG, int dflt)
 {
@@ -1026,7 +1026,7 @@ int checkStart(graph_t * G, int nG, int dflt)
     int init;
 
     seed = 1;
-    init = setSeed (G, dflt, &seed); 
+    init = setSeed (G, dflt, &seed);
     if (N_pos && (init != INIT_RANDOM)) {
 	agerr(AGWARN, "node positions are ignored unless start=random\n");
     }
@@ -1090,7 +1090,7 @@ void dumpClusterData (cluster_data* dp)
       fprintf (stderr, "  %d", dp->clusters[i][j]);
     fprintf (stderr, "\n");
   }
-    
+
 
   fprintf (stderr, "Toplevel:\n");
   for (i = 0; i < dp->ntoplevel; i++)
@@ -1136,7 +1136,7 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
 #endif
     int init = checkStart(g, nv, (mode == MODE_HIER ? INIT_SELF : INIT_RANDOM));
     int opts = checkExp (g);
-	
+
     if (init == INIT_SELF)
 	opts |= opt_smart_init;
 
@@ -1162,10 +1162,10 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
 #ifdef DIGCOLA
     if (mode != MODE_MAJOR) {
         double lgap = late_double(g, agfindgraphattr(g, "levelsgap"), 0.0, -MAXDOUBLE);
-        if (mode == MODE_HIER) {        
+        if (mode == MODE_HIER) {
             rv = stress_majorization_with_hierarchy(gp, nv, ne, coords, nodes, Ndim,
                        opts, model, MaxIter, lgap);
-        } 
+        }
 #ifdef IPSEPCOLA
 	else {
             char* str;
@@ -1198,7 +1198,7 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
                 opt.noverlap = 2;
                 if(Verbose)
                     fprintf(stderr,"Removing overlaps as postprocess...\n");
-            }  
+            }
             else opt.noverlap = 0;
 #ifdef MOSEK
             str = agget(g, "mosek");
@@ -1335,7 +1335,7 @@ static void kkNeato(Agraph_t * g, int nG, int model)
 /* neatoLayout:
  * Use stress optimization to layout a single component
  */
-static void 
+static void
 neatoLayout(Agraph_t * mg, Agraph_t * g, int layoutMode, int layoutModel,
   adjust_data* am)
 {
@@ -1359,7 +1359,7 @@ neatoLayout(Agraph_t * mg, Agraph_t * g, int layoutMode, int layoutModel,
 }
 
 /* addZ;
- * If dimension == 3 and z attribute is declared, 
+ * If dimension == 3 and z attribute is declared,
  * attach z value to nodes if not defined.
  */
 static void addZ (Agraph_t* g)
@@ -1367,7 +1367,7 @@ static void addZ (Agraph_t* g)
     node_t* n;
     char    buf[BUFSIZ];
 
-    if ((Ndim >= 3) && N_z) { 
+    if ((Ndim >= 3) && N_z) {
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    sprintf(buf, "%lf", POINTS_PER_INCH * (ND_pos(n)[2]));
 	    agxset(n, N_z, buf);
@@ -1486,7 +1486,7 @@ void neato_layout(Agraph_t * g)
 	    for (i = 0; i < n_cc; i++) {
 		gc = cc[i];
 		free_scan_graph(gc);
-		agdelrec (gc, "Agraphinfo_t"); 
+		agdelrec (gc, "Agraphinfo_t");
 		agdelete(g, gc);
 	    }
 	    free (cc);

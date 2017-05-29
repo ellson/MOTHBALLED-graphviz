@@ -1,4 +1,4 @@
-#ifndef MSWIN32
+#ifndef _WIN32
 
 //#include    <unistd.h>
 #include	<sys/types.h>
@@ -19,7 +19,7 @@ typedef clock_t mytime_t;
 #define DIFF_IN_SECS(S,T) ((S - T) / (double)CLOCKS_PER_SEC)
 
 #endif
-	
+
 
 static mytime_t T;
 

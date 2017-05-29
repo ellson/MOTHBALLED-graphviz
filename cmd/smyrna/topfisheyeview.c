@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,7 +28,7 @@
 #include "color.h"
 #include "colorprocs.h"
 
-#ifdef MSWIN32
+#ifdef _WIN32
 #include <wincrypt.h>
 #endif
 
@@ -208,7 +208,7 @@ static v_data *makeGraph(Agraph_t* gg, int *nedges)
     ne = 0;
     i=0;
 //    for (i = 0; i < nv; i++) {
-    for (np = agfstnode(gg); np; np = agnxtnode(gg, np)) 
+    for (np = agfstnode(gg); np; np = agnxtnode(gg, np))
     {
 	graph[i].edges = edges++;	/* reserve space for the self loop */
 	graph[i].ewgts = ewgts++;
@@ -219,7 +219,7 @@ static v_data *makeGraph(Agraph_t* gg, int *nedges)
 
 	if (!g)
 	    g = agraphof(np);
-	for (ep = agfstedge(g, np); ep; ep = agnxtedge(g, ep, np)) 
+	for (ep = agfstedge(g, np); ep; ep = agnxtedge(g, ep, np))
 	{
 	    Agnode_t *vp;
 	    Agnode_t *tp = agtail(ep);
@@ -274,7 +274,7 @@ static v_data *makeGraph_old(topview * tv, int *nedges)
 	np = tv->Nodes[i].Node;
 	if (!g)
 	    g = agraphof(np);
-	for (ep = agfstedge(g, np); ep; ep = agnxtedge(g, ep, np)) 
+	for (ep = agfstedge(g, np); ep; ep = agnxtedge(g, ep, np))
 	{
 	    Agnode_t *vp;
 	    Agnode_t *tp = agtail(ep);
@@ -343,7 +343,7 @@ void prepare_topological_fisheye(Agraph_t* g,topview * t)
 
 //      t->fisheyeParams.animate=1;   //turn the animation on
     i=0;
-    for (np = agfstnode(g); np; np = agnxtnode(g, np)) 
+    for (np = agfstnode(g); np; np = agnxtnode(g, np))
     {
 	x_coords[i]=ND_A(np).x;
 	y_coords[i]=ND_A(np).y;
@@ -371,7 +371,7 @@ void prepare_topological_fisheye(Agraph_t* g,topview * t)
 	(int) (view->bdyTop - view->bdyBottom);
     view->Topview->fisheyeParams.repos.rescale = Polar;
 
-    //topological fisheye 
+    //topological fisheye
 
     colorxlate(get_attribute_value
 	       ("topologicalfisheyefinestcolor", view,
@@ -586,7 +586,7 @@ static void drawtopfishedges(topview * t)
 			glVertex3f((GLfloat) x0, (GLfloat) y0,
 				   (GLfloat) 0);
 			glVertex3f((GLfloat) x, (GLfloat) y, (GLfloat) 0);
-		    } else	// if (gg[n].active_level > level) 
+		    } else	// if (gg[n].active_level > level)
 		    {
 			int levell, nodee;
 			find_active_ancestor_info(hp, level, n, &levell,
@@ -687,7 +687,7 @@ int get_temp_coords(topview * t, int level, int v, double *coord_x,
 	AL = gg[v].active_level;
 	OAL = gg[v].old_active_level;
 
-	if ((OAL < level) || (AL < level))	//no draw 
+	if ((OAL < level) || (AL < level))	//no draw
 	    return 0;
 	if ((OAL >= level) || (AL >= level))	//draw the node
 	{

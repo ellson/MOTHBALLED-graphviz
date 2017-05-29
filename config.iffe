@@ -89,7 +89,7 @@ link{
 
 compile{
     #include <iconv.h>
-    iconv_t xx; 
+    iconv_t xx;
 }end yes{
 /* Define if <iconv.h> defines iconv_t. */
 #define HAVE_ICONV_T_DEF 1
@@ -97,7 +97,7 @@ compile{
 
 compile{
     #include <fenv.h>
-    void foo() {fesetenv (FE_NONIEEE_ENV);} 
+    void foo() {fesetenv (FE_NONIEEE_ENV);}
 }end yes{
 /* Define if FE_NONIEEE_ENV defined in <fenv.h>. */
 #define FE_NONIEEE_ENV 1
@@ -140,7 +140,7 @@ cat{
 #define HAVE_LIBM 1
 
 /* Define if you have the png library (-lpng).  */
-#define HAVE_LIBPNG     1	
+#define HAVE_LIBPNG     1
 
 /* Define if you have the freetype library (-lfreetype),  */
 #define	HAVE_LIBFREETYPE   1
@@ -175,21 +175,21 @@ cat{
 
 /* Default DPI. */
 #define DEFAULT_DPI 96
- 
+
 /* Define if you want SFDP. */
 #define SFDP 1
- 
+
 /* Define if you want to use the triangle library. */
 #define HAVE_TRIANGLE 1
- 
+
 #define VERSION "VVVV"
 
 /* Define if you have the pango library with cairo support */
 /* #define HAVE_PANGOCAIRO 1 */
 
-/* Define if you want DIGCOLA */ 
+/* Define if you want DIGCOLA */
 #define DIGCOLA 1
-/* Define if you want IPSEPCOLA */ 
+/* Define if you want IPSEPCOLA */
 #define IPSEPCOLA 1
 
 /* #define MOSEK 1 */
@@ -199,7 +199,7 @@ cat{
 #  define DEFAULT_FONTPATH    "/win/fonts"
 #  define PATHSEPARATOR ":"
 #  else
-#  ifdef MSWIN32
+#  ifdef _WIN32
 #   define DEFAULT_FONTPATH    "C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
 #   define PATHSEPARATOR ";"
 #  else
@@ -209,4 +209,3 @@ cat{
 # endif
 #endif
 }end
-
