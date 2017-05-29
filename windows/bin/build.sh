@@ -4,7 +4,7 @@
 PATH=$PATH:"/c/Program Files/putty:/msdev/vc/bin"
 export ROOT=$PWD
 export INSTALLROOT=$ROOT/local
-GVIZ_HOME=$ROOT/gviz       
+GVIZ_HOME=$ROOT/gviz
 LFILE=$ROOT/build.log    # log file
 SOURCEM=www.graphviz.org
 SOURCE=/var/www/www.graphviz.org/pub/graphviz
@@ -20,7 +20,7 @@ SFX=
 SUBJECT="-s'Windows build failure'"
 export nativepp=-1
 
-function SetVersion 
+function SetVersion
 {
   if [[ -f $GVIZ_HOME/config.h ]]
   then
@@ -36,14 +36,14 @@ function SetVersion
 function WarnEx
 {
   ssh erg@penguin "echo $1 | mail erg $SUBJECT"
-}  
+}
 
 function ErrorEx
 {
   scp -q $LFILE $USER@penguin:/home/$USER/build.log.$VERSION
   ssh $USER@penguin "echo $1 | mail $WINDBG $SUBJECT"
   exit 1
-}  
+}
 
 # Copy file to graphviz machine
 function PutFile
@@ -56,16 +56,16 @@ function PutFile
   fi
 }
 
-function Get 
+function Get
 {
   echo scp $SOURCEM:$SOURCEFILE . >> $LFILE
   scp -q  $SOURCEM:$SOURCEFILE . >> $LFILE 2>&1
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to get source"
-  fi 
+  fi
 
-     # Remove any old source directories 
+     # Remove any old source directories
   rm -rf graphviz-[1-9]*[0-9]
   echo "unpacking the package" >> $LFILE
   echo "(gunzip < $INPKG | tar xf - )" >> $LFILE 2>&1
@@ -100,16 +100,16 @@ function Get
 
 function mkDir {
   if [[ ! -d $1 ]]
-  then 
+  then
     echo mkdir $1 >> $LFILE 2>&1
     mkdir $1 >> $LFILE 2>&1
-  fi 
+  fi
 }
 
-THIRD_PARTY_DLL="freetype6.dll libexpat.dll png.dll jpeg.dll libexpatw.dll z.dll zlib1.dll" 
-THIRD_PARTY="freetype.lib libexpat.lib libexpatw.lib expat.lib png.lib jpeg.lib expatw.lib z.lib" 
+THIRD_PARTY_DLL="freetype6.dll libexpat.dll png.dll jpeg.dll libexpatw.dll z.dll zlib1.dll"
+THIRD_PARTY="freetype.lib libexpat.lib libexpatw.lib expat.lib png.lib jpeg.lib expatw.lib z.lib"
 
-#Todo : 
+#Todo :
 # Do we need freetype[6].def?
 
 # Prepare to build the software.
@@ -117,7 +117,7 @@ THIRD_PARTY="freetype.lib libexpat.lib libexpatw.lib expat.lib png.lib jpeg.lib 
 #   Add any missing software and libraries
 #   Run configure
 #   Make post-configure tweaks to source, Makefiles and config.h
-function Setup 
+function Setup
 {
   cd $ROOT
   echo rm -rf $INSTALLROOT >> $LFILE 2>&1
@@ -169,7 +169,7 @@ function Setup
     > lib/gd/unistd.h      # for fontconfig.h
     > plugin/pango/unistd.h      # for fontconfig.h
   fi
-#  if grep _typ_ssize_t ast_common.h > /dev/null 
+#  if grep _typ_ssize_t ast_common.h > /dev/null
 #  then
 #    mv ast_common.h xx
 #    sed '/#define _typ_ssize_t/d' xx > ast_common.h
@@ -179,11 +179,6 @@ function Setup
   then
     cp lib/gd/gd.h xx
     sed 's/#ifndef WIN32/#define NONDLL 1\n#define DISABLE_THREADS 1\n#ifndef WIN32/' xx > lib/gd/gd.h
-  fi
-  if grep 'define NO_POSTSCRIPT_ALIAS' lib/gd/gdft.c > /dev/null
-  then
-    cp lib/gd/gdft.c xx
-    sed 's/^.*define NO_POSTSCRIPT_ALIAS.*$/#define NO_POSTSCRIPT_ALIAS 1/' xx > lib/gd/gdft.c
   fi
 
   if [[ $USE_DLL != 0 ]]
@@ -216,7 +211,7 @@ function mkGvpr
     if [[ $? != 0 ]]
     then
       return 1
-    fi 
+    fi
   done
 
   echo "ncc -g -L$INSTALLROOT/lib -o gvpr.exe  actions.o compile.o gvpr.o gprstate.o parse.o queue.o ../../lib/ingraphs/.libs/libingraphs_C.a -lexpr -lagraph -lcdt"
@@ -224,7 +219,7 @@ function mkGvpr
   if [[ $? != 0 ]]
   then
     return 1
-  fi 
+  fi
   cp gvpr.exe $INSTALLROOT/bin
   return 0
 }
@@ -235,13 +230,13 @@ function mkDot
   if [[ $? != 0 ]]
   then
     return 1
-  fi 
-  echo "ncc -g -o dot.exe dot.o  -L$INSTALLROOT/lib -L$GTKDIR/lib -lgvc -lgraph -lpathplan -lexpat -lz -lltdl" 
+  fi
+  echo "ncc -g -o dot.exe dot.o  -L$INSTALLROOT/lib -L$GTKDIR/lib -lgvc -lgraph -lpathplan -lexpat -lz -lltdl"
   ncc -g -o dot.exe dot.o  -L$INSTALLROOT/lib -L$GTKDIR/lib -lgvc -lgraph -lpathplan -lexpat -lz -lltdl
   if [[ $? != 0 ]]
   then
     return 1
-  fi 
+  fi
   cp dot.exe $INSTALLROOT/bin
   return 0
 }
@@ -253,7 +248,7 @@ function mkTool
   if [[ $? != 0 ]]
   then
     return 1
-  fi 
+  fi
   cp ${1}.exe $INSTALLROOT/bin
   return 0
 }
@@ -268,74 +263,74 @@ function mkTools
     if [[ $? != 0 ]]
     then
       return 1
-    fi 
+    fi
   done
 
   mkTool acyclic -lgraph
   if [[ $? != 0 ]]
   then
     return 1
-  fi 
+  fi
   mkTool bcomps -lgraph
   if [[ $? != 0 ]]
   then
     return 1
-  fi 
+  fi
   mkTool ccomps -lgraph
   if [[ $? != 0 ]]
   then
     return 1
-  fi 
+  fi
   mkTool dijkstra -lagraph
   if [[ $? != 0 ]]
   then
     return 1
-  fi 
+  fi
   mkTool gc -lgraph
   if [[ $? != 0 ]]
   then
     return 1
-  fi 
+  fi
   mkTool gvcolor -lgraph colxlate.o
   if [[ $? != 0 ]]
   then
     return 1
-  fi 
-  mkTool gxl2dot "-L$GTKDIR/lib -lagraph -lgraph -lexpat" "cvtgxl.o dot2gxl.o" 
+  fi
+  mkTool gxl2dot "-L$GTKDIR/lib -lagraph -lgraph -lexpat" "cvtgxl.o dot2gxl.o"
   if [[ $? != 0 ]]
   then
     return 1
-  fi 
+  fi
   mkTool nop -lgraph
   if [[ $? != 0 ]]
   then
     return 1
-  fi 
+  fi
   mkTool sccmap -lagraph
   if [[ $? != 0 ]]
   then
     return 1
-  fi 
+  fi
   mkTool tred -lgraph
   if [[ $? != 0 ]]
   then
     return 1
-  fi 
+  fi
   mkTool unflatten -lagraph
   if [[ $? != 0 ]]
   then
     return 1
-  fi 
+  fi
   mkTool gvpack "-lgvplugin_neato_layout -lgvc -lgraph"
   if [[ $? != 0 ]]
   then
     return 1
-  fi 
+  fi
 
   return 0
 }
 
-function Build 
+function Build
 {
   cd $GVIZ_HOME
 
@@ -344,14 +339,14 @@ function Build
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to make lib"
-  fi 
+  fi
 
   cd ../plugin
   make install >> $LFILE 2>&1
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to make plugins"
-  fi 
+  fi
 
   # Go to install directory and move libraries from graphviz
   # subdirectory to main lib directory
@@ -368,14 +363,14 @@ function Build
     mkDLL agraph -lcdt
     cp $GVIZ_HOME/lib/expr/.libs/libexpr_C.a libexpr.a
     mkDLL expr -lcdt
-    mkDLL gvc "-L$GTKDIR/lib -lpathplan -lgraph -lcdt -lexpat -lz -lltdl" 
+    mkDLL gvc "-L$GTKDIR/lib -lpathplan -lgraph -lcdt -lexpat -lz -lltdl"
     mkDLL gvplugin_core "-L$GTKDIR/lib -lgvc -lgraph -lcdt -lexpat -lz -lltdl"
     mkDLL gvplugin_dot_layout "-L$GTKDIR/lib -lgvc -lgraph -lpathplan -lcdt -lexpat -lz -lltdl"
     mkDLL gvplugin_neato_layout "-L$GTKDIR/lib -lgvc -lpathplan -lgraph -lcdt -lexpat -lz -lltdl"
-    mkDLL gvplugin_gd "-L$GTKDIR/lib -lgvc -lpathplan -lgraph -lcdt -lpng -ljpeg -lfontconfig -lfreetype -lcairo -liconv -lexpat -lz -lltdl" 
-#    mkDLL gvplugin_gdk_pixbuf "-L$GTKDIR/lib -lcairo -lgdk_pixbuf-2.0 -lltdl" 
-    mkDLL gvplugin_pango "-L$GTKDIR/lib -lgvc -lfontconfig  -lfreetype  -ljpeg  -lpng  -lexpat  -lz -lcairo -lpango-1.0 -lpangocairo-1.0 -lgobject-2.0 -lgtk-win32-2.0 -lglib-2.0 -lgdk-win32-2.0 -latk-1.0 -lgdk_pixbuf-2.0"  
-  fi 
+    mkDLL gvplugin_gd "-L$GTKDIR/lib -lgvc -lpathplan -lgraph -lcdt -lpng -ljpeg -lfontconfig -lfreetype -lcairo -liconv -lexpat -lz -lltdl"
+#    mkDLL gvplugin_gdk_pixbuf "-L$GTKDIR/lib -lcairo -lgdk_pixbuf-2.0 -lltdl"
+    mkDLL gvplugin_pango "-L$GTKDIR/lib -lgvc -lfontconfig  -lfreetype  -ljpeg  -lpng  -lexpat  -lz -lcairo -lpango-1.0 -lpangocairo-1.0 -lgobject-2.0 -lgtk-win32-2.0 -lglib-2.0 -lgdk-win32-2.0 -latk-1.0 -lgdk_pixbuf-2.0"
+  fi
 
   cd $GVIZ_HOME/cmd
   cd lefty
@@ -383,63 +378,63 @@ function Build
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to make lefty"
-  fi 
+  fi
 
   cd ../lneato
   make install >> $LFILE 2>&1
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to make lneato"
-  fi 
+  fi
 
   cd ../dotty
   make install >> $LFILE 2>&1
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to make dotty"
-  fi 
+  fi
 
   cd ../gvpr
   if [[ $USE_DLL != 0 ]]
   then
-    mkGvpr >> $LFILE 2>&1 
+    mkGvpr >> $LFILE 2>&1
   else
     make install >> $LFILE 2>&1
   fi
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to make gvpr"
-  fi 
+  fi
 
   cd ../tools
   if [[ $USE_DLL != 0 ]]
   then
-    mkTools >> $LFILE 2>&1 
+    mkTools >> $LFILE 2>&1
   else
     make install >> $LFILE 2>&1
   fi
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to make tools"
-  fi 
+  fi
 
   cd ../dot
   if [[ $USE_DLL != 0 ]]
   then
-    mkDot >> $LFILE 2>&1 
+    mkDot >> $LFILE 2>&1
   else
     make install >> $LFILE 2>&1
   fi
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to make dot"
-  fi 
+  fi
 
 #  make install >> $LFILE 2>&1
 #  if [[ $? != 0 ]]
 #  then
 #    ErrorEx "failure to make cmd"
-#  fi 
+#  fi
 
 }
 
@@ -472,12 +467,12 @@ function Install
 {
 # Add 3rd party programs and libraries
   cd $GTKDIR/bin
-  echo "Copying 3rd party programs" >> $LFILE 2>&1   
+  echo "Copying 3rd party programs" >> $LFILE 2>&1
   for l in $GTKPROGS
   do
     cp $l.exe $INSTALLROOT/bin
   done
-  echo "Copying 3rd party libraries" >> $LFILE 2>&1   
+  echo "Copying 3rd party libraries" >> $LFILE 2>&1
   for l in $GTKDLLS
   do
     cp $l.dll $INSTALLROOT/bin
@@ -489,7 +484,7 @@ function Install
   # fontconfig.dll rather than libfontconfig-1.dll, so we make a copy.
   cd $INSTALLROOT/bin
   cp libfontconfig-1.dll fontconfig.dll
-  
+
   # Add extra software
   cd $ROOT/add-on
   cp Uninstall.exe $INSTALLROOT
@@ -506,10 +501,10 @@ function Install
     fi
     cd ..
   fi
-  
+
 # Create "soft" links. At present, hard links appear necessary for
 # GVedit and GVUI. It is hoped this will change with the new GVUI.
-  echo "Create soft links" >> $LFILE 2>&1   
+  echo "Create soft links" >> $LFILE 2>&1
   echo cd $INSTALLROOT/bin >> $LFILE 2>&1
   cd $INSTALLROOT/bin
   cp dot.exe neato.exe
@@ -520,21 +515,21 @@ function Install
 
   if [[ $USE_DLL == 2 ]]
   then
-    ./dot -c >> $LFILE 2>&1   
+    ./dot -c >> $LFILE 2>&1
     if [[ $? != 0 ]]
     then
       ErrorEx "failure to initialize dot"
-    fi 
+    fi
   fi
-  
+
   cd $ROOT
-  echo "Install extra files" >> $LFILE 2>&1   
+  echo "Install extra files" >> $LFILE 2>&1
   cp -r $GVIZ_HOME/graphs $INSTALLROOT
   cp -r $GVIZ_HOME/dot.demo $INSTALLROOT
   cp -r $GVIZ_HOME/contrib $INSTALLROOT
-  cp -r $GVIZ_HOME/doc/*.pdf $INSTALLROOT/doc 
+  cp -r $GVIZ_HOME/doc/*.pdf $INSTALLROOT/doc
 
-  echo "Install man pages" >> $LFILE 2>&1   
+  echo "Install man pages" >> $LFILE 2>&1
   cp $GVIZ_HOME/cmd/dot/dot.pdf $INSTALLROOT/doc/man
   cp $GVIZ_HOME/cmd/gvpr/gvpr.pdf $INSTALLROOT/doc/man
   cp $GVIZ_HOME/cmd/dotty/dotty.pdf $INSTALLROOT/doc/man
@@ -554,7 +549,7 @@ function Install
 
   if [[ -d $INSTALLROOT/share ]]
   then
-    echo "Install share software" >> $LFILE 2>&1   
+    echo "Install share software" >> $LFILE 2>&1
     echo "cd $INSTALLROOT/share/graphviz" >> $LFILE 2>&1
     cd $INSTALLROOT/share/graphviz
     if [[ -d lefty ]]
@@ -568,7 +563,7 @@ function Install
 
   if [[ -d $INSTALLROOT/include/graphviz ]]
   then
-    echo "Install include/graphviz files" >> $LFILE 2>&1   
+    echo "Install include/graphviz files" >> $LFILE 2>&1
     cd $INSTALLROOT
     mv include/graphviz ginclude
     rm -rf include
@@ -581,7 +576,7 @@ function Install
   rm -f $(find contrib -name Makefile -print)
   rm -f $(find contrib -name Makefile.in -print)
 
-  echo "Finish Install" >> $LFILE 2>&1   
+  echo "Finish Install" >> $LFILE 2>&1
 }
 
 function PackageTar
@@ -612,7 +607,7 @@ function PackageTar
   fi
   cd ..
 }
-  
+
 function Package
 {
   cd $ROOT
@@ -625,16 +620,16 @@ function Package
   sed "s/XXX/$SHORTVERSION/" Graphviz.ini > $ROOT/release/Graphviz.ini
   cd $ROOT
   ./gsetup.sh $ROOT "${RELEASE}" >> $LFILE 2>&1
- 
+
   # now copy it to the webserver
   UPLOADFILE=graphviz-${VERSION}${STATIC}.exe
   PACKAGEDFILE=$ROOT/release/graphvizw.exe
-  
+
   if [[ -f $PACKAGEDFILE ]]
   then
     echo "SUCCESS : installation package created" >> $LFILE
     mv $PACKAGEDFILE $UPLOADFILE    # attach version info
-  
+
     echo "uploading the package file $UPLOADFILE" >> $LFILE
     chmod 755 $UPLOADFILE
     PutFile $UPLOADFILE
@@ -642,10 +637,10 @@ function Package
     echo "FAILED : could not create installation package" >> $LFILE
       ErrorEx "windows install failure"
   fi
-  
+
 }
 
-function PutLog 
+function PutLog
 {
   LOG=graphviz-windows-buildlog-${VERSION}.txt
   echo "uploading the log $LOG file" >> $LFILE
@@ -718,7 +713,7 @@ do
     SOURCEFILE=$SOURCE/ARCHIVE/$INPKG
     DESTDIR=$SOURCE/ARCHIVE
     INSTALLROOT=$ROOT/local.${RELEASE}
-    GVIZ_HOME=$ROOT/gviz.${RELEASE}       
+    GVIZ_HOME=$ROOT/gviz.${RELEASE}
     ;;
   :)
     echo $OPTARG requires a value
@@ -783,4 +778,3 @@ then
 fi
 
 exit 0
-
