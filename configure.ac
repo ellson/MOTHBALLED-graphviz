@@ -427,7 +427,7 @@ AC_SUBST([MATH_LIBS])
 
 # Check for functions that might need -lm
 LIBS="$LIBS $MATH_LIBS"
-AC_CHECK_FUNCS([log2 sincos])
+AC_CHECK_FUNCS([sincos])
 
 LIBS=$save_LIBS
 
