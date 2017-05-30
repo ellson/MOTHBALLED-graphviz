@@ -37,7 +37,7 @@ extern "C" {
 #define _NO_LARGEFILE64_SOURCE  1
 #endif
 #if !defined(_NO_LARGEFILE64_SOURCE) && \
-	_lib_lseek64 && _lib_stat64 && defined(_typ_off64_t) && \
+	HAVE_LSEEK64 && HAVE_STAT64 && defined(_typ_off64_t) && \
 	_typ_struct_stat64
 #	if !defined(_LARGEFILE64_SOURCE)
 #	define _LARGEFILE64_SOURCE     1
@@ -57,7 +57,7 @@ extern "C" {
 #undef  _socket_peek
 #undef  HAVE_VFORK_H
 #undef  _HAVE_SYS_VFORK_H
-#undef  _lib_vfork
+#undef  HAVE_VFORK
 #undef  HAVE_SYS_IOCTL_H
 #endif
 
@@ -106,13 +106,13 @@ extern "C" {
 #define POOLMTXRETURN(p,v)	{ return(v); }
 
 /* functions for polling readiness of streams */
-#if _lib_select
+#ifdef HAVE_SELECT
 #undef _lib_poll
 #else
 #if _lib_poll_fd_1 || _lib_poll_fd_2
 #define _lib_poll	1
 #endif
-#endif /*_lib_select_*/
+#endif /*HAVE_SELECT*/
 
 #if defined(_lib_poll)
 #include	<poll.h>
@@ -138,7 +138,7 @@ extern "C" {
 #endif
 
 /* alternative process forking */
-#if _lib_vfork && !defined(fork) && !defined(sparc) && !defined(__sparc)
+#if HAVE_VFORK && !defined(fork) && !defined(sparc) && !defined(__sparc)
 #if defined(HAVE_VFORK_H)
 #include	<vfork.h>
 #endif
@@ -148,7 +148,7 @@ extern "C" {
 #define fork	vfork
 #endif
 
-#if _lib_unlink
+#ifdef HAVE_UNLINK
 #define remove	unlink
 #endif
 
@@ -808,7 +808,7 @@ extern "C" {
 #if !defined(fork)
     extern int fork(void);
 #endif
-#if _lib_unlink
+#ifdef HAVE_UNLINK
     extern int unlink(const char *);
 #endif
 
@@ -827,9 +827,9 @@ extern "C" {
     extern int fstat(int, Stat_t *);
 #endif
 
-#if _lib_vfork && !defined(HAVE_VFORK_H) && !defined(_HAVE_SYS_VFORK_H)
+#if HAVE_VFORK && !defined(HAVE_VFORK_H) && !defined(_HAVE_SYS_VFORK_H)
     extern pid_t vfork(void);
-#endif /*_lib_vfork*/
+#endif /*HAVE_VFORK*/
 
 #if defined(_lib_poll)
 #if _lib_poll_fd_1

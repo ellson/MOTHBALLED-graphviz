@@ -25,7 +25,7 @@ __STDPP__directive pragma pp:nohide getpagesize
 #undef	getpagesize
 #endif
 
-#if _lib_getpagesize
+#ifdef HAVE_GETPAGESIZE
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -207,7 +207,7 @@ void *sfsetbuf(reg Sfio_t * f, reg void * buf, reg size_t size)
 
 	/* set page size, this is also the desired default buffer size */
 	if (_Sfpage <= 0) {
-#if _lib_getpagesize
+#ifdef HAVE_GETPAGESIZE
 	    if ((_Sfpage = (size_t) getpagesize()) <= 0)
 #endif
 		_Sfpage = SF_PAGE;

@@ -155,7 +155,7 @@ int sfpoll(Sfio_t ** fa, reg int n, int tm)
     }
 #endif /*_lib_poll*/
 
-#if _lib_select
+#ifdef HAVE_SELECT
     if (c > 0) {
 	fd_set rd, wr;
 	struct timeval tmb, *tmp;
@@ -198,7 +198,7 @@ int sfpoll(Sfio_t ** fa, reg int n, int tm)
 	    break;
 	}
     }
-#endif /*_lib_select*/
+#endif /*HAVE_SELECT*/
 
     /* call exception functions */
     for (c = 0; c < n; ++c) {

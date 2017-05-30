@@ -18,7 +18,7 @@
 **	Written by Kiem-Phong Vo
 */
 
-#if _lib_waitpid
+#ifdef HAVE_WAITPID
 int _Sf_no_need_for_waitpid;
 #else
 
@@ -85,6 +85,6 @@ waitpid(int pid, int *status, int options)
     return -1;
 }
 
-#endif /*_lib_waitpid*/
+#endif /*HAVE_WAITPID*/
 
 #endif
