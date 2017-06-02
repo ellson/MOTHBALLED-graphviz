@@ -15,17 +15,6 @@ typ struct_stat64 compile{
 	}
 }end
 
-exit    cleanup note{ stuck with standard _cleanup }end execute{
-        #include <stdio.h>
-        _BEGIN_EXTERNS_
-        extern void exit(int);
-        extern void _exit(int);
-        extern void _cleanup();
-        void _cleanup() { _exit(0); }
-        _END_EXTERNS_
-        main() { printf("cleanup\n"); exit(1); }
-}end
-
 hdr stat note{ stat() in default lib(s) }end link{
 	#if _STD_
 	#include	<stddef.h>
@@ -174,31 +163,5 @@ socket	peek note{ recv(MSG_PEEK) works }end link{
         {       char    buf[128];
                 recv(0,buf,sizeof(buf),MSG_PEEK);
                 return 0;
-        }
-}end
-
-
-################################################################
-## See if register layout is ok for vax string operations
-################################################################
-
-vax asm note{ register layout ok for vax string operations }end execute{
-        main()
-        {
-        #ifndef vax
-                return absurd = -1;
-        #else
-                register int    r11, r10, r9, r8, r7, r6;
-                r11 = r10 = r9 = r8 = r7 = r6 = -1;
-                asm("clrw       r11");
-                asm("clrw       r10");
-                asm("clrw       r9");
-                asm("clrw       r8");
-                asm("clrw       r7");
-                asm("clrw       r6");
-                if(sizeof(int) != sizeof(char*) || r11 || r10 || r9 || r8 || r7 || r6 )
-                        return -1;
-                return 0;
-        #endif
         }
 }end
