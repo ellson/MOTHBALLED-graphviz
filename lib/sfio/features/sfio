@@ -15,20 +15,6 @@ typ struct_stat64 compile{
 	}
 }end
 
-hdr stat note{ stat() in default lib(s) }end link{
-	#if _STD_
-	#include	<stddef.h>
-	#else
-	#include	<sys/types.h>
-	#endif
-	#include	<time.h>
-	#include	<stat.h>
-	main()
-	{	struct stat	st;
-		fstat(0,&st);
-	}
-}end
-
 ##################################################
 # file control checks
 ##################################################

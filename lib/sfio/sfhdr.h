@@ -51,7 +51,7 @@ extern "C" {
 */
 #if defined(_SFBINARY_H)
 #undef  HAVE_SYS_ST
-#undef  _hdr_stat
+#undef  HAVE_STAT_H
 #undef  _lib_poll
 #undef  _stream_peek
 #undef  _socket_peek
@@ -69,7 +69,7 @@ extern "C" {
 #if HAVE_SYS_STAT_H
 #include	<sys/stat.h>
 #else
-#if _hdr_stat
+#if HAVE_STAT_H
 #include	<stat.h>
 #ifndef HAVE_SYS_STAT_H
 #define	HAVE_SYS_STAT_H	1
