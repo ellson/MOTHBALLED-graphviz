@@ -26,20 +26,6 @@ exit    cleanup note{ stuck with standard _cleanup }end execute{
         main() { printf("cleanup\n"); exit(1); }
 }end
 
-sys stat note{ stat() in default lib(s) }end link{
-	#if _STD_
-	#include	<stddef.h>
-	#else
-	#include	<sys/types.h>
-	#endif
-	#include	<time.h>
-	#include	<sys/stat.h>
-	main()
-	{	struct stat	st;
-		fstat(0,&st);
-	}
-}end
-
 hdr stat note{ stat() in default lib(s) }end link{
 	#if _STD_
 	#include	<stddef.h>

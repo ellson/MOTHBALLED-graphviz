@@ -50,7 +50,7 @@ extern "C" {
    are not needed and they may get in the way so we remove them here.
 */
 #if defined(_SFBINARY_H)
-#undef  _sys_stat
+#undef  HAVE_SYS_ST
 #undef  _hdr_stat
 #undef  _lib_poll
 #undef  _stream_peek
@@ -66,19 +66,19 @@ extern "C" {
 #include	<stdint.h>
 #include	<stddef.h>
 
-#if _sys_stat
+#if HAVE_SYS_STAT_H
 #include	<sys/stat.h>
 #else
 #if _hdr_stat
 #include	<stat.h>
-#ifndef _sys_stat
-#define	_sys_stat	1
+#ifndef HAVE_SYS_STAT_H
+#define	HAVE_SYS_STAT_H	1
 #endif
 #endif
-#endif /*_sys_stat*/
+#endif /*HAVE_SYS_STAT_H*/
 
-#ifndef _sys_stat
-#define _sys_stat	0
+#ifndef HAVE_SYS_STAT_H
+#define HAVE_SYS_STAT_H	0
 #endif
 
 #include	<fcntl.h>
@@ -153,7 +153,7 @@ extern "C" {
 #endif
 
 /* 64-bit vs 32-bit file stuff */
-#if _sys_stat
+#if HAVE_SYS_STAT_H
 #ifdef _LARGEFILE64_SOURCE
     typedef struct stat64 Stat_t;
 #define	lseek		lseek64
@@ -823,7 +823,7 @@ extern "C" {
     typedef int (*Onexit_f)(void);
     extern Onexit_f onexit(Onexit_f);
 
-#if _sys_stat
+#if HAVE_SYS_STAT_H
     extern int fstat(int, Stat_t *);
 #endif
 

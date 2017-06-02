@@ -41,13 +41,13 @@ extern "C" {
 **
 **	Written by Kiem-Phong Vo.
 */
-#if !_sys_stat
+#if !HAVE_SYS_STAT_H
     struct stat {
     int st_mode;
     int st_size;
 };
 #define fstat(fd,st)	(-1)
-#endif /*_sys_stat*/
+#endif /*HAVE_SYS_STAT_H*/
 
 /**
  * @param f stream to be buffered
@@ -138,7 +138,7 @@ void *sfsetbuf(reg Sfio_t * f, reg void * buf, reg size_t size)
 	st.st_mode = 0;
 
 	/* if has discipline, set size by discipline if possible */
-	if (!_sys_stat || disc) {
+	if (!HAVE_SYS_STAT_H || disc) {
 	    if ((f->here = SFSK(f, (Sfoff_t) 0, SEEK_CUR, disc)) < 0)
 		goto unseekable;
 	    else {
@@ -154,7 +154,7 @@ void *sfsetbuf(reg Sfio_t * f, reg void * buf, reg size_t size)
 	if (fstat((int) f->file, &st) < 0)
 	    f->here = -1;
 	else {
-#if _sys_stat && _stat_blksize	/* preferred io block size */
+#if HAVE_SYS_STAT_H && _stat_blksize	/* preferred io block size */
 	    if ((blksize = (ssize_t) st.st_blksize) > 0)
 		while ((blksize + (ssize_t) st.st_blksize) <= SF_PAGE)
 		    blksize += (ssize_t) st.st_blksize;
@@ -185,7 +185,7 @@ void *sfsetbuf(reg Sfio_t * f, reg void * buf, reg size_t size)
 		    /* set line mode for terminals */
 		    if (!(f->flags & SF_LINE) && isatty(f->file))
 			f->flags |= SF_LINE;
-#if _sys_stat
+#if HAVE_SYS_STAT_H
 		    else {	/* special case /dev/null */
 			reg int dev, ino;
 			dev = (int) st.st_dev;
