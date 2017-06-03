@@ -46,18 +46,6 @@ tmp rmfail note{ file not removable if still opened }end execute{
 	}
 }end
 
-more void_int note{ voidptr is larger than int }end execute{
-	main() {
-	return sizeof(char*) > sizeof(int) ? 0 : 1;
-	}
-}end
-
-more long_int note{ long is larger than int }end execute{
-	main() {
-	return sizeof(long) > sizeof(int) ? 0 : 1;
-	}
-}end
-
 ################################################################
 # See if there is a preferred block size for a file system
 ################################################################
