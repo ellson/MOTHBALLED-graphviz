@@ -89,6 +89,7 @@ ccomps.1.pdf: $(srcdir)/ccomps.1
 tred_SOURCES = tred.c
 
 tred_LDADD = \
+    $(top_builddir)/lib/common/libcommon_C.la \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la
 
