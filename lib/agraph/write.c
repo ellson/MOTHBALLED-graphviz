@@ -261,7 +261,7 @@ static void write_hdr(Agraph_t * g, iochan_t * ofile, int top)
     name = agnameof(g);
     sep = " ";
     if (!name || name[0] == LOCALNAMEPREFIX)
-	sep = name = "";
+	name = "\"\"";
     indent(g, ofile);
     ioput(g, ofile, strict);
 
