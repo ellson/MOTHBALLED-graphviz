@@ -45,6 +45,7 @@ static Agraph_t *clone_graph(Agraph_t * ing, Agraph_t ** xg)
     agbindrec(clone, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
     sprintf(gname, "_clone_%d", id++);
     xclone = agopen(gname, ing->desc,NIL(Agdisc_t *));
+    agbindrec(xclone, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
     for (n = agfstnode(ing); n; n = agnxtnode(ing, n)) {
 	agsubnode(clone,n,1);
 	xn = agnode(xclone, agnameof(n),1);
