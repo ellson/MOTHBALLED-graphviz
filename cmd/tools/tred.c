@@ -7,8 +7,6 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
 
@@ -89,14 +87,14 @@ static void push(estack_t* sp, Agedge_t * ep, nodeinfo_t* ninfo)
 	if (sp->Stk.curblk->next == NULL) {
 	    blk_t *bp = NEW(blk_t);
 	    if (bp == 0) {
-		fprintf(stderr, "gc: Out of memory\n");
+		fprintf(stderr, "%s: Out of memory\n", CmdName);
 		exit(1);
 	    }
 	    bp->prev = sp->Stk.curblk;
 	    bp->next = NULL;
 	    bp->data = N_NEW(BIGBUF, Agedge_t *);
 	    if (bp->data == 0) {
-		fprintf(stderr, "gc: Out of memory\n");
+		fprintf(stderr, "%s: Out of memory\n", CmdName);
 		exit(1);
 	    }
 	    bp->endp = bp->data + BIGBUF;

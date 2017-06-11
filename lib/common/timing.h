@@ -14,7 +14,6 @@
 #ifndef GV_TIMING_H
 #define GV_TIMING_H
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
