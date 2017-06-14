@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
 project (Graphviz)
 
+include(FeatureSummary)
+
 # =============================== Build options ================================
 option(enable_ltdl     "Support on-demand plugin loading" ON)
 option(with_digcola    "DIGCOLA features in neato layout engine" ON )
@@ -164,3 +166,5 @@ add_subdirectory(cmd)
 
 enable_testing()
 add_subdirectory(tests)
+
+feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)
