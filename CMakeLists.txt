@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
 project (Graphviz)
 
+include(FeatureSummary)
+
 # =============================== Build options ================================
 option(enable_ltdl     "Support on-demand plugin loading" ON)
 option(with_digcola    "DIGCOLA features in neato layout engine" ON )
@@ -96,6 +98,10 @@ endif()
 # ============================ Set Graphviz version ============================
 set(GRAPHVIZ_VERSION_MAJOR 2)
 set(GRAPHVIZ_VERSION_MINOR 41)
+set(GRAPHVIZ_VERSION_PATCH 0)
+set(GRAPHVIZ_VERSION_STRING "${GRAPHVIZ_VERSION_MAJOR}.${GRAPHVIZ_VERSION_MINOR}.${GRAPHVIZ_VERSION_PATCH}")
+configure_file(graphviz_version.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/graphviz_version.h @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/graphviz_version.h DESTINATION ${HEADER_INSTALL_DIR})
 
 # Set GRAPHVIZ_VERSION_BUILD to time of last commit, or to 0 if that fails.
 execute_process(
@@ -160,3 +166,5 @@ add_subdirectory(cmd)
 
 enable_testing()
 add_subdirectory(tests)
+
+feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)
