@@ -1,4 +1,9 @@
-.TH gv 3[string tolower $lang] \"[clock format [clock seconds] -format "%d %B %Y"]\"
+.TH gv 3[string tolower $lang] \"[
+    set buildtime [clock seconds]
+    if { [info exists ::env(SOURCE_DATE_EPOCH) ] } {
+         set buildtime $::env(SOURCE_DATE_EPOCH)
+    }
+    clock format $buildtime -format "%d %B %Y"]\"
 
 .SH NAME
 
