@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,8 +37,8 @@ extern "C" {
 #define _NO_LARGEFILE64_SOURCE  1
 #endif
 #if !defined(_NO_LARGEFILE64_SOURCE) && \
-	HAVE_LSEEK64 && HAVE_STAT64 && defined(_typ_off64_t) && \
-	_typ_struct_stat64
+	HAVE_LSEEK64 && HAVE_STAT64 && defined(HAVE_OFF64_T) && \
+	HAVE_STRUCT_STAT64
 #	if !defined(_LARGEFILE64_SOURCE)
 #	define _LARGEFILE64_SOURCE     1
 #	endif

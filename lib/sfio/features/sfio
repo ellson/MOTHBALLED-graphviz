@@ -6,15 +6,6 @@
 # Converted to sfio v10/01/94 by Giampiero Sierra (06/08/95).
 ##################################################################
 
-typ off64_t
-typ struct_stat64 compile{
-	#include	<sys/types.h>
-	#include	<sys/stat.h>
-	main()
-	{	struct stat64 statb;
-	}
-}end
-
 ##################################################
 # file control checks
 ##################################################
