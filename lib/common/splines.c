@@ -450,7 +450,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
 	    } 
-	    /* P->start.p.y += 1; */
+	    P->start.p.y += 1;
 	    endp->boxn = 2;
 	}
 	else if (side & BOTTOM) {
@@ -458,7 +458,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.UR.y = MAX(b.UR.y,P->start.p.y);
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    /* P->start.p.y -= 1; */
+	    P->start.p.y -= 1;
 	}
 	else if (side & LEFT) {
 	    endp->sidemask = LEFT;
@@ -467,7 +467,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.UR.y = P->start.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    /* P->start.p.x -= 1; */
+	    P->start.p.x -= 1;
 	}
 	else {
 	    endp->sidemask = RIGHT;
@@ -476,7 +476,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.UR.y = P->start.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    /* P->start.p.x += 1; */
+	    P->start.p.x += 1;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 	if (n == agtail(orig))
@@ -492,7 +492,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.LL.y = MIN(b.LL.y,P->start.p.y);
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    /* P->start.p.y += 1; */
+	    P->start.p.y += 1;
 	}
 	else if (side & BOTTOM) {
 	    if (endp->sidemask == TOP) {
@@ -513,7 +513,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		endp->boxes[0] = b;
 		endp->boxn = 1;
 	    }
-	    /* P->start.p.y -= 1; */
+	    P->start.p.y -= 1;
 	}
 	else if (side & LEFT) {
 	    b.UR.x = P->start.p.x+1;
@@ -527,7 +527,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    }
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    /* P->start.p.x -= 1; */
+	    P->start.p.x -= 1;
 	}
 	else {
 	    b.LL.x = P->start.p.x;
@@ -541,7 +541,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    }
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    /* P->start.p.x += 1; */
+	    P->start.p.x += 1;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 	if (n == agtail(orig))
@@ -579,7 +579,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	case REGULAREDGE:
 	    endp->boxes[0].UR.y = P->start.p.y;
 	    endp->sidemask = BOTTOM;
-	    /* P->start.p.y -= 1; */
+	    P->start.p.y -= 1;
 	    break;
 	}    
     }    
@@ -621,7 +621,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.LL.y = MIN(b.LL.y,P->end.p.y);
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    /* P->end.p.y += 1; */
+	    P->end.p.y += 1;
 	}
 	else if (side & BOTTOM) {
 	    endp->sidemask = BOTTOM;
@@ -652,7 +652,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		endp->boxes[1] = b;
 	    } 
 	    endp->boxn = 2;
-	    /* P->end.p.y -= 1; */
+	    P->end.p.y -= 1;
 	}
 	else if (side & LEFT) {
 	    endp->sidemask = LEFT;
@@ -661,7 +661,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.LL.y = P->end.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    /* P->end.p.x -= 1; */
+	    P->end.p.x -= 1;
 	}
 	else {
 	    endp->sidemask = RIGHT;
@@ -670,7 +670,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.LL.y = P->end.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    /* P->end.p.x += 1; */
+	    P->end.p.x += 1;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 	if (n == aghead(orig))
@@ -688,7 +688,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.LL.y = MIN(b.LL.y,P->end.p.y);
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    /* P->end.p.y += 1; */
+	    P->end.p.y += 1;
 	}
 	else if (side & BOTTOM) {
 	    if (endp->sidemask == TOP) {
@@ -709,7 +709,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		endp->boxes[0] = b;
 		endp->boxn = 1;
 	    }
-	    /* P->end.p.y -= 1; */
+	    P->end.p.y -= 1;
 	}
 	else if (side & LEFT) {
 	    b.UR.x = P->end.p.x+1;
@@ -723,7 +723,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    }
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    /* P->end.p.x -= 1; */
+	    P->end.p.x -= 1;
 	}
 	else {
 	    b.LL.x = P->end.p.x-1;
@@ -737,7 +737,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    }
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    /* P->end.p.x += 1; */
+	    P->end.p.x += 1;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 	if (n == aghead(orig))
@@ -775,7 +775,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	case REGULAREDGE:
 	    endp->boxes[0].LL.y = P->end.p.y;
 	    endp->sidemask = TOP;
-	    /* P->end.p.y += 1; */
+	    P->end.p.y += 1;
 	    break;
 	}
     }
