@@ -50,7 +50,7 @@ Sfoff_t sfsize(reg Sfio_t * f)
 		if (SFSK(f, f->here, SEEK_SET, disc) != f->here)
 		    f->here = SFSK(f, (Sfoff_t) 0, SEEK_CUR, disc);
 	    }
-#if HAVE_SYS_STAT_H
+#ifdef HAVE_SYS_STAT_H
 	    else {
 		Stat_t st;
 		if (fstat(f->file, &st) < 0)

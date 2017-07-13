@@ -13,7 +13,7 @@
 
 #include	"sfhdr.h"
 #ifndef FIONREAD
-#if HAVE_SYS_IOCTL_H
+#ifdef HAVE_SYS_IOCTL_H
 #include	<sys/ioctl.h>
 #endif
 #endif

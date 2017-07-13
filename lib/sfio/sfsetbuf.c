@@ -41,7 +41,7 @@ extern "C" {
 **
 **	Written by Kiem-Phong Vo.
 */
-#if !HAVE_SYS_STAT_H
+#ifndef HAVE_SYS_STAT_H
     struct stat {
     int st_mode;
     int st_size;
@@ -154,7 +154,7 @@ void *sfsetbuf(reg Sfio_t * f, reg void * buf, reg size_t size)
 	if (fstat((int) f->file, &st) < 0)
 	    f->here = -1;
 	else {
-#if HAVE_SYS_STAT_H && _stat_blksize	/* preferred io block size */
+#if defined(HAVE_SYS_STAT_H) && _stat_blksize	/* preferred io block size */
 	    if ((blksize = (ssize_t) st.st_blksize) > 0)
 		while ((blksize + (ssize_t) st.st_blksize) <= SF_PAGE)
 		    blksize += (ssize_t) st.st_blksize;
@@ -185,7 +185,7 @@ void *sfsetbuf(reg Sfio_t * f, reg void * buf, reg size_t size)
 		    /* set line mode for terminals */
 		    if (!(f->flags & SF_LINE) && isatty(f->file))
 			f->flags |= SF_LINE;
-#if HAVE_SYS_STAT_H
+#ifdef HAVE_SYS_STAT_H
 		    else {	/* special case /dev/null */
 			reg int dev, ino;
 			dev = (int) st.st_dev;

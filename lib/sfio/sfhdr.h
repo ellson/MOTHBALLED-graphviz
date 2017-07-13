@@ -37,8 +37,8 @@ extern "C" {
 #define _NO_LARGEFILE64_SOURCE  1
 #endif
 #if !defined(_NO_LARGEFILE64_SOURCE) && \
-	HAVE_LSEEK64 && HAVE_STAT64 && defined(HAVE_OFF64_T) && \
-	HAVE_STRUCT_STAT64
+	defined(HAVE_LSEEK64) && defined(HAVE_STAT64) && defined(HAVE_OFF64_T) && \
+	defined(HAVE_STRUCT_STAT64)
 #	if !defined(_LARGEFILE64_SOURCE)
 #	define _LARGEFILE64_SOURCE     1
 #	endif
@@ -49,7 +49,7 @@ extern "C" {
 /* when building the binary compatibility package, a number of header files
    are not needed and they may get in the way so we remove them here.
 */
-#if defined(_SFBINARY_H)
+#ifdef _SFBINARY_H
 #undef  HAVE_SYS_ST
 #undef  HAVE_STAT_H
 #undef  _lib_poll
@@ -66,24 +66,20 @@ extern "C" {
 #include	<stdint.h>
 #include	<stddef.h>
 
-#if HAVE_SYS_STAT_H
-#include	<sys/stat.h>
+#ifdef HAVE_SYS_STAT_H
+#	include	<sys/stat.h>
+#	undef HAVE_SYS_STAT_H
+#	define HAVE_SYS_STAT_H 1
 #else
-#if HAVE_STAT_H
-#include	<stat.h>
-#ifndef HAVE_SYS_STAT_H
-#define	HAVE_SYS_STAT_H	1
-#endif
-#endif
+#	ifdef HAVE_STAT_H
+#		include	<stat.h>
+#		define	HAVE_SYS_STAT_H	1
+#	endif
 #endif /*HAVE_SYS_STAT_H*/
-
-#ifndef HAVE_SYS_STAT_H
-#define HAVE_SYS_STAT_H	0
-#endif
 
 #include	<fcntl.h>
 
-#if HAVE_UNISTD_H
+#ifdef HAVE_UNISTD_H
 #include	<unistd.h>
 #endif
 
@@ -114,7 +110,7 @@ extern "C" {
 #endif
 #endif /*HAVE_SELECT*/
 
-#if defined(_lib_poll)
+#ifdef _lib_poll
 #include	<poll.h>
 
 #if _lib_poll_fd_1
@@ -138,11 +134,11 @@ extern "C" {
 #endif
 
 /* alternative process forking */
-#if HAVE_VFORK && !defined(fork) && !defined(sparc) && !defined(__sparc)
-#if defined(HAVE_VFORK_H)
+#if defined(HAVE_VFORK) && !defined(fork) && !defined(sparc) && !defined(__sparc)
+#ifdef HAVE_VFORK_H
 #include	<vfork.h>
 #endif
-#if defined(_HAVE_SYS_VFORK_H)
+#ifdef HAVE_SYS_VFORK_H
 #include	<sys/vfork.h>
 #endif
 #define fork	vfork
@@ -153,7 +149,7 @@ extern "C" {
 #endif
 
 /* 64-bit vs 32-bit file stuff */
-#if HAVE_SYS_STAT_H
+#ifdef HAVE_SYS_STAT_H
 #ifdef _LARGEFILE64_SOURCE
     typedef struct stat64 Stat_t;
 #define	lseek		lseek64
@@ -792,7 +788,7 @@ extern "C" {
 #include <io.h>
 #define SF_ERROR	0000400	/* an error happened                    */
 #else
-#if !HAVE_UNISTD_H
+#ifndef HAVE_UNISTD_H
     extern int close(int);
     extern ssize_t read(int, void *, size_t);
     extern ssize_t write(int, const void *, size_t);
@@ -805,7 +801,7 @@ extern "C" {
     extern uint sleep(uint);
     extern int execl(const char *, const char *, ...);
     extern int execv(const char *, char **);
-#if !defined(fork)
+#ifndef fork
     extern int fork(void);
 #endif
 #ifdef HAVE_UNLINK
@@ -823,15 +819,15 @@ extern "C" {
     typedef int (*Onexit_f)(void);
     extern Onexit_f onexit(Onexit_f);
 
-#if HAVE_SYS_STAT_H
+#ifdef HAVE_SYS_STAT_H
     extern int fstat(int, Stat_t *);
 #endif
 
-#if HAVE_VFORK && !defined(HAVE_VFORK_H) && !defined(_HAVE_SYS_VFORK_H)
+#if defined(HAVE_VFORK) && !defined(HAVE_VFORK_H) && !defined(_HAVE_SYS_VFORK_H)
     extern pid_t vfork(void);
 #endif /*HAVE_VFORK*/
 
-#if defined(_lib_poll)
+#ifdef _lib_poll
 #if _lib_poll_fd_1
     extern int poll(struct pollfd *, ulong, int);
 #else
