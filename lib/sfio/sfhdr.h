@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,8 +37,8 @@ extern "C" {
 #define _NO_LARGEFILE64_SOURCE  1
 #endif
 #if !defined(_NO_LARGEFILE64_SOURCE) && \
-	_lib_lseek64 && _lib_stat64 && defined(_typ_off64_t) && \
-	_typ_struct_stat64
+	defined(HAVE_LSEEK64) && defined(HAVE_STAT64) && defined(HAVE_OFF64_T) && \
+	defined(HAVE_STRUCT_STAT64)
 #	if !defined(_LARGEFILE64_SOURCE)
 #	define _LARGEFILE64_SOURCE     1
 #	endif
@@ -49,15 +49,15 @@ extern "C" {
 /* when building the binary compatibility package, a number of header files
    are not needed and they may get in the way so we remove them here.
 */
-#if defined(_SFBINARY_H)
-#undef  _sys_stat
-#undef  _hdr_stat
+#ifdef _SFBINARY_H
+#undef  HAVE_SYS_ST
+#undef  HAVE_STAT_H
 #undef  _lib_poll
 #undef  _stream_peek
 #undef  _socket_peek
 #undef  HAVE_VFORK_H
 #undef  _HAVE_SYS_VFORK_H
-#undef  _lib_vfork
+#undef  HAVE_VFORK
 #undef  HAVE_SYS_IOCTL_H
 #endif
 
@@ -66,24 +66,20 @@ extern "C" {
 #include	<stdint.h>
 #include	<stddef.h>
 
-#if _sys_stat
-#include	<sys/stat.h>
+#ifdef HAVE_SYS_STAT_H
+#	include	<sys/stat.h>
+#	undef HAVE_SYS_STAT_H
+#	define HAVE_SYS_STAT_H 1
 #else
-#if _hdr_stat
-#include	<stat.h>
-#ifndef _sys_stat
-#define	_sys_stat	1
-#endif
-#endif
-#endif /*_sys_stat*/
-
-#ifndef _sys_stat
-#define _sys_stat	0
-#endif
+#	ifdef HAVE_STAT_H
+#		include	<stat.h>
+#		define	HAVE_SYS_STAT_H	1
+#	endif
+#endif /*HAVE_SYS_STAT_H*/
 
 #include	<fcntl.h>
 
-#if HAVE_UNISTD_H
+#ifdef HAVE_UNISTD_H
 #include	<unistd.h>
 #endif
 
@@ -106,15 +102,15 @@ extern "C" {
 #define POOLMTXRETURN(p,v)	{ return(v); }
 
 /* functions for polling readiness of streams */
-#if _lib_select
+#ifdef HAVE_SELECT
 #undef _lib_poll
 #else
 #if _lib_poll_fd_1 || _lib_poll_fd_2
 #define _lib_poll	1
 #endif
-#endif /*_lib_select_*/
+#endif /*HAVE_SELECT*/
 
-#if defined(_lib_poll)
+#ifdef _lib_poll
 #include	<poll.h>
 
 #if _lib_poll_fd_1
@@ -138,22 +134,22 @@ extern "C" {
 #endif
 
 /* alternative process forking */
-#if _lib_vfork && !defined(fork) && !defined(sparc) && !defined(__sparc)
-#if defined(HAVE_VFORK_H)
+#if defined(HAVE_VFORK) && !defined(fork) && !defined(sparc) && !defined(__sparc)
+#ifdef HAVE_VFORK_H
 #include	<vfork.h>
 #endif
-#if defined(_HAVE_SYS_VFORK_H)
+#ifdef HAVE_SYS_VFORK_H
 #include	<sys/vfork.h>
 #endif
 #define fork	vfork
 #endif
 
-#if _lib_unlink
+#ifdef HAVE_UNLINK
 #define remove	unlink
 #endif
 
 /* 64-bit vs 32-bit file stuff */
-#if _sys_stat
+#ifdef HAVE_SYS_STAT_H
 #ifdef _LARGEFILE64_SOURCE
     typedef struct stat64 Stat_t;
 #define	lseek		lseek64
@@ -792,7 +788,7 @@ extern "C" {
 #include <io.h>
 #define SF_ERROR	0000400	/* an error happened                    */
 #else
-#if !HAVE_UNISTD_H
+#ifndef HAVE_UNISTD_H
     extern int close(int);
     extern ssize_t read(int, void *, size_t);
     extern ssize_t write(int, const void *, size_t);
@@ -805,10 +801,10 @@ extern "C" {
     extern uint sleep(uint);
     extern int execl(const char *, const char *, ...);
     extern int execv(const char *, char **);
-#if !defined(fork)
+#ifndef fork
     extern int fork(void);
 #endif
-#if _lib_unlink
+#ifdef HAVE_UNLINK
     extern int unlink(const char *);
 #endif
 
@@ -823,15 +819,15 @@ extern "C" {
     typedef int (*Onexit_f)(void);
     extern Onexit_f onexit(Onexit_f);
 
-#if _sys_stat
+#ifdef HAVE_SYS_STAT_H
     extern int fstat(int, Stat_t *);
 #endif
 
-#if _lib_vfork && !defined(HAVE_VFORK_H) && !defined(_HAVE_SYS_VFORK_H)
+#if defined(HAVE_VFORK) && !defined(HAVE_VFORK_H) && !defined(_HAVE_SYS_VFORK_H)
     extern pid_t vfork(void);
-#endif /*_lib_vfork*/
+#endif /*HAVE_VFORK*/
 
-#if defined(_lib_poll)
+#ifdef _lib_poll
 #if _lib_poll_fd_1
     extern int poll(struct pollfd *, ulong, int);
 #else

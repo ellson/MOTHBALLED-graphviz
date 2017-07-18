@@ -25,7 +25,7 @@ __STDPP__directive pragma pp:nohide getpagesize
 #undef	getpagesize
 #endif
 
-#if _lib_getpagesize
+#ifdef HAVE_GETPAGESIZE
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -41,13 +41,13 @@ extern "C" {
 **
 **	Written by Kiem-Phong Vo.
 */
-#if !_sys_stat
+#ifndef HAVE_SYS_STAT_H
     struct stat {
     int st_mode;
     int st_size;
 };
 #define fstat(fd,st)	(-1)
-#endif /*_sys_stat*/
+#endif /*HAVE_SYS_STAT_H*/
 
 /**
  * @param f stream to be buffered
@@ -138,7 +138,7 @@ void *sfsetbuf(reg Sfio_t * f, reg void * buf, reg size_t size)
 	st.st_mode = 0;
 
 	/* if has discipline, set size by discipline if possible */
-	if (!_sys_stat || disc) {
+	if (!HAVE_SYS_STAT_H || disc) {
 	    if ((f->here = SFSK(f, (Sfoff_t) 0, SEEK_CUR, disc)) < 0)
 		goto unseekable;
 	    else {
@@ -154,7 +154,7 @@ void *sfsetbuf(reg Sfio_t * f, reg void * buf, reg size_t size)
 	if (fstat((int) f->file, &st) < 0)
 	    f->here = -1;
 	else {
-#if _sys_stat && _stat_blksize	/* preferred io block size */
+#if defined(HAVE_SYS_STAT_H) && _stat_blksize	/* preferred io block size */
 	    if ((blksize = (ssize_t) st.st_blksize) > 0)
 		while ((blksize + (ssize_t) st.st_blksize) <= SF_PAGE)
 		    blksize += (ssize_t) st.st_blksize;
@@ -185,7 +185,7 @@ void *sfsetbuf(reg Sfio_t * f, reg void * buf, reg size_t size)
 		    /* set line mode for terminals */
 		    if (!(f->flags & SF_LINE) && isatty(f->file))
 			f->flags |= SF_LINE;
-#if _sys_stat
+#ifdef HAVE_SYS_STAT_H
 		    else {	/* special case /dev/null */
 			reg int dev, ino;
 			dev = (int) st.st_dev;
@@ -207,7 +207,7 @@ void *sfsetbuf(reg Sfio_t * f, reg void * buf, reg size_t size)
 
 	/* set page size, this is also the desired default buffer size */
 	if (_Sfpage <= 0) {
-#if _lib_getpagesize
+#ifdef HAVE_GETPAGESIZE
 	    if ((_Sfpage = (size_t) getpagesize()) <= 0)
 #endif
 		_Sfpage = SF_PAGE;

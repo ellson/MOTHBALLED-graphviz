@@ -43,14 +43,14 @@ Sfoff_t sfsize(reg Sfio_t * f)
 	    for (disc = f->disc; disc; disc = disc->disc)
 		if (disc->seekf)
 		    break;
-	    if (!_sys_stat || disc) {
+	    if (!HAVE_SYS_STAT_H || disc) {
 		Sfoff_t e;
 		if ((e = SFSK(f, 0, SEEK_END, disc)) >= 0)
 		    f->extent = e;
 		if (SFSK(f, f->here, SEEK_SET, disc) != f->here)
 		    f->here = SFSK(f, (Sfoff_t) 0, SEEK_CUR, disc);
 	    }
-#if _sys_stat
+#ifdef HAVE_SYS_STAT_H
 	    else {
 		Stat_t st;
 		if (fstat(f->file, &st) < 0)

@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,9 +26,9 @@ extern "C" {
  * At some point, we could consider allowing these to be set in configure
  * See Makefile.old for others.
  */
-#define FEATURE_MINTSIZE 1 
+#define FEATURE_MINTSIZE 1
 #define FEATURE_DOT 1
-#if defined(_WIN32) || defined(MSWIN32)
+#if defined(_WIN32)
 #ifndef FEATURE_WIN32
 #define FEATURE_WIN32 1
 #endif
@@ -45,7 +45,7 @@ extern "C" {
 #include <limits.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#ifndef MSWIN32
+#ifndef _WIN32
 #include <sys/time.h>
 #endif
 #ifdef HAVE_SYS_SELECT_H
@@ -105,4 +105,3 @@ void panic2 (char *, int, char *, char *, ...);
 #ifdef __cplusplus
 }
 #endif
-

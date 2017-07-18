@@ -13,7 +13,7 @@
 
 #include	"sfhdr.h"
 #ifndef FIONREAD
-#if HAVE_SYS_IOCTL_H
+#ifdef HAVE_SYS_IOCTL_H
 #include	<sys/ioctl.h>
 #endif
 #endif
@@ -115,7 +115,7 @@ ssize_t sfpkrd(int fd, void * argbuf, size_t n, int rc, long tm,
 		    r = (po.revents & POLLIN) ? 1 : -1;
 	    }
 #endif /*_lib_poll*/
-#if _lib_select
+#ifdef HAVE_SELECT
 	    if (r == -2) {
 		fd_set rd;
 		struct timeval tmb, *tmp;
@@ -140,9 +140,9 @@ ssize_t sfpkrd(int fd, void * argbuf, size_t n, int rc, long tm,
 		} else
 		    r = FD_ISSET(fd, &rd) ? 1 : -1;
 	    }
-#endif /*_lib_select*/
+#endif /*HAVE_SELECT*/
 	    if (r == -2) {
-#if !_lib_poll && !_lib_select	/* both poll and select cann't be used */
+#if !_lib_poll && !defined(HAVE_SELECT)	/* both poll and select cann't be used */
 #ifdef FIONREAD			/* quick and dirty check for availability */
 		long nsec = tm < 0 ? 0 : (tm + 999) / 1000;
 		while (nsec > 0 && r < 0) {

@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,7 +25,7 @@ extern "C" {
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#if !defined(MSWIN32) && !defined(WIN32)
+#if !defined(WIN32)
 #include <unistd.h>
 #endif
 #endif

@@ -263,7 +263,7 @@ Agraphinfo_t* GD_info(graph_t * g) { return ((Agraphinfo_t*)AGDATA(g));}
 Agnodeinfo_t* ND_info(node_t * n) { return ((Agnodeinfo_t*)AGDATA(n));}
 #endif
 
-#if !defined(MSWIN32) && !defined(_WIN32)
+#if !defined(_WIN32)
 #include	<pwd.h>
 
 #if 0
@@ -610,7 +610,7 @@ static int Tflag;
 void gvToggle(int s)
 {
     Tflag = !Tflag;
-#if !defined(MSWIN32) && !defined(_WIN32)
+#if !defined(_WIN32)
     signal(SIGUSR1, gvToggle);
 #endif
 }

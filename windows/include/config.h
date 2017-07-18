@@ -289,9 +289,6 @@
 /* Define if no fpu error exception handling is required. */
 #define NO_FPERR 1
 
-/* Postscript fontnames. */
-#define NO_POSTSCRIPT_ALIAS 1
-
 /* Define if you want ORTHO */
 /* #undef ORTHO */
 #define ORTHO 1
@@ -356,4 +353,3 @@ typedef int ssize_t;
 
 /* Define to `int' if <sys/types.h> doesn't define. */
 #define uid_t int
-

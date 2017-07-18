@@ -6,28 +6,28 @@
 !IF "$(CFG)" == ""
 CFG=lneato - Win32 Debug
 !MESSAGE No configuration specified.  Defaulting to lneato - Win32 Debug.
-!ENDIF 
+!ENDIF
 
 !IF "$(CFG)" != "lneato - Win32 Release" && "$(CFG)" != "lneato - Win32 Debug"
 !MESSAGE Invalid configuration "$(CFG)" specified.
 !MESSAGE You can specify a configuration when running NMAKE on this makefile
 !MESSAGE by defining the macro CFG on the command line.  For example:
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "lneato.mak" CFG="lneato - Win32 Debug"
-!MESSAGE 
+!MESSAGE
 !MESSAGE Possible choices for configuration are:
-!MESSAGE 
+!MESSAGE
 !MESSAGE "lneato - Win32 Release" (based on "Win32 (x86) Application")
 !MESSAGE "lneato - Win32 Debug" (based on "Win32 (x86) Application")
-!MESSAGE 
+!MESSAGE
 !ERROR An invalid configuration is specified.
-!ENDIF 
+!ENDIF
 
 !IF "$(OS)" == "Windows_NT"
 NULL=
-!ELSE 
+!ELSE
 NULL=nul
-!ENDIF 
+!ENDIF
 ################################################################################
 # Begin Project
 # PROP Target_Last_Scanned "lneato - Win32 Debug"
@@ -52,7 +52,7 @@ INTDIR=.\Release
 
 ALL : "$(OUTDIR)\lneato.exe"
 
-CLEAN : 
+CLEAN :
 	-@erase "$(INTDIR)\lneato.obj"
 	-@erase "$(OUTDIR)\lneato.exe"
 
@@ -62,27 +62,27 @@ CLEAN :
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "MSWIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
 # ADD CPP /nologo /W3 /GX /O2 /D "MSWIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
 CPP_PROJ=/nologo /ML /W3 /GX /O2 /D "MSWIN32" /D "NDEBUG" /D "_WINDOWS"\
- /Fp"$(INTDIR)/lneato.pch" /YX /Fo"$(INTDIR)/" /c 
+ /Fp"$(INTDIR)/lneato.pch" /YX /Fo"$(INTDIR)/" /c
 CPP_OBJS=.\Release/
 CPP_SBRS=.\.
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
 # ADD MTL /nologo /D "NDEBUG" /win32
-MTL_PROJ=/nologo /D "NDEBUG" /win32 
+MTL_PROJ=/nologo /D "NDEBUG" /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-BSC32_FLAGS=/nologo /o"$(OUTDIR)/lneato.bsc" 
+BSC32_FLAGS=/nologo /o"$(OUTDIR)/lneato.bsc"
 BSC32_SBRS= \
-	
+
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
 LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib\
  advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib\
  odbccp32.lib /nologo /subsystem:windows /incremental:no\
- /pdb:"$(OUTDIR)/lneato.pdb" /machine:I386 /out:"$(OUTDIR)/lneato.exe" 
+ /pdb:"$(OUTDIR)/lneato.pdb" /machine:I386 /out:"$(OUTDIR)/lneato.exe"
 LINK32_OBJS= \
 	"$(INTDIR)\lneato.obj"
 
@@ -108,7 +108,7 @@ INTDIR=.\Debug
 
 ALL : "$(OUTDIR)\lneato.exe"
 
-CLEAN : 
+CLEAN :
 	-@erase "$(INTDIR)\lneato.obj"
 	-@erase "$(INTDIR)\vc40.idb"
 	-@erase "$(INTDIR)\vc40.pdb"
@@ -122,27 +122,27 @@ CLEAN :
 # ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "MSWIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
 # ADD CPP /nologo /W3 /Gm /GX /Zi /Od /D "MSWIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
 CPP_PROJ=/nologo /MLd /W3 /Gm /GX /Zi /Od /D "MSWIN32" /D "_DEBUG" /D\
- "_WINDOWS" /Fp"$(INTDIR)/lneato.pch" /YX /Fo"$(INTDIR)/" /Fd"$(INTDIR)/" /c 
+ "_WINDOWS" /Fp"$(INTDIR)/lneato.pch" /YX /Fo"$(INTDIR)/" /Fd"$(INTDIR)/" /c
 CPP_OBJS=.\Debug/
 CPP_SBRS=.\.
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /win32
-MTL_PROJ=/nologo /D "_DEBUG" /win32 
+MTL_PROJ=/nologo /D "_DEBUG" /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-BSC32_FLAGS=/nologo /o"$(OUTDIR)/lneato.bsc" 
+BSC32_FLAGS=/nologo /o"$(OUTDIR)/lneato.bsc"
 BSC32_SBRS= \
-	
+
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386
 LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib\
  advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib\
  odbccp32.lib /nologo /subsystem:windows /incremental:yes\
- /pdb:"$(OUTDIR)/lneato.pdb" /debug /machine:I386 /out:"$(OUTDIR)/lneato.exe" 
+ /pdb:"$(OUTDIR)/lneato.pdb" /debug /machine:I386 /out:"$(OUTDIR)/lneato.exe"
 LINK32_OBJS= \
 	"$(INTDIR)\lneato.obj"
 
@@ -151,25 +151,25 @@ LINK32_OBJS= \
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
-!ENDIF 
+!ENDIF
 
 .c{$(CPP_OBJS)}.obj:
-   $(CPP) $(CPP_PROJ) $<  
+   $(CPP) $(CPP_PROJ) $<
 
 .cpp{$(CPP_OBJS)}.obj:
-   $(CPP) $(CPP_PROJ) $<  
+   $(CPP) $(CPP_PROJ) $<
 
 .cxx{$(CPP_OBJS)}.obj:
-   $(CPP) $(CPP_PROJ) $<  
+   $(CPP) $(CPP_PROJ) $<
 
 .c{$(CPP_SBRS)}.sbr:
-   $(CPP) $(CPP_PROJ) $<  
+   $(CPP) $(CPP_PROJ) $<
 
 .cpp{$(CPP_SBRS)}.sbr:
-   $(CPP) $(CPP_PROJ) $<  
+   $(CPP) $(CPP_PROJ) $<
 
 .cxx{$(CPP_SBRS)}.sbr:
-   $(CPP) $(CPP_PROJ) $<  
+   $(CPP) $(CPP_PROJ) $<
 
 ################################################################################
 # Begin Target
@@ -181,7 +181,7 @@ LINK32_OBJS= \
 
 !ELSEIF  "$(CFG)" == "lneato - Win32 Debug"
 
-!ENDIF 
+!ENDIF
 
 ################################################################################
 # Begin Source File
@@ -190,7 +190,7 @@ SOURCE=.\lneato.c
 DEP_CPP_LNEAT=\
 	{$(INCLUDE)}"\sys\stat.h"\
 	{$(INCLUDE)}"\sys\types.h"\
-	
+
 
 "$(INTDIR)\lneato.obj" : $(SOURCE) $(DEP_CPP_LNEAT) "$(INTDIR)"
 

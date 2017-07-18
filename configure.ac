@@ -137,10 +137,7 @@ case "${host_os}" in
   *uwin* )
 	UWIN=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
-	CFLAGS="${CFLAGS} -DMSWIN32"
-	CXXFLAGS="${CXXFLAGS} -DMSWIN32"
 	PATHSEPARATOR=";"
-        NO_POSTSCRIPT_ALIAS=1
 	BROWSER="xdg-open"
 	JSHEXT=so
 	;;
@@ -148,8 +145,6 @@ case "${host_os}" in
 	CYGWIN=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
 	PATHSEPARATOR=";"
-        NO_POSTSCRIPT_ALIAS=1
-	AC_DEFINE(NO_POSTSCRIPT_ALIAS,1,[Alias PostScript font names to URW type 1 fonts])
 	BROWSER="xdg-open"
 	JSHEXT=so
 	;;
@@ -157,7 +152,6 @@ case "${host_os}" in
 	MINGW32=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
 	PATHSEPARATOR=":"
-        NO_POSTSCRIPT_ALIAS=1
 	BROWSER="xdg-open"
 	JSHEXT=so
 	;;
@@ -166,7 +160,6 @@ case "${host_os}" in
 	AC_DEFINE_UNQUOTED(DARWIN,1,[Define for any Darwin-based OS.])
 	DEFAULT_FONTPATH="~/Library/Fonts:/Library/Fonts:/Network/Library/Fonts:/System/Library/Fonts"
 	PATHSEPARATOR=":"
-        NO_POSTSCRIPT_ALIAS=1
 	BROWSER="open"
 	JSHEXT=jnilib
 	AC_DEFINE_UNQUOTED(DARWIN_DYLIB,"$DARWIN_DYLIB",[Define for Darwin-style shared library names.])
@@ -184,7 +177,6 @@ case "${host_os}" in
   * ) # This sucks!  Whatever happened to standards for file system layout?   (Good job its no longer used unless fontconfig is unavailable.)
 	DEFAULT_FONTPATH="/usr/share/fonts/sun/TrueType:/usr/share/fonts/TrueType:/usr/X11/lib/X11/fonts/TrueType:/usr/share/fonts/sun/Type1:/usr/openwin/lib/X11/fonts/Type1:/usr/share/fonts/X11/Type1:/usr/share/fonts/default/Type1:/usr/X11R6/lib/X11/fonts/TrueType:/usr/X11R6/lib/X11/fonts/truetype:/usr/X11R6/lib/X11/fonts/TTF:/usr/share/fonts/truetype:/usr/openwin/lib/X11/fonts/TrueType:/usr/X11R6/lib/X11/fonts/Type1:/usr/common/share/fonts/ttf";
 	PATHSEPARATOR=":"
-        NO_POSTSCRIPT_ALIAS=0
 	BROWSER="xdg-open"
 	JSHEXT=so
 	;;
@@ -199,7 +191,6 @@ AC_SUBST([JNI_EXTRA_LDFLAGS])
 AC_SUBST([JSHEXT])
 AC_DEFINE_UNQUOTED(DEFAULT_FONTPATH,"$DEFAULT_FONTPATH",[Path to TrueType fonts.])
 AC_DEFINE_UNQUOTED(PATHSEPARATOR,"$PATHSEPARATOR",[Path separator character.])
-AC_DEFINE_UNQUOTED(NO_POSTSCRIPT_ALIAS,$NO_POSTSCRIPT_ALIAS,[Postscript fontnames.])
 AM_CONDITIONAL(WITH_WIN32, [test "x$UWIN" = "xyes" -o "x$CYGWIN" = "xyes" -o "x$MINGW32" = "xyes"])
 AM_CONDITIONAL(WITH_DARWIN9, [test "x$DARWIN9" = "xyes"])
 
@@ -235,7 +226,7 @@ fi
 # ALL_LINGUAS=""
 
 dnl -----------------------------------
-# Static/Shared binaries 
+# Static/Shared binaries
 
 AC_ARG_ENABLE(static,
         [AS_HELP_STRING([--enable-static],[build static executable])])
@@ -317,10 +308,10 @@ if [test "${GCC}" == "yes"]
 then
   # Enable common warnings flags
   CFLAGS="${CFLAGS} -Wall"
-  
+
   # Enable common extra flags
   CFLAGS="${CFLAGS} -Wextra"
-  
+
   # Enable specific warning flags not included by -Wall or -Wextra
   CFLAGS="${CFLAGS} -Wmissing-include-dirs -Wswitch-default -Wfloat-equal -Wundef -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wconversion -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs"
 
@@ -413,6 +404,11 @@ AC_TYPE_PID_T
 AC_TYPE_SSIZE_T
 AC_TYPE_UID_T
 
+AC_CHECK_TYPES([
+	off64_t,
+	struct stat64,
+])
+
 dnl -----------------------------------
 dnl Checks for header files
 
@@ -436,7 +432,7 @@ AC_SUBST([MATH_LIBS])
 
 # Check for functions that might need -lm
 LIBS="$LIBS $MATH_LIBS"
-AC_CHECK_FUNCS([log2 sincos])
+AC_CHECK_FUNCS([sincos])
 
 LIBS=$save_LIBS
 
@@ -444,7 +440,8 @@ LIBS=$save_LIBS
 
 # Checks for library functions
 AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
-	cbrt vsnprintf _NSGetEnviron mallopt mallinfo mstats getpagesize])
+	cbrt vsnprintf _NSGetEnviron mallopt mallinfo mstats getpagesize \
+  ftruncate lseek64 stat64 vfork unlink waitpid select])
 
 AC_REPLACE_FUNCS([strcasecmp strncasecmp strcasestr])
 
@@ -834,13 +831,13 @@ else
         ac_save_CPPFLAGS="$CPPFLAGS"
         ac_save_CFLAGS="$CFLAGS"
         ac_save_LDFLAGS="$LDFLAGS"
-    
+
         AC_CHECK_PROG(LUA,lua,lua)
-    
+
         LUA_INCLUDES=""
         LUA_LIBS=""
         LUA_INSTALL_DIR=""
-    
+
         if test -n "$lua_inc"; then
            CFLAGS="$CFLAGS -I$lua_inc"
            CPPFLAGS="$CPPFLAGS -I$lua_inc"
@@ -848,7 +845,7 @@ else
         if test -n "$lua_lib"; then
            LDFLAGS="$LDFLAGS -L$lua_lib"
         fi
-    
+
         if test "x$LUA_INCLUDES" = "x" -a "x$LUA_LIBS" = "x" ; then
             PKGCONFIG=""
             AC_CHECK_PROGS(PKGCONFIG, pkg-config)
@@ -862,7 +859,7 @@ else
                         LUA_INCLUDES="$LUA_CFLAGS "`$PKGCONFIG --cflags lua$l`
                         LUA_LIBS="$LUA_LFLAGS "`$PKGCONFIG --libs lua$l`
 		        LUA_INSTALL_DIR="/usr/lib$LIBPOSTFIX/lua/`$PKGCONFIG --variable=V lua`"
-    
+
 		        pkgconfig_lualib_found=`$PKGCONFIG --exists lualib$l 2>/dev/null`
 		        if test  "x$?" = "x0"; then
 		           LUA_INCLUDES="$LUA_CFLAGS "`$PKGCONFIG --cflags lualib$l`
@@ -873,7 +870,7 @@ else
                 done
             fi
         fi
-    
+
         if test "x$LUA_INCLUDES" = "x" -o "x$LUA_LIBS" = "x" ; then
             LUACONFIG=""
             AC_CHECK_PROGS(LUACONFIG, lua-config lua-config52 lua-config5.2 lua-config51 lua-config5.1 lua-config50 lua-config5.0)
@@ -886,7 +883,7 @@ else
 	        LUA_INSTALL_DIR="/usr/lib$LIBPOSTFIX/lua/5.0"
             fi
         fi
-    
+
         if test "x$LUA_INCLUDES" = "x" -o "x$LUA_LIBS" = "x" ; then
             AC_MSG_CHECKING(for Lua headers and libraries)
 	    echo
@@ -899,33 +896,33 @@ else
                 AC_CHECK_LIB(lua$l,lua_call,ac_found_lua_lib="yes",ac_found_lua_lib="no")
                 if test "x$ac_found_lua_lib" = "xyes" ; then
 	            LUA_VERSION=">=5.1.0"
-    
+
 	            LUA_LIBS="$LDFLAGS -llua$l -lm"
-    
+
 		    ac2_save_LDFLAGS="$LDFLAGS"
 		    LDFLAGS="$LDFLAGS -llua$l -lm"
-    
+
 		    if echo "$host_os" | grep "^linux" 1>/dev/null 2>&1 ; then
 		       LDFLAGS="$LDFLAGS -ldl"
 		    fi
-    
+
 		    AC_CHECK_LIB(lualib$l,luaL_openlib,ac_found_liblua_lib="yes",ac_found_liblua_lib="no")
 		    if test "x$ac_found_liblua_lib" = "xyes" ; then
 		       LUA_VERSION="5.0.x"
-    
+
 		       LUA_LIBS="$LUA_LFLAGS -llualib$l"
-    
+
 		       if echo "$host_os" | grep "^linux" 1>/dev/null 2>&1 ; then
 		          LUA_LIBS="$LUA_LFLAGS -ldl"
 		       fi
 		    fi
-    
+
 		    LDFLAGS="$ac2_save_LDFLAGS"
 		    break
 	        fi
             done
         fi
-    
+
         AC_MSG_CHECKING(for Lua compiling and linking)
         LUA_TEST=`LT=luatest.c ; echo "#include <lua.h>" > $LT;  echo "#include <lualib.h>" >> $LT; echo "int main() { return 0; }" >> $LT ; $CC -Wall $LT -o $LT.out $LUA_INCLUDES $LUA_LIBS $CFLAGS $LDFLAGS 1>/dev/null 2>&1 ; echo $?; rm -f $LT $LT.out 1>/dev/null 2>&1`
         if test "x$LUA_TEST" != "x0" ; then
@@ -1810,7 +1807,7 @@ if test "$tk_checkBoth" = 1; then
   tk_oldLibs=$LIBS
   LIBS="$LIBS -lsocket -lnsl"
   AC_CHECK_FUNC(accept, tk_checkNsl=0, [LIBS=$tk_oldLibs])
-fi  
+fi
 AC_CHECK_FUNC(gethostbyname, , [AC_CHECK_LIB(nsl, main, [LIBS="$LIBS -lnsl"])])
 SOCKET_LIBS=$LIBS
 AC_SUBST([SOCKET_LIBS])
@@ -1836,7 +1833,7 @@ else
 	if test "${EXPAT_PREFIX}/lib" != "/usr/lib" ; then
 		EXPAT_LIBS="-L${EXPAT_PREFIX}/lib"
 	fi
-  else         
+  else
 	EXPAT_INCLUDES=""
 	EXPAT_LIBS=""
   fi
@@ -1872,7 +1869,7 @@ if test "x$use_expat" = "x"; then
   AC_SUBST([EXPAT_INCLUDES])
   AC_SUBST([EXPAT_LIBS])
 fi
-  
+
 dnl -----------------------------------
 dnl INCLUDES and LIBS for DEVIL
 
@@ -2017,7 +2014,7 @@ AC_SUBST([Z_LIBS])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for WEBP
-                                                                                
+
 AC_ARG_WITH(webp,
   [AS_HELP_STRING([--with-webp=no],[webp library])],
   [], [with_webp=no])
@@ -2039,7 +2036,7 @@ AM_CONDITIONAL(WITH_WEBP, [test "x$use_webp" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for POPPLER
-                                                                                
+
 AC_ARG_WITH(poppler,
   [AS_HELP_STRING([--with-poppler=yes],[poppler library])],
   [], [with_poppler=yes])
@@ -2061,7 +2058,7 @@ AM_CONDITIONAL(WITH_POPPLER, [test "x$use_poppler" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for RSVG
-                                                                                
+
 AC_ARG_WITH(rsvg,
   [AS_HELP_STRING([--with-rsvg=yes],[rsvg library])],
   [], [with_rsvg=yes])
@@ -2090,7 +2087,7 @@ AM_CONDITIONAL(WITH_RSVG, [test "x$use_rsvg" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GHOSTSCRIPT
-                                                                                
+
 AC_ARG_WITH(ghostscript,
   [AS_HELP_STRING([--with-ghostscript=yes],[ghostscript library])],
   [], [with_ghostscript=yes])
@@ -2118,7 +2115,7 @@ AM_CONDITIONAL(WITH_GS, [test "x$use_ghostscript" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for VISIO
-                                                                                
+
 AC_ARG_WITH(visio,
   [AS_HELP_STRING([--with-visio=no],[visio library])],
   [], [with_visio=no])
@@ -2142,7 +2139,7 @@ AM_CONDITIONAL(WITH_VISIO, [test "x$use_visio" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PANGOCAIRO
-                                                                                
+
 AC_ARG_WITH(pangocairo,
   [AS_HELP_STRING([--with-pangocairo=yes],[pangocairo library])],
   [], [with_pangocairo=yes])
@@ -2174,7 +2171,7 @@ fi
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for LASI
-                                                                                
+
 AC_ARG_WITH(lasi,
   [AS_HELP_STRING([--with-lasi=yes],[lasi library])],
   [], [with_lasi=yes])
@@ -2200,7 +2197,7 @@ AM_CONDITIONAL(WITH_LASI, [test "x$use_lasi" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GLITZ
-                                                                                
+
 AC_ARG_WITH(glitz,
   [AS_HELP_STRING([--with-glitz=no],[glitz library])],
   [], [with_glitz=no])
@@ -2222,7 +2219,7 @@ AM_CONDITIONAL(WITH_GLITZ, [test "x$use_glitz" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for FREETYPE2
-                                                                                
+
 AC_ARG_WITH(freetype2,
   [AS_HELP_STRING([--with-freetype2=yes],[freetype2 library])],
   [], [with_freetype2=yes])
@@ -2268,7 +2265,7 @@ AM_CONDITIONAL(WITH_FREETYPE2, [test "x$ue_freetype" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for FONTCONFIG
-                                                                                
+
 AC_ARG_WITH(fontconfig,
   [AS_HELP_STRING([--with-fontconfig=yes],[use fontconfig library])],
   [], [with_fontconfig=yes])
@@ -2562,7 +2559,7 @@ fi
 AM_CONDITIONAL(WITH_QT, [test "x$use_qt" = "xYes"])
 
 dnl -----------------------------------
-dnl INCLUDES and LIBS for QUARTZ 
+dnl INCLUDES and LIBS for QUARTZ
 
 AC_ARG_WITH(quartz,
   [AS_HELP_STRING([--with-quartz=no],[Quartz framework (Mac OS X)])],
@@ -2597,10 +2594,10 @@ AC_ARG_WITH(platformsdklibdir,
 
 AC_SUBST([PLATFORMSDKINCLUDE])
 AC_SUBST([PLATFORMSDKINCLUDE_ESCAPED])
-AC_SUBST([PLATFORMSDKLIB]) 
+AC_SUBST([PLATFORMSDKLIB])
 
 dnl -----------------------------------
-dnl INCLUDES and LIBS for GDI+ 
+dnl INCLUDES and LIBS for GDI+
 
 AC_ARG_WITH(gdiplus,
   [AS_HELP_STRING([--with-gdiplus=no],[GDI+ framework (Windows)])],
@@ -2627,7 +2624,7 @@ AM_CONDITIONAL(WITH_GDIPLUS, [test "x$use_gdiplus" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GD
-                                                                                
+
 AC_ARG_WITH(libgd,
   [AS_HELP_STRING([--with-libgd=yes],[use gd library])],
   [], [with_libgd=yes])
@@ -2789,7 +2786,7 @@ else
     [AS_HELP_STRING([--with-glutlibdir=DIR],[use GLUT libraries from DIR])],
     [GLUT_LIBS="-L$withval"])
   LDFLAGS="$LDFLAGS $GLUT_LIBS"
-  
+
   AC_CHECK_HEADER(GL/glut.h,
     AC_CHECK_LIB(glut,main,
       [GLUT_LIBS="$GLUT_LIBS -lglut"
@@ -2855,7 +2852,7 @@ AC_SUBST([TCL_PKGINDEX_SWIG])
 
 dnl -----------------------------------
 dnl SFDP
- 
+
 AC_ARG_WITH(sfdp,
   [AS_HELP_STRING([--with-sfdp=yes],[sfdp layout engine])],
   [], [with_sfdp=yes])
@@ -2869,7 +2866,7 @@ fi
 AM_CONDITIONAL(WITH_SFDP, [test "x$use_sfdp" = "xYes"])
 
 dnl -----------------------------------
-dnl SMYRNA 
+dnl SMYRNA
 
 AC_ARG_WITH(smyrna,
   [AS_HELP_STRING([--with-smyrna=no],[SMYRNA large graph viewer])],
@@ -2908,7 +2905,7 @@ fi
 AM_CONDITIONAL(WITH_SMYRNA, [test "x$use_smyrna" = "xYes"])
 
 dnl -----------------------------------
-dnl ORTHO 
+dnl ORTHO
 
 AC_ARG_WITH(ortho,
   [AS_HELP_STRING([--with-ortho=yes],[ORTHO features in neato layout engine])],
@@ -2923,7 +2920,7 @@ fi
 AM_CONDITIONAL(WITH_ORTHO, [test "x$use_ortho" = "xYes"])
 
 dnl -----------------------------------
-dnl DIGCOLA 
+dnl DIGCOLA
 
 AC_ARG_WITH(digcola,
   [AS_HELP_STRING([--with-digcola=yes],[DIGCOLA features in neato layout engine])],

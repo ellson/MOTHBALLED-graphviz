@@ -3,12 +3,8 @@
 #define _def_time_Sfio_f	1
 #define _sys_types	1	/* #include <sys/types.h> ok */
 //#define _hdr_unistd	1	/* #include <unistd.h> ok */
-#define _lib_ftruncate	0	/* ftruncate() in default lib(s) */
-#define _lib_lseek64	1	/* lseek64() in default lib(s) */
 #define _typ_off64_t	1	/* off64_t is a type */
-#define _sys_stat	1	/* stat() in default lib(s) */
 #define _lib_remove	1	/* remove() in default lib(s) */
-#define _lib_unlink	1	/* unlink() in default lib(s) */
 #define _lib_getpagesize	0	/* getpagesize() in default lib(s) */
 #define _tmp_rmfail	1	/* file not removable if still opened */
 #define _proto_open	1	/* open() has a vararg prototype */

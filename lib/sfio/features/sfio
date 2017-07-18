@@ -6,73 +6,9 @@
 # Converted to sfio v10/01/94 by Giampiero Sierra (06/08/95).
 ##################################################################
 
-lib ftruncate
-
-lib lseek64
-lib stat64
-typ off64_t
-typ struct_stat64 compile{
-	#include	<sys/types.h>
-	#include	<sys/stat.h>
-	main()
-	{	struct stat64 statb;
-	}
-}end
-
-exit    cleanup note{ stuck with standard _cleanup }end execute{
-        #include <stdio.h>
-        _BEGIN_EXTERNS_
-        extern void exit(int);
-        extern void _exit(int);
-        extern void _cleanup();
-        void _cleanup() { _exit(0); }
-        _END_EXTERNS_
-        main() { printf("cleanup\n"); exit(1); }
-}end
-
-sys stat note{ stat() in default lib(s) }end link{
-	#if _STD_
-	#include	<stddef.h>
-	#else
-	#include	<sys/types.h>
-	#endif
-	#include	<time.h>
-	#include	<sys/stat.h>
-	main()
-	{	struct stat	st;
-		fstat(0,&st);
-	}
-}end
-
-hdr stat note{ stat() in default lib(s) }end link{
-	#if _STD_
-	#include	<stddef.h>
-	#else
-	#include	<sys/types.h>
-	#endif
-	#include	<time.h>
-	#include	<stat.h>
-	main()
-	{	struct stat	st;
-		fstat(0,&st);
-	}
-}end
-
-
-##################################################
-# vfork and any associated header files
-##################################################
-
-lib vfork
-
 ##################################################
 # file control checks
 ##################################################
-
-lib remove
-lib unlink
-lib waitpid
-lib getpagesize
 
 tmp rmfail note{ file not removable if still opened }end execute{
 	#include	<sys/time.h>
@@ -98,18 +34,6 @@ tmp rmfail note{ file not removable if still opened }end execute{
 		if(strcmp(file,"0123456789") != 0)
 			return 0;
 		return 1;
-	}
-}end
-
-more void_int note{ voidptr is larger than int }end execute{
-	main() {
-	return sizeof(char*) > sizeof(int) ? 0 : 1;
-	}
-}end
-
-more long_int note{ long is larger than int }end execute{
-	main() {
-	return sizeof(long) > sizeof(int) ? 0 : 1;
 	}
 }end
 
@@ -179,22 +103,6 @@ lib     poll_fd_2 note{ fd is second arg to poll() }end execute{
         }
 }end
 
-lib	select note{ select() has standard 5 arg interface }end link{
-	#include <sys/types.h>
-        #include <sys/time.h>
-        #include <sys/socket.h>
-        main()
-        {       struct timeval  tmb;
-                fd_set          rd;
-                FD_ZERO(&rd);
-                FD_SET(0,&rd);
-                tmb.tv_sec = 0;
-                tmb.tv_usec = 0;
-                select(1,&rd,(fd_set*)0,(fd_set*)0,&tmb);
-                return 0;
-        }
-}end
-
 ################################################################
 ## See if we can peek ahead in unseekable devices
 ################################################################
@@ -220,31 +128,5 @@ socket	peek note{ recv(MSG_PEEK) works }end link{
         {       char    buf[128];
                 recv(0,buf,sizeof(buf),MSG_PEEK);
                 return 0;
-        }
-}end
-
-
-################################################################
-## See if register layout is ok for vax string operations
-################################################################
-
-vax asm note{ register layout ok for vax string operations }end execute{
-        main()
-        {
-        #ifndef vax
-                return absurd = -1;
-        #else
-                register int    r11, r10, r9, r8, r7, r6;
-                r11 = r10 = r9 = r8 = r7 = r6 = -1;
-                asm("clrw       r11");
-                asm("clrw       r10");
-                asm("clrw       r9");
-                asm("clrw       r8");
-                asm("clrw       r7");
-                asm("clrw       r6");
-                if(sizeof(int) != sizeof(char*) || r11 || r10 || r9 || r8 || r7 || r6 )
-                        return -1;
-                return 0;
-        #endif
         }
 }end

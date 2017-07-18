@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,7 +30,7 @@ extern "C" {
 #else
 #define extern __declspec(dllimport)
 #endif
-#endif	
+#endif
 
 extern box mkbox(point p, point q);
 extern boxf mkboxf(pointf p, pointf q);
@@ -52,7 +52,7 @@ extern void rect2poly(pointf *p);
 
 extern int line_intersect (pointf a, pointf b, pointf c, pointf d, pointf* p);
 
-#if defined(MSWIN32) || defined(_WIN32)
+#if defined(_WIN32)
 #define inline __inline
 #endif
 
@@ -150,7 +150,7 @@ static inline pointf mid_pointf(pointf p, pointf q)
 
 static inline pointf interpolate_pointf(double t, pointf p, pointf q)
 {
-    pointf r; 
+    pointf r;
 
     r.x = p.x + t * (q.x - p.x);
     r.y = p.y + t * (q.y - p.y);
