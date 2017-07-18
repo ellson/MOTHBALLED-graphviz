@@ -388,67 +388,51 @@ DEVTSTS += test_php
 endif
 if WITH_PYTHON
 pkgpython_DATA = $(PYTHON_data)
-man_MANS += gv.3python
-pdf_DATA += gv.3python.pdf
 pkgpython_LTLIBRARIES = libgv_python.la
 DEVTSTS += test_python
 endif
 if WITH_PYTHON2
 pkgpython2_DATA = $(PYTHON2_data)
-man_MANS += gv.3python2
-pdf_DATA += gv.3python2.pdf
 pkgpython2_LTLIBRARIES = libgv_python2.la
 DEVTSTS += test_python2
 endif
 if WITH_PYTHON3
 pkgpython3_DATA = $(PYTHON3_data)
-man_MANS += gv.3python3
-pdf_DATA += gv.3python3.pdf
 pkgpython3_LTLIBRARIES = libgv_python3.la
 DEVTSTS += test_python3
 endif
 if WITH_PYTHON23
 pkgpython23_DATA = $(PYTHON23_data)
-man_MANS += gv.3python
-pdf_DATA += gv.3python.pdf
 pkgpython23_LTLIBRARIES = libgv_python23.la
 #DEVTSTS += test_python23
 endif
 if WITH_PYTHON24
 pkgpython24_DATA = $(PYTHON24_data)
-man_MANS += gv.3python
-pdf_DATA += gv.3python.pdf
 pkgpython24_LTLIBRARIES = libgv_python24.la
 #DEVTSTS += test_python24
 endif
 if WITH_PYTHON25
 pkgpython25_DATA = $(PYTHON25_data)
-man_MANS += gv.3python
-pdf_DATA += gv.3python.pdf
 pkgpython25_LTLIBRARIES = libgv_python25.la
 #DEVTSTS += test_python25
 endif
 if WITH_PYTHON26
 pkgpython26_DATA = $(PYTHON26_data)
-man_MANS += gv.3python
-pdf_DATA += gv.3python.pdf
 pkgpython26_LTLIBRARIES = libgv_python26.la
 #DEVTSTS += test_python26
 endif
 if WITH_PYTHON27
 pkgpython27_DATA = $(PYTHON27_data)
-man_MANS += gv.3python
-pdf_DATA += gv.3python.pdf
 pkgpython27_LTLIBRARIES = libgv_python27.la
 #DEVTSTS += test_python27
 endif
 if WITH_PYTHON34
 pkgpython34_DATA = $(PYTHON34_data)
-man_MANS += gv.3python
-pdf_DATA += gv.3python.pdf
 pkgpython34_LTLIBRARIES = libgv_python34.la
 #DEVTSTS += test_python34
 endif
+man_MANS += gv.3python
+pdf_DATA += gv.3python.pdf
 if WITH_R
 pkgR_DATA = $(R_data)
 man_MANS += gv.3r
@@ -478,11 +462,10 @@ endif
 endif
 
 man = gv.3sharp gv.3go gv.3guile gv.3io gv.3java gv.3lua gv.3ocaml \
-	gv.3perl gv.3php gv.3python gv.3python2 gv.3python3 gv.3r gv.3ruby gv.3tcl
+	gv.3perl gv.3php gv.3python gv.3r gv.3ruby gv.3tcl
 
 pdf = gv.3sharp.pdf gv.3go.pdf gv.3guile.pdf gv.3io.pdf gv.3java.pdf gv.3lua.pdf \
-      gv.3ocaml.pdf gv.3perl.pdf gv.3php.pdf gv.3python.pdf gv.3python2.pdf \
-      gv.3python3.pdf gv.3r.pdf gv.3ruby.pdf gv.3tcl.pdf
+      gv.3ocaml.pdf gv.3perl.pdf gv.3php.pdf gv.3python.pdf gv.3r.pdf gv.3ruby.pdf gv.3tcl.pdf
 
 
 $(man): gv.i gv_doc_writer.tcl gv_doc_template.tcl gv_doc_langs.tcl
@@ -517,12 +500,6 @@ gv.3php.pdf: gv.3php
 
 gv.3python.pdf: gv.3python
 	- $(GROFF) -Tps -man gv.3python | $(PS2PDF) - - >gv.3python.pdf
-
-gv.3python2.pdf: gv.3python2
-	- $(GROFF) -Tps -man gv.3python2 | $(PS2PDF) - - >gv.3python2.pdf
-
-gv.3python3.pdf: gv.3python3
-	- $(GROFF) -Tps -man gv.3python3 | $(PS2PDF) - - >gv.3python3.pdf
 
 gv.3r.pdf: gv.3r
 	- $(GROFF) -Tps -man gv.3r | $(PS2PDF) - - >gv.3r.pdf

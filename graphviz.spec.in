@@ -746,7 +746,7 @@ Python extension for graphviz.
 %defattr(-,root,root,-)
 %{_libdir}/python*/*
 %{_datadir}/graphviz/demo/*.py*
-%{_mandir}/man3/gv.3python
+%{_mandir}/man3/gv.3python.*
 %exclude %{_libdir}/graphviz/python/*.so
 %exclude %{_libdir}/graphviz/python/*.py*
 %endif
@@ -766,8 +766,8 @@ Python extension for graphviz.
 %files lang-python2
 %defattr(-,root,root,-)
 %{_libdir}/python2*/*
-# %{_datadir}/graphviz/demo/*.py*
-%{_mandir}/man3/gv.3python2
+%{_datadir}/graphviz/demo/*.py*
+%{_mandir}/man3/gv.3python.*
 %exclude %{_libdir}/graphviz/python2/*.so
 %exclude %{_libdir}/graphviz/python2/*.py*
 %endif
@@ -787,8 +787,8 @@ Python extension for graphviz.
 %files lang-python3
 %defattr(-,root,root,-)
 %{_libdir}/python3*/*
-#  %{_datadir}/graphviz/demo/*.py*
-%{_mandir}/man3/gv.3python3
+%{_datadir}/graphviz/demo/*.py*
+%{_mandir}/man3/gv.3python.*
 %exclude %{_libdir}/graphviz/python3/*.so
 %exclude %{_libdir}/graphviz/python3/*.py*
 %endif
