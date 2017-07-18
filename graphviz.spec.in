@@ -112,8 +112,6 @@ BuildRequires: perl-devel perl-ExtUtils-Embed
 BuildRequires: ruby ruby-devel
 %define GUILE 1
 BuildRequires: guile-devel
-%define PYTHON 1
-BuildRequires: python python-devel
 %define JAVA 1
 BuildRequires: java-devel
 %define _QT 1
@@ -155,20 +153,35 @@ BuildRequires: poppler-glib-devel
 %define R_LANG 1
 BuildRequires: R-devel swig >= 1.3.33 perl-libs
 %endif
+
 %if %fedora >= 16
 %define WEBP 1
 BuildRequires: libwebp-devel
 %endif
+
 %if %fedora >= 19
 %define SEPARATE_LICENSE 1
 %endif
+
 %if %fedora >= 21
 %define _GO 1
 BuildRequires: golang >= 1.2 gcc-go swig >= 3.0.2
 %endif
+
 %define PHP 1
-BuildRequires: php-devel
-# disable PHP7 in fc25 until swig supports it - requires swig-3.0.11
+BuildRequires: php-devel swig >= 3.0.11
+
+%if %fedora < 23
+%define PYTHON 1
+BuildRequires: python python-devel
+%endif
+%if %fedora >= 23
+%define PYTHON2 1
+BuildRequires: python2 python2-devel
+%define PYTHON3 1
+BuildRequires: python3 python3-devel
+%endif
+
 %endif
 
 # What a meal PHP makes of versioning !!!
@@ -733,9 +746,51 @@ Python extension for graphviz.
 %defattr(-,root,root,-)
 %{_libdir}/python*/*
 %{_datadir}/graphviz/demo/*.py*
-%{_mandir}/man3/*.3python.*
+%{_mandir}/man3/gv.3python
 %exclude %{_libdir}/graphviz/python/*.so
 %exclude %{_libdir}/graphviz/python/*.py*
+%endif
+
+#-- graphviz-lang-python2 rpm -------------------------------------------
+%if 0%{?PYTHON2}
+%package lang-python2
+Group:          Applications/Multimedia
+Summary:        Python extension for graphviz
+Requires:       %{name} = %{version}-%{release}, python2
+Obsoletes:	%{name}-python
+Obsoletes:	%{name}-lang-python
+
+%description lang-python2
+Python extension for graphviz.
+
+%files lang-python2
+%defattr(-,root,root,-)
+%{_libdir}/python2*/*
+# %{_datadir}/graphviz/demo/*.py*
+%{_mandir}/man3/gv.3python2
+%exclude %{_libdir}/graphviz/python2/*.so
+%exclude %{_libdir}/graphviz/python2/*.py*
+%endif
+
+#-- graphviz-lang-python3 rpm -------------------------------------------
+%if 0%{?PYTHON3}
+%package lang-python3
+Group:          Applications/Multimedia
+Summary:        Python extension for graphviz
+Requires:       %{name} = %{version}-%{release}, python3
+Obsoletes:	%{name}-python
+Obsoletes:	%{name}-lang-python
+
+%description lang-python3
+Python extension for graphviz.
+
+%files lang-python3
+%defattr(-,root,root,-)
+%{_libdir}/python3*/*
+#  %{_datadir}/graphviz/demo/*.py*
+%{_mandir}/man3/gv.3python3
+%exclude %{_libdir}/graphviz/python3/*.so
+%exclude %{_libdir}/graphviz/python3/*.py*
 %endif
 
 #-- graphviz-lang-R rpm ---------------------------------------------
@@ -910,6 +965,8 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --enable-perl%{!?PERL:=no} \
         --enable-php%{!?PHP:=no} \
         --enable-python%{!?PYTHON:=no} \
+        --enable-python2%{!?PYTHON2:=no} \
+        --enable-python3%{!?PYTHON3:=no} \
         --enable-r%{!?R_LANG:=no} \
         --enable-ruby%{!?RUBY:=no} \
         --enable-tcl%{!?TCL:=no} \
