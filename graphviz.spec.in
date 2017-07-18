@@ -166,11 +166,9 @@ BuildRequires: libwebp-devel
 %define _GO 1
 BuildRequires: golang >= 1.2 gcc-go swig >= 3.0.2
 %endif
-%if %fedora <= 24
 %define PHP 1
 BuildRequires: php-devel
 # disable PHP7 in fc25 until swig supports it - requires swig-3.0.11
-%endif
 %endif
 
 # What a meal PHP makes of versioning !!!
