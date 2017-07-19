@@ -13,11 +13,6 @@ pkgphpdir = $(pkglibdir)/php
 pkgpythondir = $(pkglibdir)/python
 pkgpython2dir = $(pkglibdir)/python2
 pkgpython3dir = $(pkglibdir)/python3
-pkgpython23dir = $(pkglibdir)/python23
-pkgpython24dir = $(pkglibdir)/python24
-pkgpython25dir = $(pkglibdir)/python25
-pkgpython26dir = $(pkglibdir)/python26
-pkgpython27dir = $(pkglibdir)/python27
 pkgRdir = $(pkglibdir)/R
 pkgrubydir = $(pkglibdir)/ruby
 pkgtcldir = $(pkglibdir)/tcl
@@ -109,61 +104,6 @@ if WITH_PYTHON3
 	else \
 		echo "Warning: @PYTHON3_INSTALL_DIR@ is not writable."; \
 		echo "Skipping system installation of python3 binding."; \
-	fi
-endif
-if WITH_PYTHON23
-	-mkdir -p $(DESTDIR)@PYTHON23_INSTALL_DIR@;
-	if test -w $(DESTDIR)@PYTHON23_INSTALL_DIR@; then \
-		(cd $(DESTDIR)@PYTHON23_INSTALL_DIR@; \
-			cp -f $(DESTDIR)$(pkgpython23dir)/libgv_python23.so _gv.so; \
-			cp -f $(DESTDIR)$(pkgpython23dir)/gv.py gv.py;) \
-	else \
-		echo "Warning: @PYTHON23_INSTALL_DIR@ is not writable."; \
-		echo "Skipping system installation of python23 binding."; \
-	fi
-endif
-if WITH_PYTHON24
-	-mkdir -p $(DESTDIR)@PYTHON24_INSTALL_DIR@;
-	if test -w $(DESTDIR)@PYTHON24_INSTALL_DIR@; then \
-		(cd $(DESTDIR)@PYTHON24_INSTALL_DIR@; \
-			cp -f $(DESTDIR)$(pkgpython24dir)/libgv_python24.so _gv.so; \
-			cp -f $(DESTDIR)$(pkgpython24dir)/gv.py gv.py;) \
-	else \
-		echo "Warning: @PYTHON24_INSTALL_DIR@ is not writable."; \
-		echo "Skipping system installation of python24 binding."; \
-	fi
-endif
-if WITH_PYTHON25
-	-mkdir -p $(DESTDIR)@PYTHON25_INSTALL_DIR@;
-	if test -w $(DESTDIR)@PYTHON25_INSTALL_DIR@; then \
-		(cd $(DESTDIR)@PYTHON25_INSTALL_DIR@; \
-			cp -f $(DESTDIR)$(pkgpython25dir)/libgv_python25.so _gv.so; \
-			cp -f $(DESTDIR)$(pkgpython25dir)/gv.py gv.py;) \
-	else \
-		echo "Warning: @PYTHON25_INSTALL_DIR@ is not writable."; \
-		echo "Skipping system installation of python25 binding."; \
-	fi
-endif
-if WITH_PYTHON26
-	-mkdir -p $(DESTDIR)@PYTHON26_INSTALL_DIR@;
-	if test -w $(DESTDIR)@PYTHON26_INSTALL_DIR@; then \
-		(cd $(DESTDIR)@PYTHON26_INSTALL_DIR@; \
-			cp -f $(DESTDIR)$(pkgpython26dir)/libgv_python26.so _gv.so; \
-			cp -f $(DESTDIR)$(pkgpython26dir)/gv.py gv.py;) \
-	else \
-		echo "Warning: @PYTHON26_INSTALL_DIR@ is not writable."; \
-		echo "Skipping system installation of python26 binding."; \
-	fi
-endif
-if WITH_PYTHON27
-	-mkdir -p $(DESTDIR)@PYTHON27_INSTALL_DIR@;
-	if test -w $(DESTDIR)@PYTHON27_INSTALL_DIR@; then \
-		(cd $(DESTDIR)@PYTHON27_INSTALL_DIR@; \
-			cp -f $(DESTDIR)$(pkgpython27dir)/libgv_python27.so _gv.so; \
-			cp -f $(DESTDIR)$(pkgpython27dir)/gv.py gv.py;) \
-	else \
-		echo "Warning: @PYTHON27_INSTALL_DIR@ is not writable."; \
-		echo "Skipping system installation of python27 binding."; \
 	fi
 endif
 if WITH_RUBY

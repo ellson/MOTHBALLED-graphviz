@@ -12,9 +12,6 @@ demophpdir = $(pkgdatadir)/demo
 demopythondir = $(pkgdatadir)/demo
 demopython2dir = $(pkgdatadir)/demo
 demopython3dir = $(pkgdatadir)/demo
-demopython23dir = $(pkgdatadir)/demo
-demopython24dir = $(pkgdatadir)/demo
-demopython25dir = $(pkgdatadir)/demo
 demoRdir = $(pkgdatadir)/demo
 demorubydir = $(pkgdatadir)/demo
 demotcldir = $(pkgdatadir)/demo
@@ -51,15 +48,6 @@ demopython2_SCRIPTS = modgraph.py
 endif
 if WITH_PYTHON3
 demopython3_SCRIPTS = modgraph.py
-endif
-if WITH_PYTHON23
-demopython23_SCRIPTS =
-endif
-if WITH_PYTHON24
-demopython24_SCRIPTS =
-endif
-if WITH_PYTHON25
-demopython25_SCRIPTS =
 endif
 if WITH_R
 demoR_SCRIPTS =

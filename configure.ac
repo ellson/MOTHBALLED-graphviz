@@ -1208,14 +1208,17 @@ else
         fi
       fi
       if test "x$PYTHON2" = "x"; then
-	use_python2="No (python2 is too old)"
+	    use_python2="No (python2 is too old)"
       else
         if test "x$PKG_CONFIG" != "x"; then
           AC_MSG_CHECKING(for Python2 headers and libraries with pkg-config)
+          echo
           pkgconfig_python2_found=`$PKG_CONFIG --exists python-$PYTHON2_VERSION 2>/dev/null`
           if test "x$?" = "x0" ; then
                PYTHON2_INCLUDES="$PYTHON2_CFLAGS "`$PKG_CONFIG --cflags python-$PYTHON2_VERSION`
                PYTHON2_LIBS="$PYTHON2_LFLAGS "`$PKG_CONFIG --libs python-$PYTHON2_VERSION`
+          else
+	           use_python2="No (python-$PYTHON2_VERSION.pc not found)"
           fi
         fi
         PYTHON2_PREFIX=`$PYTHON2 -c "import sys; print(sys.prefix)"`
@@ -1277,10 +1280,13 @@ else
       else
         if test "x$PKG_CONFIG" != "x"; then
           AC_MSG_CHECKING(for Python3 headers and libraries with pkg-config)
+          echo
           pkgconfig_python3_found=`$PKG_CONFIG --exists python-$PYTHON3_VERSION 2>/dev/null`
           if test "x$?" = "x0" ; then
                PYTHON3_INCLUDES="$PYTHON3_CFLAGS "`$PKG_CONFIG --cflags python-$PYTHON3_VERSION`
                PYTHON3_LIBS="$PYTHON3_LFLAGS "`$PKG_CONFIG --libs python-$PYTHON3_VERSION`
+          else
+	           use_python3="No (python-$PYTHON3_VERSION.pc not found)"
           fi
         fi
         PYTHON3_PREFIX=`$PYTHON3 -c "import sys; print(sys.prefix)"`
@@ -1303,388 +1309,6 @@ else
   fi
 fi
 AM_CONDITIONAL(WITH_PYTHON3, [test "x$use_python3" = "xYes"])
-
-dnl -----------------------------------
-dnl INCLUDES and LIBS for PYTHON23
-
-AC_ARG_ENABLE(python23,
-  [AS_HELP_STRING([--enable-python23=no],[python23 language bindings])],
-  [], [enable_python23=no])
-
-if test "x$enable_python23" != "xyes"; then
-  use_python23="No (disabled by default - for multiversion installs)"
-else
-  if test "x$use_swig" != "xYes"; then
-    use_python23="No (swig not available)"
-  else
-    if test `$SWIG -help 2>&1 | $EGREP -c '\-python *- Generate'` = 0; then
-      use_python23="No (swig does not support -python option)"
-    else
-      AC_CHECK_PROG(PYTHON23,python2.3,python2.3)
-      if test "x$PYTHON23" = "x"; then
-        use_python23="No (python23 not available)"
-      else
-        PYTHON23_VERSION=`$PYTHON23 -V 2>&1 | $EGREP Python | cut -d ' ' -f 2`
-        if test "x$PYTHON23_VERSION" = "x"; then
-          PYTHON23=
-        else
-          PYTHON23_VERSION_MAJOR=`echo $PYTHON23_VERSION | cut -d '.' -f 1`
-          PYTHON23_VERSION_MINOR=`echo $PYTHON23_VERSION | cut -d '.' -f 2`
-          PYTHON23_VERSION_SHORT=$PYTHON23_VERSION_MAJOR.$PYTHON23_VERSION_MINOR
-          if test $PYTHON23_VERSION_MAJOR -lt 3; then
-            if test $PYTHON23_VERSION_MAJOR -lt 2; then
-	      PYTHON23=
-            else
-              if test $PYTHON23_VERSION_MINOR -lt 3; then
-	        PYTHON23=
-              fi
-            fi
-          fi
-        fi
-      fi
-      if test "x$PYTHON23" = "x"; then
-	use_python23="No (python2.3 is too old)"
-      else
-        PYTHON23_PREFIX=`$PYTHON23 -c "import sys; print sys.prefix"`
-        PYTHON23_INCLUDES=-I$PYTHON23_PREFIX/include/python$PYTHON23_VERSION_SHORT
-        PYTHON23_LIBS="-lpython$PYTHON_VERSION_SHORT"
-        PYTHON23_INSTALL_DIR="`$PYTHON23 $srcdir/config/config_python.py archsitelib`"
-        save_CPPFLAGS=$CPPFLAGS
-        CPPFLAGS="$CPPFLAGS $PYTHON23_INCLUDES"
-        AC_CHECK_HEADER(Python.h,,[
-          use_python23="No (missing header)"
-          PYTHON23=
-        ])
-        CPPFLAGS=$save_CPPFLAGS
-	if test "x$PYTHON23" != "x"; then
-	  use_python23="Yes"
-          AC_SUBST([PYTHON23_INSTALL_DIR])
-          AC_SUBST([PYTHON23_INCLUDES])
-          AC_SUBST([PYTHON23_LIBS])
-        fi
-      fi
-    fi
-  fi
-fi
-AM_CONDITIONAL(WITH_PYTHON23, [test "x$use_python23" = "xYes"])
-
-dnl -----------------------------------
-dnl INCLUDES and LIBS for PYTHON24
-
-AC_ARG_ENABLE(python24,
-  [AS_HELP_STRING([--enable-python24=no],[python24 language bindings])],
-  [], [enable_python24=no])
-
-if test "x$enable_python24" != "xyes"; then
-  use_python24="No (disabled by default - for multiversion installs)"
-else
-  if test "x$use_swig" != "xYes"; then
-    use_python24="No (swig not available)"
-  else
-    if test `$SWIG -help 2>&1 | $EGREP -c '\-python *- Generate'` = 0; then
-      use_python24="No (swig does not support -python option)"
-    else
-      AC_CHECK_PROG(PYTHON24,python2.4,python2.4)
-      if test "x$PYTHON24" = "x"; then
-        use_python24="No (python24 not available)"
-      else
-        PYTHON24_VERSION=`$PYTHON24 -V 2>&1 | $EGREP Python | cut -d ' ' -f 2`
-        if test "x$PYTHON24_VERSION" = "x"; then
-          PYTHON24=
-        else
-          PYTHON24_VERSION_MAJOR=`echo $PYTHON24_VERSION | cut -d '.' -f 1`
-          PYTHON24_VERSION_MINOR=`echo $PYTHON24_VERSION | cut -d '.' -f 2`
-          PYTHON24_VERSION_SHORT=$PYTHON24_VERSION_MAJOR.$PYTHON24_VERSION_MINOR
-          if test $PYTHON24_VERSION_MAJOR -lt 3; then
-            if test $PYTHON24_VERSION_MAJOR -lt 2; then
-	      PYTHON24=
-            else
-              if test $PYTHON24_VERSION_MINOR -lt 4; then
-	        PYTHON24=
-              fi
-            fi
-          fi
-        fi
-      fi
-      if test "x$PYTHON24" = "x"; then
-	use_python24="No (python2.4 is too old)"
-      else
-        PYTHON24_PREFIX=`$PYTHON24 -c "import sys; print sys.prefix"`
-        PYTHON24_INCLUDES=-I$PYTHON24_PREFIX/include/python$PYTHON24_VERSION_SHORT
-        PYTHON24_LIBS="-lpython$PYTHON_VERSION_SHORT"
-        PYTHON24_INSTALL_DIR="`$PYTHON24 $srcdir/config/config_python.py archsitelib`"
-        save_CPPFLAGS=$CPPFLAGS
-        CPPFLAGS="$CPPFLAGS $PYTHON24_INCLUDES"
-        AC_CHECK_HEADER(Python.h,,[
-          use_python24="No (missing header)"
-          PYTHON24=
-        ])
-        CPPFLAGS=$save_CPPFLAGS
-	if test "x$PYTHON24" != "x"; then
-	  use_python24="Yes"
-          AC_SUBST([PYTHON24_INSTALL_DIR])
-          AC_SUBST([PYTHON24_INCLUDES])
-          AC_SUBST([PYTHON24_LIBS])
-        fi
-      fi
-    fi
-  fi
-fi
-AM_CONDITIONAL(WITH_PYTHON24, [test "x$use_python24" = "xYes"])
-
-dnl -----------------------------------
-dnl INCLUDES and LIBS for PYTHON25
-
-AC_ARG_ENABLE(python25,
-  [AS_HELP_STRING([--enable-python25=no],[python25 language bindings])],
-  [], [enable_python25=no])
-
-if test "x$enable_python25" != "xyes"; then
-  use_python25="No (disabled by default - for multiversion installs)"
-else
-  if test "x$use_swig" != "xYes"; then
-    use_python25="No (swig not available)"
-  else
-    if test `$SWIG -help 2>&1 | $EGREP -c '\-python *- Generate'` = 0; then
-      use_python25="No (swig does not support -python option)"
-    else
-      AC_CHECK_PROG(PYTHON25,python2.5,python2.5)
-      if test "x$PYTHON25" = "x"; then
-        use_python25="No (python25 not available)"
-      else
-        PYTHON25_VERSION=`$PYTHON25 -V 2>&1 | $EGREP Python | cut -d ' ' -f 2`
-        if test "x$PYTHON25_VERSION" = "x"; then
-          PYTHON25=
-        else
-          PYTHON25_VERSION_MAJOR=`echo $PYTHON25_VERSION | cut -d '.' -f 1`
-          PYTHON25_VERSION_MINOR=`echo $PYTHON25_VERSION | cut -d '.' -f 2`
-          PYTHON25_VERSION_SHORT=$PYTHON25_VERSION_MAJOR.$PYTHON25_VERSION_MINOR
-          if test $PYTHON25_VERSION_MAJOR -lt 3; then
-            if test $PYTHON25_VERSION_MAJOR -lt 2; then
-	      PYTHON25=
-            else
-              if test $PYTHON25_VERSION_MINOR -lt 5; then
-	        PYTHON25=
-              fi
-            fi
-          fi
-        fi
-      fi
-      if test "x$PYTHON25" = "x"; then
-	use_python25="No (python2.5 is too old)"
-      else
-        PYTHON25_PREFIX=`$PYTHON25 -c "import sys; print sys.prefix"`
-        PYTHON25_INCLUDES=-I$PYTHON25_PREFIX/include/python$PYTHON25_VERSION_SHORT
-        PYTHON24_LIBS="-lpython$PYTHON_VERSION_SHORT"
-        PYTHON25_INSTALL_DIR="`$PYTHON25 $srcdir/config/config_python.py archsitelib`"
-        save_CPPFLAGS=$CPPFLAGS
-        CPPFLAGS="$CPPFLAGS $PYTHON25_INCLUDES"
-        AC_CHECK_HEADER(Python.h,,[
-          use_python25="No (missing header)"
-          PYTHON25=
-        ])
-        CPPFLAGS=$save_CPPFLAGS
-	if test "x$PYTHON25" != "x"; then
-	  use_python25="Yes"
-          AC_SUBST([PYTHON25_INSTALL_DIR])
-          AC_SUBST([PYTHON25_INCLUDES])
-          AC_SUBST([PYTHON25_LIBS])
-        fi
-      fi
-    fi
-  fi
-fi
-AM_CONDITIONAL(WITH_PYTHON25, [test "x$use_python25" = "xYes"])
-
-dnl -----------------------------------
-dnl INCLUDES and LIBS for PYTHON26
-
-AC_ARG_ENABLE(python26,
-  [AS_HELP_STRING([--enable-python26=no],[python26 language bindings])],
-  [], [enable_python26=no])
-
-if test "x$enable_python26" != "xyes"; then
-  use_python26="No (disabled by default - for multiversion installs)"
-else
-  if test "x$use_swig" != "xYes"; then
-    use_python26="No (swig not available)"
-  else
-    if test `$SWIG -help 2>&1 | $EGREP -c '\-python *- Generate'` = 0; then
-      use_python26="No (swig does not support -python option)"
-    else
-      AC_CHECK_PROG(PYTHON26,python2.6,python2.6)
-      if test "x$PYTHON26" = "x"; then
-        use_python26="No (python26 not available)"
-      else
-        PYTHON26_VERSION=`$PYTHON26 -V 2>&1 | $EGREP Python | cut -d ' ' -f 2`
-        if test "x$PYTHON26_VERSION" = "x"; then
-          PYTHON26=
-        else
-          PYTHON26_VERSION_MAJOR=`echo $PYTHON26_VERSION | cut -d '.' -f 1`
-          PYTHON26_VERSION_MINOR=`echo $PYTHON26_VERSION | cut -d '.' -f 2`
-          PYTHON26_VERSION_SHORT=$PYTHON26_VERSION_MAJOR.$PYTHON26_VERSION_MINOR
-          if test $PYTHON26_VERSION_MAJOR -lt 3; then
-            if test $PYTHON26_VERSION_MAJOR -lt 2; then
-	      PYTHON26=
-            else
-              if test $PYTHON26_VERSION_MINOR -lt 5; then
-	        PYTHON26=
-              fi
-            fi
-          fi
-        fi
-      fi
-      if test "x$PYTHON26" = "x"; then
-	use_python26="No (python2.6 is too old)"
-      else
-        PYTHON26_PREFIX=`$PYTHON26 -c "import sys; print sys.prefix"`
-        PYTHON26_INCLUDES=-I$PYTHON26_PREFIX/include/python$PYTHON26_VERSION_SHORT
-        PYTHON24_LIBS="-lpython$PYTHON_VERSION_SHORT"
-        PYTHON26_INSTALL_DIR="`$PYTHON26 $srcdir/config/config_python.py archsitelib`"
-        save_CPPFLAGS=$CPPFLAGS
-        CPPFLAGS="$CPPFLAGS $PYTHON26_INCLUDES"
-        AC_CHECK_HEADER(Python.h,,[
-          use_python26="No (missing header)"
-          PYTHON26=
-        ])
-        CPPFLAGS=$save_CPPFLAGS
-	if test "x$PYTHON26" != "x"; then
-	  use_python26="Yes"
-          AC_SUBST([PYTHON26_INSTALL_DIR])
-          AC_SUBST([PYTHON26_INCLUDES])
-          AC_SUBST([PYTHON26_LIBS])
-        fi
-      fi
-    fi
-  fi
-fi
-AM_CONDITIONAL(WITH_PYTHON26, [test "x$use_python26" = "xYes"])
-
-dnl -----------------------------------
-dnl INCLUDES and LIBS for PYTHON27
-
-AC_ARG_ENABLE(python27,
-  [AS_HELP_STRING([--enable-python27=no],[python27 language bindings])],
-  [], [enable_python27=no])
-
-if test "x$enable_python27" != "xyes"; then
-  use_python27="No (disabled by default - for multiversion installs)"
-else
-  if test "x$use_swig" != "xYes"; then
-    use_python27="No (swig not available)"
-  else
-    if test `$SWIG -help 2>&1 | $EGREP -c '\-python *- Generate'` = 0; then
-      use_python27="No (swig does not support -python option)"
-    else
-      AC_CHECK_PROG(PYTHON27,python2.7,python2.7)
-      if test "x$PYTHON27" = "x"; then
-        use_python27="No (python27 not available)"
-      else
-        PYTHON27_VERSION=`$PYTHON27 -V 2>&1 | $EGREP Python | cut -d ' ' -f 2`
-        if test "x$PYTHON27_VERSION" = "x"; then
-          PYTHON27=
-        else
-          PYTHON27_VERSION_MAJOR=`echo $PYTHON27_VERSION | cut -d '.' -f 1`
-          PYTHON27_VERSION_MINOR=`echo $PYTHON27_VERSION | cut -d '.' -f 2`
-          PYTHON27_VERSION_SHORT=$PYTHON27_VERSION_MAJOR.$PYTHON27_VERSION_MINOR
-          if test $PYTHON27_VERSION_MAJOR -lt 3; then
-            if test $PYTHON27_VERSION_MAJOR -lt 2; then
-	      PYTHON27=
-            else
-              if test $PYTHON27_VERSION_MINOR -lt 5; then
-	        PYTHON27=
-              fi
-            fi
-          fi
-        fi
-      fi
-      if test "x$PYTHON27" = "x"; then
-	use_python27="No (python2.7 is too old)"
-      else
-        PYTHON27_PREFIX=`$PYTHON27 -c "import sys; print sys.prefix"`
-        PYTHON27_INCLUDES=-I$PYTHON27_PREFIX/include/python$PYTHON27_VERSION_SHORT
-        PYTHON24_LIBS="-lpython$PYTHON_VERSION_SHORT"
-        PYTHON27_INSTALL_DIR="`$PYTHON27 $srcdir/config/config_python.py archsitelib`"
-        save_CPPFLAGS=$CPPFLAGS
-        CPPFLAGS="$CPPFLAGS $PYTHON27_INCLUDES"
-        AC_CHECK_HEADER(Python.h,,[
-          use_python27="No (missing header)"
-          PYTHON27=
-        ])
-        CPPFLAGS=$save_CPPFLAGS
-	if test "x$PYTHON27" != "x"; then
-	  use_python27="Yes"
-          AC_SUBST([PYTHON27_INSTALL_DIR])
-          AC_SUBST([PYTHON27_INCLUDES])
-          AC_SUBST([PYTHON27_LIBS])
-        fi
-      fi
-    fi
-  fi
-fi
-AM_CONDITIONAL(WITH_PYTHON27, [test "x$use_python27" = "xYes"])
-
-dnl -----------------------------------
-dnl INCLUDES and LIBS for PYTHON34
-
-AC_ARG_ENABLE(python34,
-  [AS_HELP_STRING([--enable-python34=no],[python34 language bindings])],
-  [], [enable_python34=no])
-
-if test "x$enable_python34" != "xyes"; then
-  use_python34="No (disabled by default - for multiversion installs)"
-else
-  if test "x$use_swig" != "xYes"; then
-    use_python34="No (swig not available)"
-  else
-    if test `$SWIG -help 2>&1 | $EGREP -c '\-python *- Generate'` = 0; then
-      use_python34="No (swig does not support -python option)"
-    else
-      AC_CHECK_PROG(PYTHON34,python3.4,python3.4)
-      if test "x$PYTHON34" = "x"; then
-        use_python34="No (python34 not available)"
-      else
-        PYTHON34_VERSION=`$PYTHON34 -V 2>&1 | $EGREP Python | cut -d ' ' -f 2`
-        if test "x$PYTHON34_VERSION" = "x"; then
-          PYTHON34=
-        else
-          PYTHON34_VERSION_MAJOR=`echo $PYTHON34_VERSION | cut -d '.' -f 1`
-          PYTHON34_VERSION_MINOR=`echo $PYTHON34_VERSION | cut -d '.' -f 2`
-          PYTHON34_VERSION_SHORT=$PYTHON34_VERSION_MAJOR.$PYTHON34_VERSION_MINOR
-          if test $PYTHON34_VERSION_MAJOR -lt 3; then
-            if test $PYTHON34_VERSION_MINOR -lt 4; then
-	          PYTHON34=
-            fi
-          fi
-        fi
-      fi
-      if test "x$PYTHON34" = "x"; then
-	    use_python34="No (python34 is too old)"
-      else
-        PYTHON34_PREFIX=`$PYTHON3 -c "import sys; print sys.prefix"`
-#        PYTHON34_INCLUDES=-I$PYTHON34_PREFIX/include/python$PYTHON34_VERSION_SHORT
-# FIXME - whats the stupid "m" for?
-        PYTHON34_INCLUDES=-I/usr/include/python3.4m
-        PYTHON34_LIBS="-lpython$PYTHON_VERSION_SHORT"
-        PYTHON34_INSTALL_DIR="`$PYTHON34 $srcdir/config/config_python.py archsitelib`"
-        save_CPPFLAGS=$CPPFLAGS
-        CPPFLAGS="$CPPFLAGS $PYTHON34_INCLUDES"
-        AC_CHECK_HEADER(Python.h,,[
-          use_python34="No (missing header)"
-          PYTHON34=
-        ])
-        CPPFLAGS=$save_CPPFLAGS
-	if test "x$PYTHON34" != "x"; then
-	  use_python34="Yes"
-          AC_SUBST([PYTHON34_INSTALL_DIR])
-          AC_SUBST([PYTHON34_INCLUDES])
-          AC_SUBST([PYTHON34_LIBS])
-        fi
-      fi
-    fi
-  fi
-fi
-AM_CONDITIONAL(WITH_PYTHON34, [test "x$use_python34" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for R
@@ -3427,12 +3051,6 @@ echo "  gv_php:        $use_php"
 echo "  gv_python:     $use_python"
 echo "  gv_python2:    $use_python2"
 echo "  gv_python3:    $use_python3"
-echo "  gv_python23:   $use_python23"
-echo "  gv_python24:   $use_python24"
-echo "  gv_python25:   $use_python25"
-echo "  gv_python26:   $use_python26"
-echo "  gv_python27:   $use_python27"
-echo "  gv_python34:   $use_python34"
 echo "  gv_R:          $use_r"
 echo "  gv_ruby:       $use_ruby"
 echo "  gv_tcl:        $use_gv_tcl"
