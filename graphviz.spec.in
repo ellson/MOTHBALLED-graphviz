@@ -169,7 +169,7 @@ BuildRequires: golang >= 1.2 gcc-go swig >= 3.0.2
 %endif
 
 %define PHP 1
-BuildRequires: php-devel swig >= 3.0.11
+BuildRequires: php-devel swig
 
 %if %fedora < 23
 %define PYTHON 1
