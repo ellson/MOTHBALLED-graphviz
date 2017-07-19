@@ -1219,6 +1219,7 @@ else
                PYTHON2_LIBS="$PYTHON2_LFLAGS "`$PKG_CONFIG --libs python-$PYTHON2_VERSION`
           else
 	           use_python2="No (python-$PYTHON2_VERSION.pc not found)"
+	           PYTHON2=
           fi
         fi
         PYTHON2_PREFIX=`$PYTHON2 -c "import sys; print(sys.prefix)"`
@@ -1277,6 +1278,7 @@ else
       fi
       if test "x$PYTHON3" = "x"; then
 	use_python3="No (python3 is too old)"
+	PYTHON3=
       else
         if test "x$PKG_CONFIG" != "x"; then
           AC_MSG_CHECKING(for Python3 headers and libraries with pkg-config)
