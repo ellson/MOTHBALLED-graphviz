@@ -64,6 +64,18 @@ BuildRequires: gts-devel
 BuildRequires: libglade2-devel gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel freeglut-devel
 #-- Red Hat Enterprise Linux (also Centos) specific Build Requirements
 %if 0%{?rhel}
+%ifnarch ppc64
+%ifnarch i386
+%define SHARP 1
+BuildRequires: mono-core
+%endif
+%define OCAML 1
+BuildRequires: ocaml
+%endif
+%ifnarch i386
+%define LASI 1
+BuildRequires: lasi-devel
+%endif
 %define PYTHON 1
 BuildRequires: python python-devel
 %endif
