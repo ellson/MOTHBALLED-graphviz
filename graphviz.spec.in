@@ -9,8 +9,8 @@ Summary: Graph Visualization Tools
 Version: @VERSION@
 
 %define truerelease 1
-%{?distroagnostic: %define release %{truerelease}}
-%{!?distroagnostic: %define release %{truerelease}%{?dist}}
+%{?distroagnostic: %global release %{truerelease}}
+%{!?distroagnostic: %global release %{truerelease}%{?dist}}
 
 Release: %{?release}
 Group:   Applications/Multimedia
