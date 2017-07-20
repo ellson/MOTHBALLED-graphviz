@@ -45,7 +45,6 @@ BuildRequires: ksh bison m4 flex
 BuildRequires: swig
 BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel
 BuildRequires: freetype-devel >= 2
-BuildRequires: lasi-devel
 BuildRequires: fontconfig-devel
 BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel gtk2-devel
 BuildRequires: libtool-ltdl libtool-ltdl-devel
