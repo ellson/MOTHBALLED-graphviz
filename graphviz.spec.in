@@ -18,9 +18,10 @@ License: EPL
 URL:     http://www.graphviz.org/
 Source0: http://www.graphviz.org/pub/@GRAPHVIZ_SOURCES@/graphviz-@VERSION@.tar.gz
 
-# graphviz is relocatable - Caution: this feature is used in AT&T,
-#   but probably will not be supported in Redhat/Fedora/Centos distros
-Prefix: /usr
+#### rpmlint complains about this
+#  # graphviz is relocatable - Caution: this feature is used in AT&T,
+#  #   but probably will not be supported in Redhat/Fedora/Centos distros
+#  Prefix: /usr
 
 #-- feature and package selection -------------------------------------------
 #   depends on macro values set by redhat-rpm-config
@@ -828,16 +829,11 @@ Provides some additional PDF and HTML documentation for graphviz.
 
 %prep
 %setup -q
-### the rpm in centos4/5 is too old to handle this
-#for p in %{patches}; do
-#     patch -p1 < ${p} || exit 1
-#done
+for p in %{patches}; do
+     patch -p1 < ${p} || exit 1
+done
 
 %build
-# XXX ix86 only used to have -ffast-math, let's use everywhere
-%{expand: %%define optflags %{optflags} -ffast-math}
-
-# %%configure is broken in RH7.3 rpmbuild
 CFLAGS="$RPM_OPT_FLAGS" \
 ./configure \
         --prefix=%{_prefix} \
