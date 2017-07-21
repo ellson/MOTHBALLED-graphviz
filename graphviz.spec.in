@@ -144,7 +144,7 @@ of graphs (as in nodes and edges, not as in bar-charts).
 #-- graphviz-nox rpm --------------------------------------------------
 %package nox
 Group:            Applications/Multimedia
-Summary:          Graphviz commands that do not depend on X11 - all graphviz installation will want this.
+Summary:          Graphviz commands with no X11 deps - all installs will want this
 Requires:         urw-fonts
 Requires:         %{name}-libs = %{version}-%{release}
 Requires:         %{name}-plugins-core = %{version}-%{release}
@@ -152,7 +152,8 @@ Provides:         %{name}-nox = %{version}-%{release}
 
 %description nox
 Graphviz plugins and commands that do not depend on x11. 
-When used alone, this is intended for mimimalist web-server apps with no X11 on the server.
+When used alone, this is intended for minimalist web-server apps
+with no X11 on the server.
 
 %files nox
 %defattr(-,root,root,-)
@@ -201,7 +202,6 @@ When used alone, this is intended for mimimalist web-server apps with no X11 on 
 %{_mandir}/man1/ccomps.1*
 %{_mandir}/man1/circo.1*
 %{_mandir}/man1/cluster.1*
-%{_mandir}/man1/diffimg.1*
 %{_mandir}/man1/dijkstra.1*
 %{_mandir}/man1/dot.1*
 %{_mandir}/man1/fdp.1*
@@ -259,12 +259,14 @@ Graphviz core libs
 %{_libdir}/libxdot.so.4*
 %{_libdir}/liblab_gamut.so.*
 
+%post -n graphviz-libs -p /sbin/ldconfig
+%postun -n graphviz-libs -p /sbin/ldconfig
+
 #-- graphviz-plugins-core rpm --------------------------------------------------
 %package plugins-core
 Group:            Applications/Multimedia
 Summary:          Graphviz plugins - core layout engines and text renderers
 Requires:         %{name}-nox = %{version}-%{release}
-Provides:         %{name}-plugins-core = %{version}-%{release}
 
 %description plugins-core
 Graphviz plugins - core layout engines and text renderers
@@ -289,10 +291,9 @@ fi
 #-- graphviz-x rpm --------------------------------------------------
 %package x
 Group:            Applications/Multimedia
-Summary:          Graphviz commands that depend on x11 - most installations will want this
+Summary:          Graphviz commands with X11 deps - most installs will want this
 Requires:         %{name}-nox = %{version}-%{release}
 Requires:         %{name}-plugins-x = %{version}-%{release}
-Provides:         %{name}-x = %{version}-%{release}
 
 %description x
 Graphviz plugins and commands that depend on x11 - most installations will want this
@@ -319,9 +320,8 @@ Graphviz plugins and commands that depend on x11 - most installations will want 
 #-- graphviz-plugins-x rpm --------------------------------------------------
 %package plugins-x
 Group:            Applications/Multimedia
-Summary:          Graphviz plugins and commands that depend on x11 - most installations will want this
+Summary:          Graphviz plugins with X11 deps - most installs will want this
 Requires:         %{name} = %{version}-%{release}
-Provides:         %{name}-plugins-x = %{version}-%{release}
 
 %description plugins-x
 Graphviz plugins that depend on x11 - most installations will want this.
@@ -352,7 +352,6 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 Group:            Applications/Multimedia
 Summary:          Graphviz binaries that depend on libgd
 Requires:         %{name} = %{version}-%{release}
-Provides:         %{name}-gd = %{version}-%{release}
 
 # this next Requires is not strictly neccessary for diffimg,
 #   but users will probably expect the plugins to get pulled in
@@ -367,13 +366,13 @@ based renderer.)
 %files gd
 %defattr(-,root,root,-)
 %{_bindir}/diffimg
+%{_mandir}/man1/diffimg.1*
 
 #-- graphviz-plugins-gd rpm --------------------------------------------------
 %package plugins-gd
 Group:            Applications/Multimedia
-Summary:          Graphviz plugin for gd renderers.
+Summary:          Graphviz plugin for gd renderers
 Requires:         %{name} = %{version}-%{release}
-Provides:         %{name}-plugins-gd = %{version}-%{release}
 
 %description plugins-gd
 Graphviz plugin for image rendering using libgd.  (Unless you absolutely have
@@ -400,7 +399,7 @@ Group:            Applications/Multimedia
 Summary:          Graphviz plugin for webp format images, using libwebp
 Requires:         %{name}-x = %{version}-%{release}
 Obsoletes:        %{name}-webp <= 2.41
-Provides:         %{name}-plugins-webp = %{version}-%{release}
+Provides:         %{name}-webp = %{version}-%{release}
 
 %description plugins-webp
 Graphviz plugin for webp image rendering. 
@@ -425,7 +424,7 @@ Group:            Applications/Multimedia
 Summary:          Graphviz plugin for renderers based on DevIL
 Requires:         %{name}-x = %{version}-%{release}
 Obsoletes:        %{name}-devil <= 2.41
-Provides:         %{name}-plugins-devil = %{version}-%{release}
+Provides:         %{name}-devil = %{version}-%{release}
 
 %description plugins-devil
 Graphviz plugin for renderers based on DevIL.  (Unless you absolutely have
@@ -452,7 +451,7 @@ Group:            Applications/Multimedia
 Summary:          Graphviz plugin for flash renderer based on ming
 Requires:         %{name}-x = %{version}-%{release}
 Obsoletes:        %{name}-ming <= 2.41
-Provides:         %{name}-plugins-ming = %{version}-%{release}
+Provides:         %{name}-ming = %{version}-%{release}
 
 %description plugins-ming
 Graphviz plugin for -Tswf (flash) renderer based on ming.
@@ -474,7 +473,6 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 Group:            Applications/Multimedia
 Summary:          Graphviz applications using _QT
 Requires:         %{name}-x = %{version}-%{release}
-Provides:         %{name}-qt = %{version}-%{release}
 
 %description qt
 Graphviz applications using _QT - currently just gvedit
@@ -492,7 +490,7 @@ Group:          Applications/Multimedia
 Summary:        C# extension for graphviz
 Requires:       %{name} = %{version}-%{release}, mono-core
 Obsoletes:      %{name}-sharp <= 2.41
-Provides:       %{name}-lang-sharp = %{version}-%{release}
+Provides:       %{name}-sharp = %{version}-%{release}
 
 %description lang-sharp
 C# extension for graphviz.
@@ -511,7 +509,7 @@ Group:          Applications/Multimedia
 Summary:        GO extension for graphviz
 Requires:       %{name} = %{version}-%{release}, golang
 Obsoletes:      %{name}-go <= 2.41
-Provides:       %{name}-lang-go = %{version}-%{release}
+Provides:       %{name}-go = %{version}-%{release}
 
 %description lang-go
 Guile extension for graphviz.
@@ -529,7 +527,7 @@ Group:          Applications/Multimedia
 Summary:        Guile extension for graphviz
 Requires:       %{name} = %{version}-%{release}, guile
 Obsoletes:      %{name}-guile <= 2.41
-Provides:       %{name}-lang-guile = %{version}-%{release}
+Provides:       %{name}-guile = %{version}-%{release}
 
 %description lang-guile
 Guile extension for graphviz.
@@ -547,7 +545,7 @@ Group:          Applications/Multimedia
 Summary:        Io extension for graphviz
 Requires:       %{name} = %{version}-%{release}, io
 Obsoletes:      %{name}-io <= 2.41
-Provides:       %{name}-lang-io = %{version}-%{release}
+Provides:       %{name}-io = %{version}-%{release}
 
 %description lang-io
 Io extension for graphviz.
@@ -563,7 +561,7 @@ Group:          Applications/Multimedia
 Summary:        Java extension for graphviz
 Requires:       %{name} = %{version}-%{release}, java
 Obsoletes:      %{name}-java <= 2.41
-Provides:       %{name}-lang-java = %{version}-%{release}
+Provides:       %{name}-java = %{version}-%{release}
 
 %description lang-java
 Java extension for graphviz.
@@ -580,7 +578,7 @@ Group:          Applications/Multimedia
 Summary:        Lua extension for graphviz
 Requires:       %{name} = %{version}-%{release}, lua
 Obsoletes:      %{name}-lua <= 2.41
-Provides:       %{name}-lang-lua = %{version}-%{release}
+Provides:       %{name}-lua = %{version}-%{release}
 
 %description lang-lua
 Lua extension for graphviz.
@@ -599,7 +597,7 @@ Group:          Applications/Multimedia
 Summary:        Ocaml extension for graphviz
 Requires:       %{name} = %{version}-%{release}, ocaml
 Obsoletes:      %{name}-ocaml <= 2.41
-Provides:       %{name}-lang-ocaml = %{version}-%{release}
+Provides:       %{name}-ocaml = %{version}-%{release}
 
 %description lang-ocaml
 Ocaml extension for graphviz.
@@ -617,7 +615,7 @@ Group:          Applications/Multimedia
 Summary:        Perl extension for graphviz
 Requires:       %{name} = %{version}-%{release}, perl
 Obsoletes:      %{name}-perl <= 2.41
-Provides:       %{name}-lang-perl = %{version}-%{release}
+Provides:       %{name}-perl = %{version}-%{release}
 
 %description lang-perl
 Perl extension for graphviz.
@@ -636,7 +634,7 @@ Group:          Applications/Multimedia
 Summary:        PHP extension for graphviz
 Requires:       %{name} = %{version}-%{release}, /usr/bin/php
 Obsoletes:      %{name}-php <= 2.41
-Provides:       %{name}-lang-php = %{version}-%{release}
+Provides:       %{name}-php = %{version}-%{release}
 
 %description lang-php
 PHP extension for graphviz.
@@ -658,7 +656,7 @@ Group:          Applications/Multimedia
 Summary:        Python extension for graphviz
 Requires:       %{name} = %{version}-%{release}, python
 Obsoletes:      %{name}-python <= 2.41
-Provides:       %{name}-lang-python = %{version}-%{release}
+Provides:       %{name}-python = %{version}-%{release}
 
 %description lang-python
 Python extension for graphviz.
@@ -678,9 +676,8 @@ Python extension for graphviz.
 Group:          Applications/Multimedia
 Summary:        Python extension for graphviz
 Requires:       %{name} = %{version}-%{release}, python2
-Obsoletes:      %{name}-python <= 2.41
-Obsoletes:      %{name}-lang-python <= 2.41
-Provides:       %{name}-lang-python2 = %{version}-%{release}
+Conflicts:      %{name}-python <= 2.41
+Conflicts:      %{name}-lang-python <= 2.41
 
 %description lang-python2
 Python extension for graphviz.
@@ -700,9 +697,8 @@ Python extension for graphviz.
 Group:          Applications/Multimedia
 Summary:        Python extension for graphviz
 Requires:       %{name} = %{version}-%{release}, python3
-Obsoletes:      %{name}-python <= 2.41
-Obsoletes:      %{name}-lang-python <= 2.41
-Provides:       %{name}-lang-python3 = %{version}-%{release}
+Conflicts:      %{name}-python <= 2.41
+Conflicts:      %{name}-lang-python <= 2.41
 
 %description lang-python3
 Python extension for graphviz.
@@ -723,7 +719,7 @@ Group:          Applications/Multimedia
 Summary:        R extension for graphviz
 Requires:       %{name} = %{version}-%{release}, R
 Obsoletes:      %{name}-R <= 2.41
-Provides:       %{name}-lang-R = %{version}-%{release}
+Provides:       %{name}-R = %{version}-%{release}
 
 %description lang-R
 R extension for graphviz.
@@ -741,7 +737,7 @@ Group:          Applications/Multimedia
 Summary:        Ruby extension for graphviz
 Requires:       %{name} = %{version}-%{release}, ruby
 Obsoletes:      %{name}-ruby <= 2.41
-Provides:       %{name}-lang-ruby = %{version}-%{release}
+Provides:       %{name}-ruby = %{version}-%{release}
 
 %description lang-ruby
 Ruby extension for graphviz.
@@ -759,7 +755,7 @@ Group:          Applications/Multimedia
 Summary:        Tcl extension & tools for graphviz
 Requires:       %{name} = %{version}-%{release}, tcl >= 8.3
 Obsoletes:      %{name}-tcl <= 2.41
-Provides:       %{name}-lang-tcl = %{version}-%{release}
+Provides:       %{name}-tcl = %{version}-%{release}
 
 %description lang-tcl
 Various tcl packages (extensions) for the graphviz tools.
@@ -778,7 +774,6 @@ Various tcl packages (extensions) for the graphviz tools.
 Group:          Development/Libraries
 Summary:        Development package for graphviz
 Requires:       %{name}-libs = %{version}-%{release}, pkgconfig
-Provides:       %{name}-devel = %{version}-%{release}
 
 %description devel
 A collection of tools for the manipulation and layout
@@ -814,12 +809,14 @@ This package contains development files for graphviz-libs.
 %exclude %{_libdir}/graphviz/libgvplugin*
 %exclude %{_libdir}/graphviz/*.so
 
+%post -n graphviz-devel -p /sbin/ldconfig
+%postun -n graphviz-devel -p /sbin/ldconfig
+
 #-- graphviz-graphs rpm -------------------------------------------
 %package graphs
 Group:          Applications/Multimedia
 Summary:        Demo graphs for graphviz
 BuildArch:      noarch
-Provides:       %{name}-graphs = %{version}-%{release}
 
 %description graphs
 Some demo graphs for graphviz.
@@ -835,7 +832,6 @@ Some demo graphs for graphviz.
 Group:          Documentation
 Summary:        PDF and HTML documents for graphviz
 BuildArch:      noarch
-Provides:       %{name}-doc = %{version}-%{release}
 
 %description doc
 Provides some additional PDF and HTML documentation for graphviz.
@@ -932,7 +928,7 @@ rm -rf %{buildroot}
 #-- changelog --------------------------------------------------
 
 %changelog
-* Thu Jul 20 2017 John Ellson <john.ellson@comcast.net> @VERSION@
+* Thu Jul 20 2017 John Ellson <john.ellson@comcast.net> '@VERSION@'
 - see git log
   (This automatically-replaced single-entry is used for frequent
   updates in the unstable developent series of releases.
