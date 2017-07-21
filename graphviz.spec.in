@@ -87,12 +87,10 @@ BuildRequires: python python-devel
 
 #-- Fedora specific Build Requirements
 %if 0%{?fedora}
-%ifnarch ppc64
 %define SHARP 1
 BuildRequires: mono-core
 %define OCAML 1
 BuildRequires: ocaml
-%endif
 %define LASI 1
 BuildRequires: lasi-devel
 %define DEVIL 1
@@ -244,7 +242,6 @@ Group:            Applications/Multimedia
 Summary:          Graphviz base libs
 Requires(post):   /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
-Provides:         %{name}-libs = %{version}-%{release}
 
 %description libs
 Graphviz core libs 
@@ -774,6 +771,8 @@ Various tcl packages (extensions) for the graphviz tools.
 Group:          Development/Libraries
 Summary:        Development package for graphviz
 Requires:       %{name}-libs = %{version}-%{release}, pkgconfig
+Requires(post):   /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
 
 %description devel
 A collection of tools for the manipulation and layout
