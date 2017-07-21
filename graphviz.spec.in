@@ -298,7 +298,7 @@ Requires:         %{name}-nox = %{version}-%{release}
 Requires:         %{name}-plugins-x = %{version}-%{release}
 
 %description x
-Graphviz plugins and commands that depend on x11 - most installations will want this
+Graphviz commands with X11 dependencies
 
 %files x
 %defattr(-,root,root,-)
