@@ -936,5 +936,5 @@ rm -rf %{buildroot}
 - see git log
   (This automatically-replaced single-entry is used for frequent
   updates in the unstable developent series of releases.
-  A properly constructed %changelog entry is a requirement
+  A properly constructed changelog entry is a requirement
   for stable releases.)
