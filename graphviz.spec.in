@@ -913,6 +913,9 @@ rm -rf %{buildroot}
 #-- changelog --------------------------------------------------
 
 %changelog
+* Thu Jul 20 2017 John Ellson <john.ellson@comcast.net> @VERSION@
+- see git log
+
 * Thu Jul 20 2017 John Ellson <john.ellson@comcast.net>
 - drop support for RHEL/Centos <6,  and for Fedora <23
   remove a lot of now unnecessary conditionality from graphviz.spec
