@@ -37,6 +37,10 @@ install-data-hook:
 	(cd $(DESTDIR)$(man1dir); rm -f gv2gxl.1; $(LN_S) gxl2gv.1 gv2gxl.1;)
 	(cd $(DESTDIR)$(pdfdir); rm -f gv2gxl.1.pdf; $(LN_S) gxl2gv.1.pdf gv2gxl.1.pdf;)
 	(cd $(DESTDIR)$(man1dir); rm -f gv2gml.1; $(LN_S) gml2gv.1 gv2gml.1;)
+	(cd $(DESTDIR)$(man1dir); rm -f gxl2dot.1; $(LN_S) gxl2gv.1 gxl2dot.1;)
+	(cd $(DESTDIR)$(man1dir); rm -f gxl2dot.1.pdf; $(LN_S) gxl2gv.1.pdf gxl2dot.1.pdf;)
+	(cd $(DESTDIR)$(man1dir); rm -f dot2gxl.1; $(LN_S) gv2gxl.1 dot2gxl.1;)
+	(cd $(DESTDIR)$(man1dir); rm -f dot2gxl.1.pdf; $(LN_S) gv2gxl.1.pdf dot2gxl.1.pdf;)
 	(cd $(DESTDIR)$(pdfdir); rm -f gv2gml.1.pdf; $(LN_S) gml2gv.1.pdf gv2gml.1.pdf;)
 
 install-exec-hook:

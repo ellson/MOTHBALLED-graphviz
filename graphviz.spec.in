@@ -202,6 +202,7 @@ with no X11 on the server.
 %{_mandir}/man1/cluster.1*
 %{_mandir}/man1/dijkstra.1*
 %{_mandir}/man1/dot.1*
+%{_mandir}/man1/dot2gxl.1*
 %{_mandir}/man1/fdp.1*
 %{_mandir}/man1/gc.1*
 %{_mandir}/man1/gml2gv.1*
@@ -214,6 +215,7 @@ with no X11 on the server.
 %{_mandir}/man1/gvmap.sh.1*
 %{_mandir}/man1/gvpack.1*
 %{_mandir}/man1/gvpr.1*
+%{_mandir}/man1/gxl2dot.1*
 %{_mandir}/man1/gxl2gv.1*
 %{_mandir}/man1/mingle.1*
 %{_mandir}/man1/edgepaint.1*
@@ -246,6 +248,12 @@ Requires(postun): /sbin/ldconfig
 %description libs
 Graphviz core libs 
 
+%post libs
+/sbin/ldconfig
+
+%postun libs
+/sbin/ldconfig
+
 %files libs
 %defattr(-,root,root,-)
 %{_libdir}/libcdt.so.*
@@ -255,12 +263,6 @@ Graphviz core libs
 %{_libdir}/libpathplan.so.*
 %{_libdir}/libxdot.so.4*
 %{_libdir}/liblab_gamut.so.*
-
-%post graphviz-devel
-/sbin/ldconfig
-
-%postun graphviz-devel
-/sbin/ldconfig
 
 #-- graphviz-plugins-core rpm --------------------------------------------------
 %package plugins-core
@@ -782,6 +784,12 @@ A collection of tools for the manipulation and layout
 of graphs (as in nodes and edges, not as in bar-charts).
 This package contains development files for graphviz-libs.
 
+%post devel
+/sbin/ldconfig
+
+%postun devel
+/sbin/ldconfig
+
 %files devel
 %defattr(-,root,root,-)
 %{_includedir}/graphviz
@@ -810,12 +818,6 @@ This package contains development files for graphviz-libs.
 %{_mandir}/man3/pack.3.*
 %exclude %{_libdir}/graphviz/libgvplugin*
 %exclude %{_libdir}/graphviz/*.so
-
-%post graphviz-devel
-/sbin/ldconfig
-
-%postun graphviz-devel
-/sbin/ldconfig
 
 #-- graphviz-graphs rpm -------------------------------------------
 %package graphs
