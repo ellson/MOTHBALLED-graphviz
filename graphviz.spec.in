@@ -142,7 +142,7 @@ of graphs (as in nodes and edges, not as in bar-charts).
 #-- graphviz-nox rpm --------------------------------------------------
 %package nox
 Group:            Applications/Multimedia
-Summary:          Graphviz commands with no X11 deps - all installs will want this
+Summary:          Graphviz commands with no X11 dependencies
 Requires:         urw-fonts
 Requires:         %{name}-libs = %{version}-%{release}
 Requires:         %{name}-plugins-core = %{version}-%{release}
@@ -256,8 +256,11 @@ Graphviz core libs
 %{_libdir}/libxdot.so.4*
 %{_libdir}/liblab_gamut.so.*
 
-%post -n graphviz-libs -p /sbin/ldconfig
-%postun -n graphviz-libs -p /sbin/ldconfig
+%post graphviz-devel
+/sbin/ldconfig
+
+%postun graphviz-devel
+/sbin/ldconfig
 
 #-- graphviz-plugins-core rpm --------------------------------------------------
 %package plugins-core
@@ -288,7 +291,7 @@ fi
 #-- graphviz-x rpm --------------------------------------------------
 %package x
 Group:            Applications/Multimedia
-Summary:          Graphviz commands with X11 deps - most installs will want this
+Summary:          Graphviz commands with X11 dependencies
 Requires:         %{name}-nox = %{version}-%{release}
 Requires:         %{name}-plugins-x = %{version}-%{release}
 
@@ -317,7 +320,7 @@ Graphviz plugins and commands that depend on x11 - most installations will want 
 #-- graphviz-plugins-x rpm --------------------------------------------------
 %package plugins-x
 Group:            Applications/Multimedia
-Summary:          Graphviz plugins with X11 deps - most installs will want this
+Summary:          Graphviz plugins with X11 dependencies
 Requires:         %{name} = %{version}-%{release}
 
 %description plugins-x
@@ -808,8 +811,11 @@ This package contains development files for graphviz-libs.
 %exclude %{_libdir}/graphviz/libgvplugin*
 %exclude %{_libdir}/graphviz/*.so
 
-%post -n graphviz-devel -p /sbin/ldconfig
-%postun -n graphviz-devel -p /sbin/ldconfig
+%post graphviz-devel
+/sbin/ldconfig
+
+%postun graphviz-devel
+/sbin/ldconfig
 
 #-- graphviz-graphs rpm -------------------------------------------
 %package graphs
@@ -927,9 +933,9 @@ rm -rf %{buildroot}
 #-- changelog --------------------------------------------------
 
 %changelog
-* Thu Jul 20 2017 John Ellson <john.ellson@comcast.net> '@VERSION@'
+* Thu Jul 20 2017 John Ellson <john.ellson@comcast.net> @VERSION@
 - see git log
   (This automatically-replaced single-entry is used for frequent
-  updates in the unstable developent series of releases.
+  updates in the unstable development series of releases.
   A properly constructed changelog entry is a requirement
   for stable releases.)
