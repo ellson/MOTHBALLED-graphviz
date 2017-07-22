@@ -62,6 +62,7 @@ BuildRequires: ghostscript-devel
 BuildRequires: poppler-glib-devel
 BuildRequires: qt-devel
 BuildRequires: gts-devel
+BuildRequires: lasi-devel
 BuildRequires: libglade2-devel gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel freeglut-devel
 #-- Red Hat Enterprise Linux (also Centos) specific Build Requirements
 %if 0%{?rhel}
@@ -75,12 +76,6 @@ BuildRequires: mono-core
 %define OCAML 1
 BuildRequires: ocaml
 %endif
-%ifnarch i386
-%ifnarch i686
-%define LASI 1
-BuildRequires: lasi-devel
-%endif
-%endif
 %define PYTHON 1
 BuildRequires: python python-devel
 %endif
@@ -91,8 +86,6 @@ BuildRequires: python python-devel
 BuildRequires: mono-core
 %define OCAML 1
 BuildRequires: ocaml
-%define LASI 1
-BuildRequires: lasi-devel
 %define DEVIL 1
 BuildRequires: DevIL-devel
 #define GLITZ 1
@@ -345,9 +338,7 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %{_libdir}/graphviz/libgvplugin_gdk.so.*
 %{_libdir}/graphviz/libgvplugin_gs.so.*
 %{_libdir}/graphviz/libgvplugin_poppler.so.*
-%if 0%{?LASI}
 %{_libdir}/graphviz/libgvplugin_lasi.so.*
-%endif
 
 #-- graphviz-gd rpm --------------------------------------------------
 %package gd
