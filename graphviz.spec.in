@@ -878,7 +878,7 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --with-ghostscript \
         --with%{!?GLITZ:out}-glitz \
         --with-ipsepcola \
-        --with%{!?LASI:out}-lasi \
+        --with-lasi \
         --with%{!?MING:out}-ming \
         --with-qt \
         --with-pangocairo \
