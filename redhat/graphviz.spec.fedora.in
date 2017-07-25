@@ -5,7 +5,7 @@
 Name:    graphviz
 Summary: Graph Visualization Tools
 Version: @VERSION@
-Release: 1
+Release: 1%{?dist}
 Group:   Applications/Multimedia
 License: EPL
 URL:     http://www.graphviz.org/

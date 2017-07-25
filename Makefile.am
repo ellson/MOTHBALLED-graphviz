@@ -47,7 +47,11 @@ EXTRA_DIST = $(txt) $(html) graphviz.spec.in graphviz.spec \
 
 .PHONY: rpm
 rpm: dist
-	rpmbuild -ta graphviz-@VERSION@.tar.gz
+	mkdir -p $(HOME)/rpmbuild/$(HOSTNAME)/SPECS $(HOME)/rpmbuild/$(HOSTNAME)/SOURCES
+	cp graphviz-@VERSION@.tar.gz $(HOME)/rpmbuild/$(HOSTNAME)/SOURCES
+	cp redhat/graphviz.spec.fedora $(HOME)/rpmbuild/$(HOSTNAME)/SPECS/graphviz.spec
+	rpmbuild -ba $(HOME)/rpmbuild/$(HOSTNAME)/SPECS/graphviz.spec
+#	rpmbuild -ta graphviz-@VERSION@.tar.gz
 #	rpmbuild -ta --define "rtest 1" graphviz-@VERSION@.tar.gz
 	
 .PHONY: deb
