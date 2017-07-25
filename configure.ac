@@ -2942,16 +2942,18 @@ AC_CONFIG_FILES(Makefile
 	tclpkg/gv/demo/Makefile
 	tclpkg/gv/META.gv
 	rtest/Makefile
-  tests/Makefile
-  tests/unit_tests/Makefile
-  tests/unit_tests/lib/Makefile
-  tests/unit_tests/lib/common/Makefile
-  tests/regression_tests/Makefile
-  tests/regression_tests/shapes/Makefile
+	tests/Makefile
+	tests/unit_tests/Makefile
+	tests/unit_tests/lib/Makefile
+	tests/unit_tests/lib/common/Makefile
+	tests/regression_tests/Makefile
+	tests/regression_tests/shapes/Makefile
 	share/Makefile
 	share/examples/Makefile
 	share/gui/Makefile
 	graphviz.spec
+	redhat/graphviz.spec.fedora
+	redhat/graphviz.spec.rhel
 	Doxyfile
 	)
 
