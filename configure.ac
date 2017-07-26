@@ -283,7 +283,7 @@ AC_ARG_WITH(tclsh,
   TCLSH=$withval,)
 
 if test "x$TCLSH" = "x"; then
-  AC_PATH_PROGS(TCLSH,[tclsh8.6 tclsh8.5 tclsh8.4 tclsh8.3 tclsh])
+  AC_PATH_PROGS(TCLSH,[tclsh8.6 tclsh8.5 tclsh8.4 tclsh8.3 tclsh],[],[/usr/bin])
 #  if test "x$TCLSH" = "x"; then
 #    AC_MSG_ERROR([Unable to find a tclsh. Tclsh is a required program for building graphviz, independent of wether tcl-based graphviz products are built])
 #    use_tcl="No (tclsh unavailable)"
@@ -1445,6 +1445,7 @@ if test "x$use_tcl" = "x"; then
   ])
   CPPFLAGS=$save_CPPFLAGS
 fi
+AC_SUBST([TCLSH_EXEC_PREFIX])
 
 if test "x$use_tcl" = "x"; then
   # Some systems don't have Tcl.  Don't build
@@ -1468,7 +1469,7 @@ if test "x$use_tcl" = "x"; then
     AC_MSG_WARN([Unable to find tclConfig.sh. The Tcl packages will not be built])
     use_tcl="No (missing tclConfig.sh)"
   fi
-  TCL_INSTALL_DIR="${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tcl${TCL_VERSION_FOUND}"
+  TCL_INSTALL_DIR=${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tcl${TCL_VERSION_FOUND}
 fi
 
 if test "x$use_tcl" = "x"; then
@@ -1484,6 +1485,7 @@ if test "x$use_tcl" = "x"; then
   fi
 fi
 
+AC_SUBST([TCLCONFIG])
 AC_SUBST([TCL_INSTALL_DIR])
 
 AM_CONDITIONAL(WITH_TCL, [test "x$use_tcl" = "xYes"])
@@ -1513,7 +1515,7 @@ TCL_LIBS=
 AC_SUBST([TCL_LIBS])
 
 #AC_SUBST([TCL_PREFIX])
-AC_SUBST([TCL_EXEC_PREFIX])
+#AC_SUBST([TCL_EXEC_PREFIX])
 #AC_SUBST([TCL_SHLIB_CFLAGS])
 #AC_SUBST([TCL_SHLIB_CXXFLAGS])
 #AC_SUBST([TCL_EXTRA_CFLAGS])
