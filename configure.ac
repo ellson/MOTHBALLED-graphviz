@@ -602,11 +602,11 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for GO
 
 AC_ARG_ENABLE(go,
-  [AS_HELP_STRING([--enable-go=no],[go language bindings])],
-  [], [enable_go=no])
+  [AS_HELP_STRING([--enable-go=yes],[go language bindings])],
+  [], [enable_go=yes])
 
 if test "x$enable_go" != "xyes"; then
-  use_go="No (disabled by default - experimental)"
+  use_go="No (disabled)"
 else
   if test "x$use_swig" != "xYes"; then
     use_go="No (swig not available)"
@@ -1773,11 +1773,11 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for WEBP
 
 AC_ARG_WITH(webp,
-  [AS_HELP_STRING([--with-webp=no],[webp library])],
-  [], [with_webp=no])
+  [AS_HELP_STRING([--with-webp=yes],[webp library])],
+  [], [with_webp=yes])
 
 if test "x$with_webp" != "xyes"; then
-  use_webp="No (disabled by default - experimental)"
+  use_webp="No (disabled)"
 else
   PKG_CHECK_MODULES(WEBP, [libwebp],[
     use_webp="Yes"
@@ -2626,11 +2626,11 @@ dnl -----------------------------------
 dnl SMYRNA
 
 AC_ARG_WITH(smyrna,
-  [AS_HELP_STRING([--with-smyrna=no],[SMYRNA large graph viewer])],
-  [], [with_smyrna=no])
+  [AS_HELP_STRING([--with-smyrna=yes],[SMYRNA large graph viewer])],
+  [], [with_smyrna=yes])
 
 if test "x$with_smyrna" != "xyes"; then
-  use_smyrna="No (disabled by default - experimental)"
+  use_smyrna="No (disabled)"
 else
   if test "x$use_gtk" != "xYes"; then
      AC_MSG_WARN(SMYRNA requires GTK)
@@ -2949,7 +2949,6 @@ AC_CONFIG_FILES(Makefile
 	share/Makefile
 	share/examples/Makefile
 	share/gui/Makefile
-	graphviz.spec
 	redhat/graphviz.spec.fedora
 	redhat/graphviz.spec.rhel
 	Doxyfile

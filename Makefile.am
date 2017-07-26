@@ -35,7 +35,7 @@ BUILT_SOURCES = $(top_builddir)/graphviz_version.h
 $(top_builddir)/graphviz_version.h: config.h
 	$(EGREP) 'PACKAGE|VERSION|GVPLUGIN' config.h > $(top_builddir)/graphviz_version.h
 
-EXTRA_DIST = $(txt) $(html) graphviz.spec.in graphviz.spec \
+EXTRA_DIST = $(txt) $(html) graphviz.spec \
 	autogen.sh config/depcomp config/config.rpath \
 	builddate.h compat.h \
 	Makeargs iffe config.iffe \

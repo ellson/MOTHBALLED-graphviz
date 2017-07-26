@@ -58,7 +58,6 @@ Makefile.in
 /config.log
 /config.status
 /libtool
-/graphviz.spec
 /redhat/graphviz.spec.fedora
 /redhat/graphviz.spec.rhel
 /stamp-h1

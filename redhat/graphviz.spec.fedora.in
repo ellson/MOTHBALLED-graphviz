@@ -17,55 +17,92 @@ Source0: http://www.graphviz.org/pub/@GRAPHVIZ_SOURCES@/graphviz-@VERSION@.tar.g
 %global SHARP  0
 %endif
 
-%global OCAML  1
-%global ARRRR  1
-%global DEVIL  1
-%global GTS    1
-%global LASI   1
+# Assuming Fedora
+%global GOLANG   1
+%global OCAML    1
+%global ARRRR    1
+%global DEVIL    1
+%global ANN      1
+%global GTS      1
+%global GTK      1
+%global LASI     1
+%global WEBP     1
+%global PYTHON2  1
+%global PYTHON3  1
+# Not yet.
+%global MING     0
+# No more
+%global PYTHON   0
 
-# Not in Fedora yet.
-%global MING   0
-
-# Not in RHEL yet.
+# Overrides for RHEL
 %if 0%{?rhel}
-%global SHARP  0
-%global ARRRR  0
-%global DEVIL  0
-%global GTS    0
-%global LASI   0
+%global GOLANG   0
+%global SHARP    0
+%global ARRRR    0
+%global DEVIL    0
+%global ANN      0
+%global GTS      0
+%global GTK      0
+%global LASI     0
+%global WEBP     0
+%global PYTHON2  1
+%global PYTHON2  0
+%global PYTHON3  0
+%global PYTHON   1
 %endif
 
+# Plugins version
+%global pluginsver 6
 
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires: zlib-devel expat-devel ann-devel ksh bison m4 flex swig gcc-c++
+BuildRequires: zlib-devel expat-devel ksh bison m4 flex swig gcc-c++
 BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel
 BuildRequires: libXmu-devel libXext-devel libX11-devel qt-devel gtk2-devel freeglut-devel
-BuildRequires: libglade2-devel gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel
 BuildRequires: freetype-devel fontconfig-devel cairo-devel pango-devel
 BuildRequires: gmp-devel gd gd-devel librsvg2-devel
 BuildRequires: ghostscript-devel poppler-glib-devel libtool-ltdl libtool-ltdl-devel
 BuildRequires: ruby ruby-devel guile-devel java-devel php-devel lua-devel
 BuildRequires: perl-devel perl-libs perl-ExtUtils-Embed tcl tcl-devel tk tk-devel
-BuildRequires: libwebp-devel golang gcc-go python2 python2-devel python3 python3-devel
 
 %if %{SHARP}
-BuildRequires:          mono-core
+BuildRequires: mono-core
 %endif
 %if %{DEVIL}
-BuildRequires:          DevIL-devel
+BuildRequires: DevIL-devel
 %endif
 %if %{ARRRR}
-BuildRequires:          R-devel
+BuildRequires: R-devel
 %endif
 %if %{OCAML}
-BuildRequires:          ocaml
+BuildRequires: ocaml
+%endif
+%if %{ANN}
+BuildRequires: ann-devel
 %endif
 %if %{GTS}
-BuildRequires:          gts-devel
+BuildRequires: gts-devel
+%endif
+%if %{WEBP}
+BuildRequires: libwebp-devel
 %endif
 %if %{LASI}
-BuildRequires:          lasi-devel
+BuildRequires: lasi-devel
+%endif
+%if %{PYTHON}
+BuildRequires: python python-devel
+%endif
+%if %{PYTHON2}
+BuildRequires: python2 python2-devel
+%endif
+%if %{PYTHON3}
+BuildRequires: python3 python3-devel
+%endif
+%if %{GOLANG}
+BuildRequires: golang gcc-go swig >= 3.0.2
+%endif
+%if %{GTK}
+BuildRequires: libglade2-devel gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel
 %endif
 
 # What a meal PHP makes of versioning !!!
@@ -102,6 +139,7 @@ of graphs (as in nodes and edges, not as in bar-charts).
 %defattr(-,root,root,-)
 %license COPYING
 %doc COPYING AUTHORS ChangeLog NEWS README
+%{_libdir}/graphviz/config%{pluginsver}
 
 #-- graphviz-nox rpm --------------------------------------------------
 %package nox
@@ -144,7 +182,9 @@ with no X11 on the server.
 %{_bindir}/gvpr
 %{_bindir}/gxl2dot
 %{_bindir}/gxl2gv
+%if %{ANN}
 %{_bindir}/mingle
+%endif
 %{_bindir}/edgepaint
 %{_bindir}/mm2gv
 %{_bindir}/neato
@@ -196,7 +236,7 @@ with no X11 on the server.
 %dir %{_datadir}/graphviz
 %{_datadir}/graphviz/gvpr/*
 
-# run "dot -c" to generate plugin config in {_libdir}/graphviz/config6
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config%{pluginsver}
 %post
 LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
@@ -235,7 +275,7 @@ Requires:         %{name}-nox = %{version}-%{release}
 %description plugins-core
 Graphviz plugins - core layout engines and text renderers
 
-# run "dot -c" to generate plugin config in {_libdir}/graphviz/config6
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config%{pluginsver}
 %post plugins-core
 LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
@@ -275,9 +315,11 @@ Graphviz commands with X11 dependencies
 %{_mandir}/man1/dotty.1*
 %{_mandir}/man1/vimdot.1*
 %{_datadir}/graphviz/lefty
+%if %{GTK}
 %{_bindir}/smyrna
 %{_datadir}/graphviz/smyrna
 %{_mandir}/man1/smyrna.1*
+%endif
 
 #-- graphviz-plugins-x rpm --------------------------------------------------
 %package plugins-x
@@ -301,11 +343,15 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %{_libdir}/graphviz/libgvplugin_xlib.so.*
 %{_libdir}/graphviz/libgvplugin_pango.so.*
 %{_libdir}/graphviz/libgvplugin_rsvg.so.*
-%{_libdir}/graphviz/libgvplugin_gtk.so.*
 %{_libdir}/graphviz/libgvplugin_gdk.so.*
 %{_libdir}/graphviz/libgvplugin_gs.so.*
 %{_libdir}/graphviz/libgvplugin_poppler.so.*
+%if %{GTK}
+%{_libdir}/graphviz/libgvplugin_gtk.so.*
+%endif
+%if %{LASI}
 %{_libdir}/graphviz/libgvplugin_lasi.so.*
+%endif
 
 #-- graphviz-gd rpm --------------------------------------------------
 %package gd
@@ -353,6 +399,7 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %{_libdir}/graphviz/libgvplugin_gd.so.*
 
 #-- graphviz-plugins-webp rpm --------------------------------------------------
+%if %{WEBP}
 %package plugins-webp
 Group:            Applications/Multimedia
 Summary:          Graphviz plugin for webp format images, using libwebp
@@ -374,6 +421,7 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz
 %{_libdir}/graphviz/libgvplugin_webp.so.*
+%endif
 
 #-- graphviz-plugins-visio rpm --------------------------------------------------
 %package plugins-visio
@@ -397,6 +445,7 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %{_libdir}/graphviz/libgvplugin_visio.so.*
 
 #-- graphviz-plugins-devil rpm --------------------------------------------------
+%if %{DEVIL}
 %package plugins-devil
 Group:            Applications/Multimedia
 Summary:          Graphviz plugin for renderers based on DevIL
@@ -420,6 +469,7 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz
 %{_libdir}/graphviz/libgvplugin_devil.so.*
+%endif
 
 #-- graphviz-plugins-ming rpm --------------------------------------------------
 %if %{MING}
@@ -480,6 +530,7 @@ C# extension for graphviz.
 %endif
 
 #-- graphviz-lang-go rpm --------------------------------------------
+%if %{GOLANG}
 %package lang-go
 Group:          Applications/Multimedia
 Summary:        GO extension for graphviz
@@ -495,6 +546,7 @@ Guile extension for graphviz.
 %dir %{_libdir}/graphviz/go
 %{_libdir}/graphviz/go/*
 %{_mandir}/man3/*.3go.*
+%endif
 
 #-- graphviz-lang-guile rpm --------------------------------------------
 %package lang-guile
@@ -624,7 +676,29 @@ PHP extension for graphviz.
 %exclude %{_libdir}/graphviz/php/*.so
 %exclude %{_libdir}/graphviz/php/*.php
 
+#-- graphviz-lang-python rpm -------------------------------------------
+%if %{PYTHON}
+%package lang-python
+Group:          Applications/Multimedia
+Summary:        Python extension for graphviz
+Requires:       %{name} = %{version}-%{release}, python
+Obsoletes:      %{name}-python <= 2.41
+Provides:       %{name}-python = %{version}-%{release}
+
+%description lang-python
+Python extension for graphviz.
+
+%files lang-python
+%defattr(-,root,root,-)
+%{_libdir}/python*/*
+%{_datadir}/graphviz/demo/*.py*
+%{_mandir}/man3/gv.3python.*
+%exclude %{_libdir}/graphviz/python*/*.so
+%exclude %{_libdir}/graphviz/python*/*.py*
+%endif
+
 #-- graphviz-lang-python2 rpm -------------------------------------------
+%if %{PYTHON2}
 %package lang-python2
 Group:          Applications/Multimedia
 Summary:        Python extension for graphviz
@@ -642,8 +716,10 @@ Python extension for graphviz.
 %{_mandir}/man3/gv.3python.*
 %exclude %{_libdir}/graphviz/python2/*.so
 %exclude %{_libdir}/graphviz/python2/*.py*
+%endif
 
 #-- graphviz-lang-python3 rpm -------------------------------------------
+%if %{PYTHON3}
 %package lang-python3
 Group:          Applications/Multimedia
 Summary:        Python extension for graphviz
@@ -661,6 +737,7 @@ Python extension for graphviz.
 %{_mandir}/man3/gv.3python.*
 %exclude %{_libdir}/graphviz/python3/*.so
 %exclude %{_libdir}/graphviz/python3/*.py*
+%endif
 
 #-- graphviz-lang-R rpm ---------------------------------------------
 %if %{ARRRR}
@@ -780,7 +857,9 @@ Some demo graphs for graphviz.
 %defattr(-,root,root,-)
 %dir %{_datadir}/graphviz
 %{_datadir}/graphviz/graphs
+%if %{GTK}
 %{_datadir}/graphviz/examples
+%endif
 
 #-- graphviz-doc rpm ----------------------------------------------
 %package doc
@@ -815,7 +894,6 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --disable-static \
         --disable-dependency-tracking \
         --enable-sharp \
-        --enable-go \
         --enable-guile \
         --disable-io \
         --enable-java \
@@ -827,11 +905,16 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --enable-python3 \
         --enable-ruby \
         --enable-tcl \
-        --with-webp \
         --with-gdk \
         --with-ghostscript \
         --without-glitz \
         --with-ipsepcola \
+%if ! %{GOLANG}
+        --disable-go \
+%endif
+%if ! %{ANN}
+        --without-ann \
+%endif
 %if ! %{LASI}
         --without-lasi \
 %endif
@@ -850,8 +933,17 @@ CFLAGS="$RPM_OPT_FLAGS" \
 %if ! %{ARRRR}
         --disable-r \
 %endif
+%if ! %{WEBP}
+        --without-webp \
+%endif
 %if ! %{DEVIL}
         --without-devil \
+%endif
+%if ! %{GTK}
+        --without-gtk \
+        --without-gtkgl \
+        --without-gtkglext \
+        --without-smyrna \
 %endif
         --with-qt \
         --with-visio \
@@ -860,7 +952,6 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --with-rsvg \
         --with-ortho \
         --with-sfdp \
-        --with-smyrna \
         --with-x
 make %{?_smp_mflags}
 
@@ -874,12 +965,34 @@ find %{buildroot} -type f -name "*.la" -exec rm -f {} ';'
 chmod -x %{buildroot}%{_datadir}/%{name}/lefty/*
 cp -a %{buildroot}%{_datadir}/%{name}/doc __doc
 rm -rf %{buildroot}%{_datadir}/%{name}/doc
+
 # PHP configuration file
 %{__mkdir_p} %{buildroot}%{_sysconfdir}/php.d
 %{__cat} << __EOF__ > %{buildroot}%{_sysconfdir}/php.d/%{name}.ini
 ; Enable %{name} extension module
 extension=gv.so
 __EOF__
+
+# Remove executable modes from demos
+find %{buildroot}%{_datadir}/%{name}/demo -type f -exec chmod a-x {} ';'
+
+# Rename python demos to prevent byte compilation
+find %{buildroot}%{_datadir}/%{name}/demo -type f -name "*.py" -exec mv {} {}.demo ';'
+
+# # Remove metadata from generated PDFs
+# pushd %{buildroot}%{_docdir}/%{name}/pdf
+# for f in prune lneato.1 lefty.1 gvgen.1 gc.1 dotty.1 dot.1 cluster.1
+# do
+#   if [ -f $f.pdf ]
+#   then
+# # ugly, but there is probably no better solution
+#     qpdf --empty --static-id --pages $f.pdf -- $f.pdf.$$
+#     mv -f $f.pdf.$$ $f.pdf
+#   fi
+# done
+
+# Ghost plugins config
+touch %{buildroot}%{_libdir}/graphviz/config%{pluginsver}
 
 %check
 %ifnarch ppc64 ppc

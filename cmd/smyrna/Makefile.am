@@ -22,6 +22,8 @@ AM_CPPFLAGS = \
 	$(GTK_CFLAGS) $(GLUT_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS) $(FONTCONFIG_CFLAGS) $(GTS_CFLAGS)
 
 bin_PROGRAMS =
+man_MANS = 
+pdf_DATA = 
 if WITH_SMYRNA
 if ENABLE_SHARED
 bin_PROGRAMS += smyrna 
@@ -29,10 +31,9 @@ endif
 if ENABLE_STATIC
 bin_PROGRAMS += smyrna_static
 endif
+man_MANS += smyrna.1
+pdf_DATA += smyrna.1.pdf
 endif
-
-man_MANS = smyrna.1
-pdf_DATA = smyrna.1.pdf
 
 noinst_HEADERS = arcball.h draw.h glexpose.h \
 	glmotion.h gltemplate.h gui/appmouse.h gui/callbacks.h \
