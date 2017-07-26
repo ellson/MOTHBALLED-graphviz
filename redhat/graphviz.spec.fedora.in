@@ -37,7 +37,7 @@ Source0: http://www.graphviz.org/pub/@GRAPHVIZ_SOURCES@/graphviz-@VERSION@.tar.g
 
 # Overrides for RHEL
 %if 0%{?rhel}
-%global LICENSE  1
+%global LICENSE  0
 %global GOLANG   0
 %global SHARP    0
 %global ARRRR    0
