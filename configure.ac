@@ -1,5 +1,3 @@
-# $Id$ $Revision$
-
 # Process this file with autoconf to produce a configure script
 # Try to use version available on FC8
 AC_PREREQ(2.61)
@@ -1876,11 +1874,11 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for VISIO
 
 AC_ARG_WITH(visio,
-  [AS_HELP_STRING([--with-visio=no],[visio library])],
-  [], [with_visio=no])
+  [AS_HELP_STRING([--with-visio=yes],[visio library])],
+  [], [with_visio=yes])
 
 if test "x$with_visio" != "xyes"; then
-  use_visio="No (disabled by default - experimental)"
+  use_visio="No (disabled)"
 else
 #  AC_CHECK_HEADER(visio/visio.h, VISIO_CFLAGS="",use_visio="No (missing headers)")
 #  if test "x$use_visio" = "x"; then

@@ -29,6 +29,7 @@
 #define isfinite(x) finite(x)
 #endif
 
+#include <cstdlib>
 #include "VisioGraphic.h"
 
 #include "gvcjob.h"

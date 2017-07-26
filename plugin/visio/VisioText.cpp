@@ -17,6 +17,7 @@
 
 #include "gvcjob.h"
 #include "gvio.h"
+#include <cstdlib>
 #include <string.h>
 
 extern "C" char *xml_string(char* str);
