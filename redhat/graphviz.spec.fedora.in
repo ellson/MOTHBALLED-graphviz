@@ -18,6 +18,7 @@ Source0: http://www.graphviz.org/pub/@GRAPHVIZ_SOURCES@/graphviz-@VERSION@.tar.g
 %endif
 
 # Assuming Fedora
+%global LICENSE  1
 %global GOLANG   1
 %global OCAML    1
 %global ARRRR    1
@@ -36,6 +37,7 @@ Source0: http://www.graphviz.org/pub/@GRAPHVIZ_SOURCES@/graphviz-@VERSION@.tar.g
 
 # Overrides for RHEL
 %if 0%{?rhel}
+%global LICENSE  1
 %global GOLANG   0
 %global SHARP    0
 %global ARRRR    0
@@ -137,7 +139,10 @@ of graphs (as in nodes and edges, not as in bar-charts).
 
 %files
 %defattr(-,root,root,-)
+%if %{LICENSE}
 %license COPYING
+%endif
+%endif
 %doc COPYING AUTHORS ChangeLog NEWS README
 %{_libdir}/graphviz/config%{pluginsver}
 
@@ -157,7 +162,9 @@ with no X11 on the server.
 
 %files nox
 %defattr(-,root,root,-)
+%if %{LICENSE}
 %license COPYING
+%endif
 %doc COPYING AUTHORS ChangeLog NEWS README
 %exclude %{_bindir}/dot_builtins
 %{_bindir}/acyclic
@@ -304,7 +311,9 @@ Graphviz commands with X11 dependencies
 
 %files x
 %defattr(-,root,root,-)
+%if %{LICENSE}
 %license COPYING
+%endif
 %doc COPYING AUTHORS ChangeLog NEWS README
 %{_bindir}/lefty
 %{_bindir}/lneato
