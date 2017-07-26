@@ -142,7 +142,6 @@ of graphs (as in nodes and edges, not as in bar-charts).
 %if %{LICENSE}
 %license COPYING
 %endif
-%endif
 %doc COPYING AUTHORS ChangeLog NEWS README
 %{_libdir}/graphviz/config%{pluginsver}
 
