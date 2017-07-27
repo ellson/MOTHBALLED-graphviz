@@ -906,15 +906,21 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --enable-lua \
         --enable-perl \
         --enable-php \
-        --disable-python \
-        --enable-python2 \
-        --enable-python3 \
         --enable-ruby \
         --enable-tcl \
         --with-gdk \
         --with-ghostscript \
         --without-glitz \
         --with-ipsepcola \
+%if ! %{PYTHON}
+        --disable-python \
+%endif
+%if ! %{PYTHON2}
+        --disable-python2 \
+%endif
+%if ! %{PYTHON3}
+        --disable-python3 \
+%endif
 %if ! %{GOLANG}
         --disable-go \
 %endif
