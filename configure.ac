@@ -1106,11 +1106,11 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for PYTHON
 
 AC_ARG_ENABLE(python,
-  [AS_HELP_STRING([--enable-python=no],[python language bindings])],
-  [], [enable_python=no])
+  [AS_HELP_STRING([--enable-python=yes],[python language bindings])],
+  [], [enable_python=yes])
 
 if test "x$enable_python" != "xyes"; then
-  use_python="No (disabled by default - use explicit python2 or python3)"
+  use_python="No (disabled)"
 else
   if test "x$use_swig" != "xYes"; then
     use_python="No (swig not available)"

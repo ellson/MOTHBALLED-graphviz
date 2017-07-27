@@ -28,12 +28,11 @@ Source0: http://www.graphviz.org/pub/@GRAPHVIZ_SOURCES@/graphviz-@VERSION@.tar.g
 %global GTK      1
 %global LASI     1
 %global WEBP     1
+%global PYTHON   0
 %global PYTHON2  1
 %global PYTHON3  1
 # Not yet.
 %global MING     0
-# No more
-%global PYTHON   0
 
 # Overrides for RHEL
 %if 0%{?rhel}
@@ -47,10 +46,9 @@ Source0: http://www.graphviz.org/pub/@GRAPHVIZ_SOURCES@/graphviz-@VERSION@.tar.g
 %global GTK      0
 %global LASI     0
 %global WEBP     0
-%global PYTHON2  1
+%global PYTHON   1
 %global PYTHON2  0
 %global PYTHON3  0
-%global PYTHON   1
 %endif
 
 # Plugins version
