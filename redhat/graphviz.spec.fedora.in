@@ -1025,7 +1025,7 @@ rm -rf %{buildroot}
 #-- changelog --------------------------------------------------
 
 %changelog
-* Thu Jul 20 2017 John Ellson <john.ellson@comcast.net> @VERSION@
+* @GRAPHVIZ_CHANGE_DATE@ @GRAPHVIZ_AUTHOR_NAME@ <@GRAPHVIZ_AUTHOR_EMAIL@> @VERSION@
 - see git log
   (This automatically-replaced single-entry is used for frequent
   updates in the unstable development series of releases.
