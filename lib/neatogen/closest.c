@@ -225,7 +225,7 @@ find_closest_pairs(double *place, int n, int num_pairs,
 	inv_ordering[ordering[i]] = i;
     }
 
-    /* Intialize heap with all consecutive pairs */
+    /* Initialize heap with all consecutive pairs */
     initHeap(&heap, place, ordering, n);
 
     /* store the leftmost and rightmost neighbors of each node that were entered into heap */

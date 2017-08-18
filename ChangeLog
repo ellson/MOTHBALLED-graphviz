@@ -628,7 +628,7 @@ July 3, 2003
 	    - "--with-wish=xxx"   now works (bug #270)
 	    - remove generated file: ast_common.h from source distributions
 	    - make GIF support configurable
-	    - added .cvsignore thoughout source tree to reduce CVS noise
+	    - added .cvsignore throughout source tree to reduce CVS noise
 	    - FAQ updates
 	    - documentation updates for gpr
 	    - improve portability of dotneato-config, but requires libtool now
@@ -664,7 +664,7 @@ July 3, 2003
 	    - doted demo
 		- use tcl's file requestor instead of homebrew
 		- add zooming controlled by mousewheel
-		- support additonal export formats
+		- support additional export formats
 	    
 January 31, 2003
 	- declare this version 1.9
@@ -1130,7 +1130,7 @@ April 14, 2000: Add Tcldgl and dge demo <ellson@graphviz.org>
 
 April 14, 2000: Add dynagraph libraries <north@research.att.com>
 
-April 14, 2000: Flatten directory hierachy of sources <ellson@graphviz.org>
+April 14, 2000: Flatten directory hierarchy of sources <ellson@graphviz.org>
 
 April 14, 2000: Fix X11 library detection for lefty:
 	src/configure.in, src/lefty/Makefile.in

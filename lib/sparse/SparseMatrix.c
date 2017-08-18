@@ -3707,7 +3707,7 @@ int SparseMatrix_distance_matrix(SparseMatrix D0, int weighted, real **dist0){
 }
 
 SparseMatrix SparseMatrix_distance_matrix_k_centers(int K, SparseMatrix D, int weighted){
-  /* return a sparse matrix whichj represent teh k-center and distance from every node to them.
+  /* return a sparse matrix whichj represent the k-center and distance from every node to them.
      The matrix will have k*n entries
    */
   int flag;

@@ -111,7 +111,7 @@ void *sfreserve(reg Sfio_t * f, ssize_t size, int type)
 	    break;
     }
 
-    if (n > 0 && n < sz && (f->mode & mode) != 0) {	/* try to accomodate request size */
+    if (n > 0 && n < sz && (f->mode & mode) != 0) {	/* try to accommodate request size */
 	if (f->flags & SF_STRING) {
 	    if ((f->mode & SF_WRITE) && (f->flags & SF_MALLOC)) {
 		(void) SFWR(f, f->next, sz, f->disc);

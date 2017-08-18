@@ -517,8 +517,7 @@ static void newPos(void)
 /* cleanup:
  * Cleanup voronoi memory.
  * Note that PQcleanup and ELcleanup rely on the number
- * of sites, so should at least be reset everytime we use
- * vAdjust.
+ * of sites, so should at least be reset every time we use vAdjust.
  * This could be optimized, over multiple components or
  * even multiple graphs, but probably not worth it.
  */

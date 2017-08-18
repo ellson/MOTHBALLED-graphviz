@@ -613,7 +613,7 @@ get_triangles (double *x, int n, int* tris)
     return mid.trianglelist;
 }
 
-// maybe it should be replaced by RNG - relative neigborhood graph, or by GG - gabriel graph
+// maybe it should be replaced by RNG - relative neighborhood graph, or by GG - gabriel graph
 int* 
 delaunay_tri (double *x, double *y, int n, int* nedges)
 {

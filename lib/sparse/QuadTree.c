@@ -164,7 +164,7 @@ static real *get_or_alloc_force_qt(QuadTree qt, int dim){
 
 static void QuadTree_repulsive_force_interact(QuadTree qt1, QuadTree qt2, real *x, real *force, real bh, real p, real KP, real *counts){
   /* calculate the all to all reopulsive force and accumulate on each node of the quadtree if an interaction is possible.
-     force[i*dim+j], j=1,...,dim is teh force on node i 
+     force[i*dim+j], j=1,...,dim is the force on node i 
    */
   SingleLinkedList l1, l2;
   real *x1, *x2, dist, wgt1, wgt2, f, *f1, *f2, w1, w2;
@@ -318,7 +318,7 @@ void QuadTree_get_repulsive_force(QuadTree qt, real *force, real *x, real bh, re
   /* get repulsice force by a more efficient algortihm: we consider two cells, if they are well separated, we
      calculate the overall repulsive force on the cell level, if not well separated, we divide one of the cell.
      If both cells are at the leaf level, we calcuaulate repulsicve force among individual nodes. Finally
-     we accumulate forces at the cell levels to teh node level
+     we accumulate forces at the cell levels to the node level
      qt: the quadtree
      x: current coordinates for node i is x[i*dim+j], j = 0, ..., dim-1
      force: the repulsice force, an array of length dim*nnodes, the force for node i is at force[i*dim+j], j = 0, ..., dim - 1

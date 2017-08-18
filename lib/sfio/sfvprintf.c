@@ -244,7 +244,7 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 	    } else if (*form != '*')
 		goto loop_flags;
 	  do_star:
-	    form += 1;		/* fall thru for '*' */
+	    form += 1;		/* fall through for '*' */
 	case '*':
 	    form = (*_Sffmtintf) (form, &n);
 	    if (*form == '$') {

@@ -414,7 +414,7 @@ Annotate the graph with layout information.  This commands takes an
 abstract graph add shape and position information to it according to 
 the layout engine's rules of eye-pleasing graph layout. If the layout engine is
 unspecified then it defaults to \fBdot\fR for directed graphs, and \fBneato\fR otherwise.
-If the \fBnop\fR engine is specified then layout infomation from the input graph is used.
+If the \fBnop\fR engine is specified then layout information from the input graph is used.
 The result of the layout is stored
 as additional attributes name/value pairs in the graph, node and edges.
 These attributes are intended to be interpreted by subsequent 
