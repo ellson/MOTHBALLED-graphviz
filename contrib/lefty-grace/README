@@ -22,7 +22,7 @@ Enhancements to the dotty interface:
 - Added save prompt for current graph on 'load graph' menu selection
 - Rudimentary "hyperlink" - click on node and select "load subgraph"
   from the menu to load and display ./{nodename}.gv graph.  Can
-  navigate back to immediate parent thru menu selection.
+  navigate back to immediate parent through menu selection.
   '+' also goes to parent, '-' to subgraph of a node.  Was not able to
   store parent information in graph spec file, so a graph has to be 
   loaded as a subgraph to another graph before the "parent" feature will

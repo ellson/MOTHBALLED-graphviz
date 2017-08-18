@@ -198,7 +198,7 @@ static char* usestr =
     /* e.g., 
        1 [cluster=10, clustercolor="#ff0000"]
        2 [cluster=10]
-       (and no ther nodes are in cluster10)
+       (and no other nodes are in cluster10)
 
        then since we can only use 1 color for the cluster 10, both 1 and 2 will be colored based on the color of node 2. However if you have
 

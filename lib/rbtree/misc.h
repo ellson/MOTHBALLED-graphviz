@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
-*      See the LICENSE file for copyright infomation.     *
+*      See the LICENSE file for copyright information.     *
 **********************************************************/
 
 #ifndef INC_E_MISC_

@@ -225,7 +225,7 @@ maxmatch(v_data * graph,	/* array of vtx data for graph */
 	order[j]=temp;
     }
 #endif
-    // Option 2: sort the nodes begining with the ones highly approriate for matching
+    // Option 2: sort the nodes beginning with the ones highly approriate for matching
 
 #ifdef DEBUG
     srand(0);

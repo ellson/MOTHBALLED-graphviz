@@ -47,7 +47,7 @@ typedef struct CMajEnvVPSC {
 	int m; /* total number of constraints for next iteration */
 	int gm; /* number of global constraints */
 	Constraint **cs;
-	/* global constraints are persistant throughout optimisation process */
+	/* global constraints are persistent throughout optimisation process */
 	Constraint **gcs;
 	VPSC *vpsc;
 	float *fArray1; /* utility arrays - reusable memory */

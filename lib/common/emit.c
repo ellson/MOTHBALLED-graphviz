@@ -1697,7 +1697,7 @@ static void setup_page(GVJ_t * job, graph_t * g)
     }
 
     /* CAUTION - job->translation was difficult to get right. */
-    /* Test with and without assymetric margins, e.g: -Gmargin="1,0" */
+    /* Test with and without assymmetric margins, e.g: -Gmargin="1,0" */
     if (job->rotation) {
 	job->translation.y = - job->clip.UR.y - job->canvasBox.LL.y / job->zoom;
         if ((job->flags & GVRENDER_Y_GOES_DOWN) || (Y_invert))
@@ -3722,7 +3722,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 		pencolor = color;
 	    if (((color = agget(sg, "fillcolor")) != 0) && color[0])
 		fillcolor = color;
-	    /* bgcolor is supported for backward compatability 
+	    /* bgcolor is supported for backward compatibility 
 	       if fill is set, fillcolor trumps bgcolor, so
                don't bother checking.
                if gradient is set fillcolor trumps bgcolor

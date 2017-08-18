@@ -467,7 +467,7 @@ Synonym for <A HREF=#d:URL>URL</A>.
 :id:GCNE:escString:"";  map,ps,svg
 Allows the graph author to provide an id for graph objects which is to be included in the output.
 Normal "&#92;N", "&#92;E", "&#92;G" substitutions are applied.
-If provided, it is the responsiblity of the provider to keep
+If provided, it is the responsibility of the provider to keep
 its values sufficiently unique for its intended downstream use.
 Note, in particular, that "&#92;E" does not provide a unique id for multi-edges.
 If no id attribute is provided, then a unique internal id is used. However, 

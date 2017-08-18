@@ -704,7 +704,7 @@ add_segment (int segnum, segment_t* seg, trap_t* tr, qnode_t* qs)
 	    {
 	      if ((tr[tr[t].d0].u0 > 0) && (tr[tr[t].d0].u1 > 0))
 		{
-		  if (tr[tr[t].d0].u0 == t) /* passes thru LHS */
+		  if (tr[tr[t].d0].u0 == t) /* passes through LHS */
 		    {
 		      tr[tr[t].d0].usave = tr[tr[t].d0].u1;
 		      tr[tr[t].d0].uside = S_LEFT;
@@ -814,7 +814,7 @@ add_segment (int segnum, segment_t* seg, trap_t* tr, qnode_t* qs)
 	    {
 	      if ((tr[tr[t].d1].u0 > 0) && (tr[tr[t].d1].u1 > 0))
 		{
-		  if (tr[tr[t].d1].u0 == t) /* passes thru LHS */
+		  if (tr[tr[t].d1].u0 == t) /* passes through LHS */
 		    {
 		      tr[tr[t].d1].usave = tr[tr[t].d1].u1;
 		      tr[tr[t].d1].uside = S_LEFT;

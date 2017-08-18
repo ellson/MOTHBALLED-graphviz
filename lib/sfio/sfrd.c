@@ -180,7 +180,7 @@ ssize_t sfrd(reg Sfio_t * f, reg void * buf, reg size_t n,
 	case SF_EDISC:
 	    if (!local && !(f->flags & SF_STRING))
 		goto do_continue;
-	    /* else fall thru */
+	    /* else fall through */
 	case SF_ESTACK:
 	    SFMTXRETURN(f, -1);
 	}

@@ -281,7 +281,7 @@ loaded but the plugins themselves are not loaded unless a plugin
 is demanded from that library.
 </para>
 <para>
-<command>dot -c</command> must be run, with enough priviledges to write
+<command>dot -c</command> must be run, with enough privileges to write
 <filename>/usr/lib/graphviz/config</filename>, whenever the set of plugins is changed.
 For rpm systems
 <command>dot -c</command>

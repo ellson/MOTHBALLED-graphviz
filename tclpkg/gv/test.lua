@@ -2,7 +2,7 @@
 
 ---- importing ----
 if string.sub(_VERSION,1,7)=='Lua 5.0' then
-        -- lua5.0 doesnt have a nice way to do this
+        -- lua5.0 does't have a nice way to do this
 --        lib=loadlib('/usr/lib/graphviz/lua/libgv_lua.so','Gv_Init') 
         lib=loadlib('./libgv_lua.so','Gv_Init') 
         assert(lib)()

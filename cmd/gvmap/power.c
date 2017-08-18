@@ -84,7 +84,7 @@ void power_method(void (*matvec)(void *, int, int, real*, real **, int, int*),
       v[k][i] = u[i];
     }
     /*
-    fprintf(stderr,"inital vec=");
+    fprintf(stderr,"initial vec=");
     for (i = 0; i < n; i++) fprintf(stderr,"%f,",u[i]);fprintf(stderr,"\n");
     */
     iter = 0;
@@ -102,7 +102,7 @@ void power_method(void (*matvec)(void *, int, int, real*, real **, int, int*),
       assert(!flag);
 
       /*
-      fprintf(stderr,"normalized aginst prev vec=");
+      fprintf(stderr,"normalized against prev vec=");
       for (i = 0; i < n; i++) fprintf(stderr,"%f,",u[i]);fprintf(stderr,"\n");
       */
 

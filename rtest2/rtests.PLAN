@@ -58,9 +58,9 @@ Format-specific tests:
 	user-shapes: image loading, input/output format transforms, multiple instances
 		
 
-Perfomance tests:
+Performance tests:
 	
-	some benchmark test so that we can catch gross perfomance changes
+	some benchmark test so that we can catch gross performance changes
 		layout
 		renderer
 		plugin loading

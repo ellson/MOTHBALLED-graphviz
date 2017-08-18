@@ -13,7 +13,7 @@
 
 #include	"sfhdr.h"
 
-/*	Read formated data from a stream
+/*	Read formatted data from a stream
 **
 **	Written by Kiem-Phong Vo.
 */

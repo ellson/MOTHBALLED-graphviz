@@ -1037,7 +1037,7 @@ static void break_cycles(graph_t * g)
 }
 /* setMinMax:
  * This will only be called with the root graph or a cluster
- * which are guarenteed to contain nodes. Thus, leader will be
+ * which are guaranteed to contain nodes. Thus, leader will be
  * set.
  */
 static void setMinMax (graph_t* g, int doRoot)

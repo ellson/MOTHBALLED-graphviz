@@ -467,7 +467,7 @@ static int inPoly(Point vertex[], int n, Point q)
 	    /* crosses ray if strictly positive intersection. */
 	    if (x > 0) {
 		if ((tp3[i].y == 0) || (tp3[i1].y == 0)) {
-		    crossings += .5;	/* goes thru vertex */
+		    crossings += .5;	/* goes through vertex */
 		} else {
 		    crossings += 1.0;
 		}

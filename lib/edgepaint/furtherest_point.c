@@ -114,7 +114,7 @@ void furtherest_point(int k, int dim, real *wgt, real *pts, real *center, real w
 	fprintf(stderr,"}, width = %f, dist = %f\n", qt->width, qt->total_weight);
       }
 
-      distance = qt->total_weight;/* total_weight is used to store the distance from teh center to the group */
+      distance = qt->total_weight;/* total_weight is used to store the distance from the center to the group */
       if (distance + wmax*sqrt(((real) dim))*qt->width < *dist_max) continue;/* this could happen if this candidate was entered into the list earlier than a better one later in the list */
       qt->qts = MALLOC(sizeof(QuadTree)*(1<<dim));
       for (ii = 0; ii < 1<<dim; ii++) {

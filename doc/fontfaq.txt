@@ -137,7 +137,7 @@ From: http://www.fontconfig.org/fontconfig-user.html
 	Monospace:matrix=1 .1 0   	The users preferred monospace font
 					with artificial obliquing
 
-Graphviz currently has a seperate attribute for specififying fontsize.
+Graphviz currently has a separate attribute for specififying fontsize.
 
 [ FIXME
   We should allow the fontconfig style specification.  "Times-20" does
@@ -288,7 +288,7 @@ Pango/cairo depends on fontconfig, so to disable fontconfig you also have
 to disable pango/cairo.    The easiest way to do this temporarily is to
 edit /usr/lib/graphviz/config and remove the entire "libpango" block.
 [Note that any changes to this file will be lost the next time graphviz
-is updated, or "dot -c" is run with installer priviledges.]
+is updated, or "dot -c" is run with installer privileges.]
 
 With pango disabled, graphviz will use gd which, even if it was built with
 fontconfig support, will still allow fontnames to be given as filenames.

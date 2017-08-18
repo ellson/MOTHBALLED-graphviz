@@ -19,7 +19,7 @@
 # 7z is an open source zip utility that can be downloaded directly 
 # from http://www.7-zip.org/
 # If all goes well, this script should create a file with the 
-# name "Graphviz.exe" in the relase folder
+# name "Graphviz.exe" in the release folder
 
 # $1 is ROOT of build tree, having the form /c/AAA
 # Set PFX to AAA

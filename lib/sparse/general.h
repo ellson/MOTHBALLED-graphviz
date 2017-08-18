@@ -107,7 +107,7 @@ void vector_float_take(int n, float *v, int m, int *p, float **u);
 /* give the position of the lagest, second largest etc in vector v if ascending = TRUE
    or
    give the position of the smallest, second smallest etc  in vector v if ascending = TRUE.
-   results in p. If *p == NULL, p is asigned.
+   results in p. If *p == NULL, p is assigned.
 */
 void vector_ordering(int n, real *v, int **p, int ascending);
 void vector_sort_real(int n, real *v, int ascending);

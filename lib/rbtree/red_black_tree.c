@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
-*      See the LICENSE file for copyright infomation.     *
+*      See the LICENSE file for copyright information.     *
 **********************************************************/
 
 #include "config.h"
@@ -14,13 +14,13 @@
 /*  FUNCTION:  RBTreeCreate */
 /**/
 /*  INPUTS:  All the inputs are names of functions.  CompFunc takes to */
-/*  void pointers to keys and returns 1 if the first arguement is */
+/*  void pointers to keys and returns 1 if the first argument is */
 /*  "greater than" the second.   DestFunc takes a pointer to a key and */
 /*  destroys it in the appropriate manner when the node containing that */
-/*  key is deleted.  InfoDestFunc is similiar to DestFunc except it */
-/*  recieves a pointer to the info of a node and destroys it. */
-/*  PrintFunc recieves a pointer to the key of a node and prints it. */
-/*  PrintInfo recieves a pointer to the info of a node and prints it. */
+/*  key is deleted.  InfoDestFunc is similar to DestFunc except it */
+/*  receives a pointer to the info of a node and destroys it. */
+/*  PrintFunc receives a pointer to the key of a node and prints it. */
+/*  PrintInfo receives a pointer to the info of a node and prints it. */
 /*  If RBTreePrint is never called the print functions don't have to be */
 /*  defined and NullFunction can be used.  */
 /**/
@@ -185,7 +185,7 @@ void RightRotate(rb_red_blk_tree* tree, rb_red_blk_node* y) {
 /**/
 /*  EFFECTS:  Inserts z into the tree as if it were a regular binary tree */
 /*            using the algorithm described in _Introduction_To_Algorithms_ */
-/*            by Cormen et al.  This funciton is only intended to be called */
+/*            by Cormen et al.  This function is only intended to be called */
 /*            by the RBTreeInsert function and not by the user */
 /***********************************************************************/
 

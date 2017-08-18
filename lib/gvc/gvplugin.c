@@ -311,7 +311,7 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, const char *str)
         }
     }
 
-    /* one last check for successfull load */
+    /* one last check for successful load */
     if (rv && rv->typeptr == NULL)
         rv = NULL;
 

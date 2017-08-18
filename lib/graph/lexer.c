@@ -233,7 +233,7 @@ int myaglex(void)
  * In particular, the buffer will contain a '\n' as the last non-null char.
  * Ignore lines beginning with '#'; update cpp line number if applicable.
  * Fold long lines, i.e., ignore escaped newlines.
- * Assume the AG.fgets function reads upto newline or buffer length
+ * Assume the AG.fgets function reads up to newline or buffer length
  * like fgets.
  * Need to be careful that AG.fgets might not return full physical line
  * because buffer is too small to hold it.

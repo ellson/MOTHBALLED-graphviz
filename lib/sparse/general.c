@@ -213,7 +213,7 @@ void vector_ordering(int n, real *v, int **p, int ascending){
      or
 
      give the position of the smallest, second smallest etc  in vector v if ascending = TRUE.
-     results in p. If *p == NULL, p is asigned.
+     results in p. If *p == NULL, p is assigned.
 
      ascending: TRUE if v[p] is from small to large.
   */

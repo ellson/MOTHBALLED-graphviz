@@ -419,7 +419,7 @@ void genSpine(Agraph_t * g, float sparse_ratio, int verbose)
 	Agedge_t **edgelist;
 	size_t i, index;
 	size_t nedges;
-	float threshhold;
+	float threshold;
 
 	cleanGraph (g, verbose);
 	nedges = agnedges(g);
@@ -483,7 +483,7 @@ void genSpine(Agraph_t * g, float sparse_ratio, int verbose)
 	if (verbose)
 		fprintf(stderr, " index %lu out of %lu\n", index, nedges);
 
-	/* set of edges with weights above threshhold */
+	/* set of edges with weights above threshold */
 	/* Add all edges with wt >= wt(edgelist[index]) */
 	/* As edgelist is sorted, first index edges */
 	int extra_edges = 0;
@@ -498,10 +498,10 @@ void genSpine(Agraph_t * g, float sparse_ratio, int verbose)
 
 	/* Add any additional edges with same weight as e */
 	if (index) {
-		threshhold = ED_wt(e);
+		threshold = ED_wt(e);
 		for (; i <= nedges; i++) {
 			e = edgelist[i - 1];
-			if (ED_wt(e) >= threshhold) {
+			if (ED_wt(e) >= threshold) {
 				if (verbose) {
 					if (agsubedge(sg_union, e, 0) == NULL)
 						extra_edges++;
