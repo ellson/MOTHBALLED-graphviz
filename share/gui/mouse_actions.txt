@@ -6,7 +6,7 @@
 #MM_POLYGON_SELECT
 #MM_MOVE
 #MM_FISHEYE_MAGNIFIER
-#keys:These are pre defined keys in the code , more keys can be added by using their GTK key event correspondants, 0 means no key
+#keys:These are predefined keys in the code, more keys can be added by using their GTK key event correspondents, 0 means no key
 #B_LSHIFT	Left Shift
 #B_RSHIFT	Right Shift
 #B_LCTRL	Left CTRL
