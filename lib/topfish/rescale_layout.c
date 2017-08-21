@@ -194,7 +194,7 @@ static void
 rescaleLayout(v_data * graph, int n, double *x_coords, double *y_coords,
 	      int interval, double distortion)
 {
-    // Rectlinear distortion - auxilliary function
+    // Rectlinear distortion - auxiliary function
     int i;
     double *densities = NULL, *smoothed_densities = NULL;
     double *copy_coords = N_NEW(n, double);
@@ -327,7 +327,7 @@ rescale_layout_polarFocus(v_data * graph, int n,
 	  double *x_coords, double *y_coords,
 	  double x_focus, double y_focus, int interval, double distortion)
 {
-    // Polar distortion - auxilliary function
+    // Polar distortion - auxiliary function
     int i;
     double *densities = NULL, *smoothed_densities = NULL;
     double *distances = N_NEW(n, double);

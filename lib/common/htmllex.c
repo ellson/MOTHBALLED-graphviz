@@ -810,7 +810,7 @@ int clearHTMLlexer()
 #ifdef HAVE_EXPAT
 /* eatComment:
  * Given first character after open comment, eat characters
- * upto comment close, returning pointer to closing > if it exists,
+ * up to comment close, returning pointer to closing > if it exists,
  * or null character otherwise.
  * We rely on HTML strings having matched nested <>.
  */

@@ -12,7 +12,7 @@
  *************************************************************************/
 
 /* geometric functions (e.g. on points and boxes) with application to, but
- * no specific dependance on graphs */
+ * no specific dependence on graphs */
 
 #ifndef GV_ARITH_H
 #define GV_ARITH_H

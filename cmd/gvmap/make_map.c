@@ -1713,7 +1713,7 @@ static void get_polygons(int exclude_random, int n, int nrandom, int dim, Sparse
     }
     ncomps = i + 1;
     if (Verbose) fprintf(stderr,"ncomps = %d\n",ncomps);
-  } else {/* alwasy exclud bounding box */
+  } else {/* always exclude bounding box */
     for (i = ncomps - 1; i >= 0; i--) {
       if (groups[comps[comps_ptr[i]]] != GRP_BBOX) break;
     }
@@ -2276,7 +2276,7 @@ int make_map_from_rectangle_groups(int exclude_random, int include_OK_points,
     /* add artificial points in an anti-clockwise fashion */
 
     if (K > 0){
-      delta[0] = .5*avgsize[0]/K; delta[1] = .5*avgsize[1]/K;/* small pertubation to make boundary between labels looks more fractal */
+      delta[0] = .5*avgsize[0]/K; delta[1] = .5*avgsize[1]/K;/* small perturbation to make boundary between labels looks more fractal */
     } else {
       delta[0] = delta[1] = 0.;
     }

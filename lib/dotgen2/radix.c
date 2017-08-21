@@ -40,7 +40,7 @@ static void radix (short bitsOffset, ulong N, rec *source, rec *dest)
         for (i = 256; i > 0; --i, ++cp)
                 *cp = 0;
 
-/* count occurences of every byte value */
+/* count occurrences of every byte value */
         sp = source;
         for (i = N; i > 0; --i, ++sp) {
                 cp = count + ByteOf (sp->key);

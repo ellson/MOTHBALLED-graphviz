@@ -32,7 +32,7 @@ pkgIndex.tcl: @TCL_PKGINDEX@ @TCL_PKGINDEX_GD@ @TCL_PKGINDEX_SWIG@
 # Installation of softlinks into non-owned directories is done as a
 # separate step, with soft failures, so that a developer can do:
 #    ./configure --prefix=$HOME/graphviz; make; make install
-# without root priviledges.
+# without root privileges.
 install-data-hook:
 if WITH_LUA
 	-mkdir -p $(DESTDIR)@LUA_INSTALL_DIR@;

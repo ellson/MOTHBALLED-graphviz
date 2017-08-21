@@ -168,7 +168,7 @@ Reference
 	  at end degrees.
 
 	  arc       - Just the curved line.
-	  fillarc   - (Intented to be a fill between the curve and chord,
+	  fillarc   - (Intended to be a fill between the curve and chord,
 		      but gd doesn't do that) - Same as pie.
 	  openarc   - Outline shape with curve and chord.
 	  chord     - Straight line chord between the ends of the curve,

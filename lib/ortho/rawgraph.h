@@ -27,7 +27,7 @@ typedef struct {
   vertex* vertices;
 } rawgraph;
 
-extern rawgraph* make_graph(int n);  /* makes a graph wih n vertices, 0 edges */
+extern rawgraph* make_graph(int n);  /* makes a graph with n vertices, 0 edges */
 extern void free_graph(rawgraph*); 
   /* inserts edge FROM v1 to v2 */
 extern void insert_edge(rawgraph*, int v1, int v2); 

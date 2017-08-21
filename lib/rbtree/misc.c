@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
-*      See the LICENSE file for copyright infomation.     *
+*      See the LICENSE file for copyright information.     *
 **********************************************************/
 
 #include "config.h"
@@ -44,7 +44,7 @@ void Assert(int assertion, char* error) {
 /**/
 /*    INPUTS:  size is the size to malloc */
 /**/
-/*    OUTPUT:  returns pointer to allocated memory if succesful */
+/*    OUTPUT:  returns pointer to allocated memory if successful */
 /**/
 /*    EFFECT:  mallocs new memory.  If malloc fails, prints error message */
 /*             and terminates program. */

@@ -312,7 +312,7 @@ void tclhandleString(tblHeader_pt tblHdrPtr, char *handle,
  *   o headerPtr (I) - A pointer to the table header.
  *   o index (I) - The index of an entry.
  * Returns:
- *   A pointer to the entry, or NULL if an error occured.
+ *   A pointer to the entry, or NULL if an error occurred.
  *-----------------------------------------------------------------------------
  */
 void *tclhandleXlateIndex(tblHeader_pt headerPtr, uint64_t entryIdx)
@@ -338,7 +338,7 @@ void *tclhandleXlateIndex(tblHeader_pt headerPtr, uint64_t entryIdx)
  *   o headerPtr (I) - A pointer to the table header.
  *   o handle (I) - The handle string -- <prefix><int>
  * Returns:
- *   A pointer to the entry, or NULL if an error occured.
+ *   A pointer to the entry, or NULL if an error occurred.
  *-----------------------------------------------------------------------------
  */
 void *tclhandleXlate(tblHeader_pt tblHdrPtr, char *handle)
@@ -359,7 +359,7 @@ void *tclhandleXlate(tblHeader_pt tblHdrPtr, char *handle)
  *   o index (I) - The index of an entry.
  *----------------------------------------------------------------------------
  * Returns:
- *   The contents of the entry, if success, or NULL if an error occured.
+ *   The contents of the entry, if success, or NULL if an error occurred.
  *----------------------------------------------------------------------------
  */
 void *tclhandleFreeIndex(tblHeader_pt headerPtr, uint64_t entryIdx)
@@ -392,7 +392,7 @@ void *tclhandleFreeIndex(tblHeader_pt headerPtr, uint64_t entryIdx)
  *   o handle (I) - The handle of an entry.
  *----------------------------------------------------------------------------
  * Returns:
- *   The contents of the entry, if success, or NULL if an error occured.
+ *   The contents of the entry, if success, or NULL if an error occurred.
  *----------------------------------------------------------------------------
  */
 void *tclhandleFree(tblHeader_pt tblHdrPtr, char *handle)

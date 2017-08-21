@@ -674,8 +674,10 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 	free(P);
     }
     if (obs) {
-	for (i=0; i < npoly; i++)
+	for (i=0; i < npoly; i++) {
+	    free (obs[i]->ps);
 	    free (obs[i]);
+	}
 	free (obs);
     }
     return 0;
@@ -995,7 +997,7 @@ void neato_translate(Agraph_t * g)
 /* _neato_set_aspect;
  * Assume all bounding boxes are correct.
  * Return false if no transform is performed. This includes
- * the possiblity that a translation was done.
+ * the possibility that a translation was done.
  */
 static boolean _neato_set_aspect(graph_t * g)
 {

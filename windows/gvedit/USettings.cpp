@@ -319,7 +319,7 @@ bool runproc(AnsiString szExeName,AnsiString szCommandLine,AnsiString tempFile,A
 
         CloseHandle ( hStdoutWr );
         //create temp file
-        if (!silent)     //for preview we dont need stdioerr
+        if (!silent)     //for preview we don't need stdioerr
                 return 0;
         HANDLE hTempFile;
         hTempFile = CreateFile ( szTempFile.c_str(), GENERIC_WRITE, 0, NULL,
@@ -350,7 +350,7 @@ bool runproc(AnsiString szExeName,AnsiString szCommandLine,AnsiString tempFile,A
                 }
                 else
                 {
-                        frmMain->Memo1->Lines->Add(engine+" has created "+outFile+" sucessfully.");
+                        frmMain->Memo1->Lines->Add(engine+" has created "+outFile+" successfully.");
                         frmMain->Memo1->SelStart=frmMain->Memo1->Text.Length()-1;
                         SendMessage(frmMain->Memo1->Handle, EM_SCROLLCARET,0,0);
                         DeleteFile(szTempFile);

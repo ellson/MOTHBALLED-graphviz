@@ -120,7 +120,7 @@ static void gv_edge_state(GVJ_t *job, edge_t *e)
     nlist = &(job->selected_obj_type_name);
 
     /* only tail, head, and key are strictly identifying properties,
-     * but we commonly alse use edge kind (e.g. "->") and tailport,headport
+     * but we commonly also use edge kind (e.g. "->") and tailport,headport
      * in edge names */
     j = 0;
     gv_argvlist_set_item(nlist, j++, s_edge);

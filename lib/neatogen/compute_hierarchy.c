@@ -57,7 +57,7 @@ compute_hierarchy(vtx_data * graph, int n, double abs_tol,
     int use_given_levels = FALSE;
     int *ordering;
     int *levels;
-    double tol;			/* node 'i' precedes 'j' in hierachy iff y[i]-y[j]>tol */
+    double tol;			/* node 'i' precedes 'j' in hierarchy iff y[i]-y[j]>tol */
     double hierarchy_span;
     int num_levels;
 

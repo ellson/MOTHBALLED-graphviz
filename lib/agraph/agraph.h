@@ -128,7 +128,7 @@ for the name. */
     };
 
     struct Agdesc_s {		/* graph descriptor */
-	unsigned directed:1;	/* if edges are assymetric */
+	unsigned directed:1;	/* if edges are assymmetric */
 	unsigned strict:1;	/* if and self, multi-edges forbidden */
 	unsigned flatlock:1;	/* if sets are flattened into lists */
 	unsigned maingraph:1;	/* if this is the top level graph */

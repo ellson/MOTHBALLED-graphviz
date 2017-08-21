@@ -379,7 +379,7 @@ static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input gra
     for (i = 0; i < num_centers; i++)
 	Dij[i] = storage + i * n;
 
-    /* select 'num_centers' pivots that are uniformaly spreaded over the graph */
+    /* select 'num_centers' pivots that are uniformaly spread over the graph */
 
     /* the first pivots is selected randomly */
     node = rand() % n;
@@ -555,7 +555,7 @@ static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input gra
 
 	/*************************************************
 	** initialize direction vectors  **
-	** to get an intial layout       **
+	** to get an initial layout       **
 	*************************************************/
 
     /* the layout is subspace*directions */

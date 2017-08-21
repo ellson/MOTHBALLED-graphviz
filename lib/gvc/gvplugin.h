@@ -37,7 +37,7 @@ extern "C" {
 			has an id that is different from the "ps" type
 			in the same package */
 	const char *type;	/* a string name, such as "png" or "ps" that
-			distinguishes different types withing the same
+			distinguishes different types within the same
 			 (renderer in this case) */
 	int quality;    /* an arbitrary integer used for ordering plugins of
 			the same type from different packages */

@@ -333,7 +333,7 @@ Private Sub cmdLayout_Click()
         
     txtOutput.Text = txtOutput.Text + optLayoutEngine.Text + " said: "
     If res.ret = 0 Then
-        txtOutput.Text = txtOutput.Text + "Layout ended succesfully." + Chr(13) + Chr(10)
+        txtOutput.Text = txtOutput.Text + "Layout ended successfully." + Chr(13) + Chr(10)
     Else
         txtOutput.Text = txtOutput.Text + "Layout ended with errors." + Chr(13) + Chr(10)
     End If

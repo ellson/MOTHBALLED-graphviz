@@ -266,7 +266,7 @@ static Agsym_t *setattr(Agraph_t * g, int kind, char *name, char *value)
     dd = agdatadict(g, TRUE);	/* force initialization of string attributes */
     ldict = agdictof(g, kind);
     lsym = aglocaldictsym(ldict, name);
-    if (lsym) {			/* update old local definiton */
+    if (lsym) {			/* update old local definition */
 	agstrfree(g, lsym->defval);
 	lsym->defval = agstrdup(g, value);
 	rv = lsym;

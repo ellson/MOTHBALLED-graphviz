@@ -131,8 +131,10 @@ static void neato_init_node_edge(graph_t * g)
 
 static void neato_cleanup_graph(graph_t * g)
 {
-    if (Nop || (Pack < 0))
+    if (Nop || (Pack < 0)) {
 	free_scan_graph(g);
+	free(GD_clust(g));
+    }
     if (g != agroot(g))
         agclean(g, AGRAPH , "Agraphinfo_t");
 }

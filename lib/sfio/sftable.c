@@ -152,7 +152,7 @@ static Fmtpos_t *sffmtpos(Sfio_t * f, const char *form, va_list args,
 	    } else if (*form != '*')
 		goto loop_flags;
 	    else
-		form += 1;	/* drop thru below */
+		form += 1;	/* drop through below */
 
 	case '*':
 	    form = sffmtint(form, &n);

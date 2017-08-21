@@ -814,7 +814,7 @@ static void maximal_independent_edge_set_heavest_edge_pernode_scaled(SparseMatri
 
 SparseMatrix DistanceMatrix_restrict_cluster(int ncluster, int *clusterp, int *cluster, SparseMatrix P, SparseMatrix R, SparseMatrix D){
 #if 0
-  /* this construct a distance matrix of a coarse graph, for a coarsen give by merging all nodes in eahc cluster */
+  /* this construct a distance matrix of a coarse graph, for a coarsen give by merging all nodes in each cluster */
   SparseMatrix cD = NULL;
   int i, j, nzc;
   int **irn, **jcn;

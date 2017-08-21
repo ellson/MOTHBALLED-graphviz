@@ -54,7 +54,7 @@ static void *poolalloc(Vmalloc_t * vm, reg size_t size)
 
     size = ROUND(size, ALIGN);
 
-    /* look thru all segments for a suitable free block */
+    /* look through all segments for a suitable free block */
     for (tp = NIL(Block_t *), seg = vd->seg; seg; seg = seg->next) {
 	if ((tp = seg->free) &&
 	    (s = (SIZE(tp) & ~BITS) + sizeof(Head_t)) >= size)

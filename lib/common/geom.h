@@ -12,7 +12,7 @@
  *************************************************************************/
 
 /* geometric types and macros (e.g. points and boxes) with application to, but
- * no specific dependance on graphs */
+ * no specific dependence on graphs */
 
 #ifndef GV_GEOM_H
 #define GV_GEOM_H

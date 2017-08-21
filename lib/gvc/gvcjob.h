@@ -248,7 +248,7 @@ extern "C" {
 	int url_map_n;                  /* number of points for url map if GVRENDER_DOES_MAPS */
 	pointf *url_map_p;
 
-	/* additonal mapped regions for edges */
+	/* additional mapped regions for edges */
 	int url_bsplinemap_poly_n;      /* number of polygons in url bspline map
 					 if GVRENDER_DOES_MAPS && GVRENDER_DOES_MAP_BSPLINES */
 	int *url_bsplinemap_n;          /* array of url_bsplinemap_poly_n ints 
