@@ -8,13 +8,13 @@ else
     GRAPHVIZ_AUTHOR_EMAIL=$( git log -n 1 --format="%ae" )
     if ! GRAPHVIZ_VERSION_DATE=$( date -u +%Y%m%d.%H%M -d "$GRAPHVIZ_GIT_DATE" 2>/dev/null ) ; then
         # try date with FreeBSD syntax
-        if ! GRAPHVIZ_VERSION_DATE=$( date -u -j -f "%Y%m%d.%H%M" "$GRAPHVIZ_GIT_DATE" 2>/dev/null); then
+        if ! GRAPHVIZ_VERSION_DATE=$( date -u -j -f "%Y-%m-%d %H:%M:%S" "$GRAPHVIZ_GIT_DATE" "+%Y%m%d.%H%M" 2>/dev/null); then
             echo "Warning: we do not know how to invoke date correctly." >&2
         fi    
     fi
     if ! GRAPHVIZ_CHANGE_DATE=$( date -u +"%a %b %e %Y" -d "$GRAPHVIZ_GIT_DATE" 2>/dev/null ) ; then
         # try date with FreeBSD syntax
-        if ! GRAPHVIZ_CHANGE_DATE=$( date -u -j -f "%a %b %e %Y" -d "$GRAPHVIZ_GIT_DATE" 2>/dev/null); then
+        if ! GRAPHVIZ_CHANGE_DATE=$( date -u -j -f "%Y-%m-%d %H:%M:%S"  "$GRAPHVIZ_GIT_DATE" "+%a %b %e %Y" 2>/dev/null); then
             echo "Warning: we do not know how to invoke date correctly." >&2
         fi    
     fi
