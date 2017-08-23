@@ -674,8 +674,10 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 	free(P);
     }
     if (obs) {
-	for (i=0; i < npoly; i++)
+	for (i=0; i < npoly; i++) {
+	    free (obs[i]->ps);
 	    free (obs[i]);
+	}
 	free (obs);
     }
     return 0;
