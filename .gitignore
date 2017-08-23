@@ -89,6 +89,9 @@ windows/build/graphviz.wxs
 *.la
 *.lo
 *.o
+*.a
+*.so
+*.so.*
 *.pdf
 !doc/**/*.pdf
 .libs
