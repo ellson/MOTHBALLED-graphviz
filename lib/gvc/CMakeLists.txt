@@ -3,6 +3,7 @@ add_definitions(-D_BLD_gvc=1 -DGVC_EXPORTS -DGVLIBDIR="${LIBRARY_INSTALL_DIR}/gr
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${TOP_SOURCE_DIR}
+    ${GRAPHVIZ_LIB_DIR}/ast
     ${GRAPHVIZ_LIB_DIR}/cdt
     ${GRAPHVIZ_LIB_DIR}/cgraph
     ${GRAPHVIZ_LIB_DIR}/common
