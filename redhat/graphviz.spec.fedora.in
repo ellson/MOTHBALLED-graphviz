@@ -141,7 +141,6 @@ of graphs (as in nodes and edges, not as in bar-charts).
 %license COPYING
 %endif
 %doc COPYING AUTHORS ChangeLog NEWS README
-%{_libdir}/graphviz/config%{pluginsver}
 
 #-- graphviz-nox rpm --------------------------------------------------
 %package nox
@@ -240,10 +239,6 @@ with no X11 on the server.
 %dir %{_datadir}/graphviz
 %{_datadir}/graphviz/gvpr/*
 
-# run "dot -c" to generate plugin config in {_libdir}/graphviz/config%{pluginsver}
-%post
-LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
-
 #-- graphviz-libs rpm --------------------------------------------------
 %package libs
 Group:            Applications/Multimedia
@@ -269,6 +264,7 @@ Graphviz core libs
 %{_libdir}/libpathplan.so.*
 %{_libdir}/libxdot.so.4*
 %{_libdir}/liblab_gamut.so.*
+%exclude %{_libdir}/graphviz/*
 
 #-- graphviz-plugins-core rpm --------------------------------------------------
 %package plugins-core
