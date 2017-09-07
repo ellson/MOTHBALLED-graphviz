@@ -4,6 +4,7 @@
 [![Windows Build Status](https://img.shields.io/appveyor/ci/ellson/graphviz/master.svg?label=Windows)](https://ci.appveyor.com/project/ellson/graphviz/branch/master)
 
 from AT&T Research and Lucent Bell Labs
+* https://emden.github.io/
 * http://www.graphviz.org/
 
 See doc/build.html within the source tree or http://ellson.github.io/graphviz/doc/html/build.html for prerequisites and detailed build notes.
@@ -15,9 +16,9 @@ The master GIT Repository for graphviz can be found at:
 
 ## Documentation
 
-The Graphviz documents are currently hosted at http://ellson.github.io/graphviz/doc/html/index.html
+The Graphviz documents are currently hosted at https://emden.github.io/
 
-## Graph Visualization ( http://www.graphviz.org/About.php )
+## Graph Visualization ( https://emden.github.io/about/ )
 
 Graph visualization is a way of representing structural information as diagrams of abstract graphs and networks. It has important applications in networking, bioinformatics,  software engineering, database and web design, machine learning, and in visual interfaces for other technical domains.
 
@@ -31,8 +32,8 @@ In practice, graphs are usually generated from an external data sources, but the
 
 ## Contacts
 
-If you have a bug or believe something is not working as expected, please submit a bug report ( https://github.com/ellson/graphviz/issues ).
+If you have a bug or believe something is not working as expected, please submit a [bug report](https://github.com/ellson/graphviz/issues).
 
-If you have a general question or are unsure how things work, please consider posting first to the Graphviz mailing list ( http://www.graphviz.org/MailingList.php ) or on the user forum ( http://www.graphviz.org/forums/general-discussion ). We follow these, but there are also many users who might be able to respond to you better or faster than we can. Please do not send detailed bug reports there.
+If you have a general question or are unsure how things work, these queries can also be posted in the [Graphviz Issues page](https://github.com/ellson/graphviz/issues).
 
 John Ellson
