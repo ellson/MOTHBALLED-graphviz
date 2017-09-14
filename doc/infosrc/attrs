@@ -671,7 +671,7 @@ Specifies layers in which the node, edge or cluster is present.
 Specifies a linearly ordered list of layer names attached to the graph
 The graph is then output in separate layers. Only those components
 belonging to the current output layer appear. For more information,
-see the page <A HREF="http://www.graphviz.org/faq/#FaqOverlays">How to use drawing layers (overlays)</A>.
+see the page <A HREF="../../../faq/#FaqOverlays">How to use drawing layers (overlays)</A>.
 :layerlistsep:G:string:",";
 Specifies the separator characters used to split
 an attribute of type <A HREF=#k:layerRange>layerRange</A> into a list of ranges.
@@ -1219,7 +1219,7 @@ rectangular. The image formats supported as well as the precise semantics of
 how the file is used depends on the
 <A HREF="output.html">output format</A>.  For further details, see
 <A HREF=output.html#d:image_fmts>Image Formats</A> and
-<A HREF=http://www.graphviz.org/faq/#ext_image>External PostScript files</A>.
+<A HREF="../../../faq/#ext_image">External PostScript files</A>.
 <P>
 There is one exception to this usage.
 If <B>shape</B> is set to "epsf", shapefile gives
@@ -1227,7 +1227,7 @@ a filename containing a definition of the node in PostScript.
 The graphics defined must be contain all of the
 node content, including any desired boundaries.
 For further details, see
-<A HREF=http://www.graphviz.org/faq/#ext_ps_file>
+<A HREF="../../../faq/#ext_ps_file">
 External PostScript files</A>.
 :showboxes:ENG:int:0:0; dot
 Print guide boxes in PostScript at the beginning of
