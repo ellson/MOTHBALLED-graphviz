@@ -1011,9 +1011,10 @@ touch %{buildroot}%{_libdir}/graphviz/config%{pluginsver}
 
 %clean
 # optional regression test using the products in the build tree
+# FIXME - rtest not working reliably in rpm build environment - JCE
 %if 0%{?rtest}
-cd rtest
-make rtest
+#cd rtest
+#make rtest
 %endif
 # clean up temporary installation
 rm -rf %{buildroot}
