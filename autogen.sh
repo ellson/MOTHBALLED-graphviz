@@ -50,13 +50,18 @@ m4_define([graphviz_version_commit],[$GRAPHVIZ_VERSION_COMMIT])
 
 EOF
 
+# config/missing is created by autoreconf,  but apparently not recreated if already there.
+# This breaks some builds from the graphviz.tar.gz sources.
+# Arguably this is an autoconf bug.
+rm -f config/missing
+
 autoreconf -v --install --force || exit 1
 
 # ensure config/depcomp exists even if still using automake-1.4
 # otherwise "make dist" fails.
 touch config/depcomp
 
-# suppress automatic ./configure  is "./autogen.sh NOCONFIG"
+# suppress automatic ./configure  if "./autogen.sh NOCONFIG"
 if test "$1" != "NOCONFIG"; then
     # don't use any old cache, but create a new one
     rm -f config.cache
