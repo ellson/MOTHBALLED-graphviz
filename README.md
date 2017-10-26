@@ -34,8 +34,8 @@ In practice, graphs are usually generated from an external data sources, but the
 
 ## Contacts
 
-If you have a bug or believe something is not working as expected, please submit a [bug report](https://github.com/ellson/graphviz/issues).
+If you have a bug or believe something is not working as expected, please submit a [bug report](https://gitlab.com/graphviz/graphviz/issues).
 
-If you have a general question or are unsure how things work, these queries can also be posted in the [Graphviz Issues page](https://github.com/ellson/graphviz/issues).
+If you have a general question or are unsure how things work, these queries can also be posted in the [Graphviz Issues page](https://gitlab.com/graphviz/graphviz/issues).
 
 John Ellson
