@@ -11,8 +11,10 @@ See doc/build.html within the source tree or http://ellson.github.io/graphviz/do
 
 ## master GIT Repository
 
-The master GIT Repository for graphviz can be found at:
-* http://github.com/ellson/graphviz/
+The master GIT Repository for graphviz can **now** be found at:
+* https://gitlab.com/graphviz/graphviz
+
+All new issues and pull requests should be made there.
 
 ## Documentation
 
