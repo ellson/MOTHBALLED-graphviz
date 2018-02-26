@@ -78,7 +78,7 @@ static gvdevice_features_t device_features_quartz = {
           | GVDEVICE_DOES_TRUECOLOR,/* flags */
 	{0.,0.},                    /* default margin - points */
 	{0.,0.},                    /* default page width, height - points */
-	{96.,96.},                  /* dpi */
+	{72.,72.},                  /* dpi */
 };
 
 gvplugin_installed_t gvdevice_quartz_types_for_cairo[] = {

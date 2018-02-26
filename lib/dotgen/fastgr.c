@@ -237,12 +237,11 @@ void delete_fast_node(graph_t * g, node_t * n)
 	GD_nlist(g) = ND_next(n);
 }
 
-node_t *virtual_node(graph_t * g)
+node_t *named_virtual_node(graph_t * g, char *s)
 {
     node_t *n;
 
     n = NEW(node_t);
-//  agnameof(n) = "virtual";
     AGTYPE(n) = AGNODE;
     n->base.data = (Agrec_t*)NEW(Agnodeinfo_t);
     n->root = agroot(g);
@@ -250,11 +249,17 @@ node_t *virtual_node(graph_t * g)
     ND_lw(n) = ND_rw(n) = 1;
     ND_ht(n) = 1;
     ND_UF_size(n) = 1;
+    if (s) ND_alg(n) = s;
     alloc_elist(4, ND_in(n));
     alloc_elist(4, ND_out(n));
     fast_node(g, n);
     GD_n_nodes(g)++;
     return n;
+}
+
+node_t *virtual_node(graph_t * g)
+{
+  return named_virtual_node(g,0);
 }
 
 void flat_edge(graph_t * g, edge_t * e)
