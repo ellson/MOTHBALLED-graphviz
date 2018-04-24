@@ -30,6 +30,8 @@ gvedit_CPPFLAGS = \
 	-DDEMAND_LOADING=1 \
 	-DGVEDIT_DATADIR=\""$(pkgdatadir)/gvedit"\"
 
+gvedit_CXXFLAGS = -fPIC
+
 gvedit_LDADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \

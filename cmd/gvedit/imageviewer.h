@@ -15,7 +15,7 @@
 
 #ifndef IMAGEVIEWER_H
 #define IMAGEVIEWER_H
-#include <QtGui>
+#include <QtWidgets>
 #include <QMainWindow>
 #include <QPrinter>
 

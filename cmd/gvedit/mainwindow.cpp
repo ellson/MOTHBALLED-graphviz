@@ -11,7 +11,7 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
-#include <QtGui>
+#include <QtWidgets>
 #include <qframe.h>
 #include "mainwindow.h"
 #include "mdichild.h"

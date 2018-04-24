@@ -12,7 +12,7 @@
  *************************************************************************/
 
 
-#include <QtGui>
+#include <QtWidgets>
 
 #include "mdichild.h"
 #include "mainwindow.h"

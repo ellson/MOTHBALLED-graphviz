@@ -16,7 +16,7 @@
 #include "csettings.h"
 #include "qmessagebox.h"
 #include "qfiledialog.h"
-#include <QtGui>
+#include <QtWidgets>
 #include <qfile.h>
 #include "mdichild.h"
 #include "string.h"
