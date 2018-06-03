@@ -1,10 +1,6 @@
 .TH GVCOLOR 1 "21 March 2001"
 .SH NAME
 gvcolor \- flow colors through a ranked digraph
-.br
-( previously known as
-.B colorize
-)
 .SH SYNOPSIS
 .B gvcolor
 [ 
@@ -16,6 +12,8 @@ dot file.gv | gvcolor | dot \-T\fI<format>\fP
 .ft
 .SH DESCRIPTION
 .B gvcolor
+(previously known as
+.BR colorize)
 is a filter that sets node colors from initial seed values.
 Colors flow along edges from tail to head, and are averaged
 (as HSB vectors) at nodes.
