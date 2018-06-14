@@ -1416,8 +1416,10 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     job->pageBoundingBox.UR.x = ROUND(job->canvasBox.UR.x * job->dpi.x / POINTS_PER_INCH);
     job->pageBoundingBox.UR.y = ROUND(job->canvasBox.UR.y * job->dpi.y / POINTS_PER_INCH);
     if (job->rotation) {
-	job->pageBoundingBox.LL = exch_xy(job->pageBoundingBox.LL);
-	job->pageBoundingBox.UR = exch_xy(job->pageBoundingBox.UR);
+        job->pageBoundingBox.LL = exch_xy(job->pageBoundingBox.LL);
+        job->pageBoundingBox.UR = exch_xy(job->pageBoundingBox.UR);
+        job->canvasBox.LL = exch_xyf(job->canvasBox.LL);
+        job->canvasBox.UR = exch_xyf(job->canvasBox.UR);
     }
 }
 
