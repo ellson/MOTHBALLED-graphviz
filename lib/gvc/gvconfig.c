@@ -437,7 +437,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 #if defined(_WIN32)
     rc = glob(gvc, config_glob, GLOB_NOSORT, NULL, &globbuf);
 #else
-    rc = glob(config_glob, GLOB_NOSORT, NULL, &globbuf);
+    rc = glob(config_glob, 0, NULL, &globbuf);
 #endif
     if (rc == 0) {
 	for (i = 0; i < globbuf.gl_pathc; i++) {
